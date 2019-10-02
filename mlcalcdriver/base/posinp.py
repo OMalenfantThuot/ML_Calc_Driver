@@ -4,7 +4,7 @@ atomic systems used as input for a calculation.
 """
 
 from copy import deepcopy
-from collections import Sequence
+from collections.abc import Sequence
 import numpy as np
 from mlcalcdriver.globals import ATOMS_MASS
 
@@ -65,10 +65,10 @@ class Posinp(Sequence):
         self.units = units
         self.boundary_conditions = boundary_conditions
         self.cell = cell
-        self._check_initial_values()
+        self._check_initial_values(self.cell, self.units, self.boundary_conditions)
 
     @staticmethod
-    def _check_initial_values():
+    def _check_initial_values(cell, units, boundary_conditions):
         r"""
         Raises
         ------
@@ -76,25 +76,25 @@ class Posinp(Sequence):
             If some initial values are invalid, contradictory or
             missing.
         """
-        if self.cell is not None:
-            if len(self.cell) != 3:
+        if cell is not None:
+            if len(cell) != 3:
                 raise ValueError(
                     "The cell size must be of length 3 (one value per "
                     "space coordinate)"
                 )
         else:
-            if self.boundary_conditions != "free":
+            if boundary_conditions != "free":
                 raise ValueError(
                     "You must give a cell size to use '{}' boundary conditions".format(
-                        self.boundary_conditions
+                        boundary_conditions
                     )
                 )
-        if self.boundary_conditions == "periodic" and "inf" in self.cell:
+        if boundary_conditions == "periodic" and "inf" in cell:
             raise ValueError(
                 "Cannot use periodic boundary conditions with a cell meant "
                 "for a surface calculation."
             )
-        elif self.boundary_conditions == "free" and self.units == "reduced":
+        elif boundary_conditions == "free" and units == "reduced":
             raise ValueError("Cannot use reduced units with free boundary conditions")
 
     @classmethod

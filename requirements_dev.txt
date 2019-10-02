@@ -3,3 +3,4 @@ wheel==0.33.6
 black==19.3b0
 numpy==1.16.5
 twine==2.0.0
+pytest==5.2.0
