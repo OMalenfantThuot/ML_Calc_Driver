@@ -2,7 +2,7 @@ dist: xenial
 language: python
 python: 3.7.4
 install:
-  - pip install requirments_dev.txt
+  - pip install requirements_dev.txt
   - pip install -e .
 script:
   - pytest
