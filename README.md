@@ -1,9 +1,9 @@
 # ML\_Calc\_Driver
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
-[![Build Status](https://travis-ci.org/OMalenfantThuot/ML_Calc_Driver.svg?branch=master)](https://travis-ci.org/OMalenfantThuot/ML_Calc_Driver)
-[![Coverage Status](https://coveralls.io/repos/github/OMalenfantThuot/ML_Calc_Driver/badge.svg)](https://coveralls.io/github/OMalenfantThuot/ML_Calc_Driver)
-[![PyPi](https://img.shields.io/pypi/v/mlcalcdriver.svg)](https://pypi.org/project/mlcalcdriver/)
+[![Build Status](https://travis-ci.org/OMalenfantThuot/ML_Calc_Driver.svg?branch=master&kill_cache=1)](https://travis-ci.org/OMalenfantThuot/ML_Calc_Driver)
+[![Coverage Status](https://coveralls.io/repos/github/OMalenfantThuot/ML_Calc_Driver/badge.svg?branch=master&kill_cache=1)](https://coveralls.io/github/OMalenfantThuot/ML_Calc_Driver)
+[![PyPi](https://img.shields.io/pypi/v/mlcalcdriver.svg?kill_cache=1)](https://pypi.org/project/mlcalcdriver/)
 [![python](https://img.shields.io/pypi/pyversions/mlcalcdriver.svg)](https://www.python.org/downloads/)
 
 ML\_Calc\_Driver is a driver to emulate DFT calculations using machine learned predictive models.

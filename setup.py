@@ -7,7 +7,7 @@ requirements = ["numpy>=1.16"]
 
 setup(
     name="mlcalcdriver",
-    version="0.0.1",
+    version="0.0.2",
     author="Olivier Malenfant-Thuot",
     author_email="malenfantthuotolivier@gmail.com",
     description="A package to drive atomic calculations using machine learned models.",
