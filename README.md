@@ -3,7 +3,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![Build Status](https://travis-ci.org/OMalenfantThuot/ML_Calc_Driver.svg?branch=master)](https://travis-ci.org/OMalenfantThuot/ML_Calc_Driver)
 [![Coverage Status](https://coveralls.io/repos/github/OMalenfantThuot/ML_Calc_Driver/badge.svg)](https://coveralls.io/github/OMalenfantThuot/ML_Calc_Driver)
-[![PyPi](https://img.shields.io/badge/pypi/v/:mlcalcdriver)](https://pypi.org/project/mlcalcdriver/)
+[![PyPi](https://img.shields.io/pypi/v/mlcalcdriver.svg)](https://pypi.org/project/mlcalcdriver/)
 
 ML\_Calc\_Driver is a driver to emulate DFT calculations using machine learned predictive models.
 To use this package, one needs an already trained model, that can predict energy or forces from an input atomic geometry.
