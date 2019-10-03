@@ -23,7 +23,7 @@ No documentation for the moment.
 
 ### From PyPi
 
-To install the latest version available on PyPi: []
+To install the latest version available on PyPi:
 
 `pip install mlcalcdriver`
 
