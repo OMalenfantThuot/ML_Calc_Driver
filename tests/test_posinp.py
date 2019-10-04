@@ -1,7 +1,8 @@
 import os
 import pytest
 import numpy as np
-from mlcalcdriver import Posinp, Atom
+from mlcalcdriver import Posinp
+from mlcalcdriver.base import Atom
 
 tests_fol = "tests/posinp_files/"
 
