@@ -3,7 +3,6 @@ The :class:`Job` class is the base object defining similar machine learning
 predictions for a single or many atomic configurations.
 """
 
-import os
 import numpy as np
 from copy import deepcopy
 from mlcalcdriver.base import Posinp
@@ -16,7 +15,7 @@ class Job:
     configuration.
     """
 
-    def __init__(self, name="", posinp=None):
+    def __init__(self, name="", posinp=None, calculator=None):
         r"""
         Parameters
         ----------
@@ -30,7 +29,7 @@ class Job:
         self.name = name
         self.posinp = posinp
         self.num_struct = len(posinp)
-        self.results = JobResults(properties=[])
+        self.results = JobResults(positions=self.posinp, properties="energy")
 
     @property
     def posinp(self):
@@ -92,6 +91,7 @@ class Job:
     def results(self, results):
         self._results = results
 
+
 class JobResults(dict):
     r"""
     Dictionnary containing results from a Job after the run() method
@@ -109,7 +109,8 @@ class JobResults(dict):
     The returned values will be `None` if the Job was not complete.
     Otherwise, the list contains one value for each structure in the Job.
     """
-    def __init__(self, properties):
+
+    def __init__(self, positions, properties):
         r"""
         Parameters
         ----------
@@ -117,9 +118,21 @@ class JobResults(dict):
             Property or properties that are returned by the chosen
             model. 
         """
+        self.positions = positions
+        self.n_at = [len(pos) for pos in self.positions]
+        self.atom_types = [set([atom.type for atom in pos]) for pos in self.positions]
+        self.boundary_conditions = [pos.boundary_conditions for pos in self.positions]
+        self.cell = [pos.cell for pos in self.positions]
+
         self.properties = properties
         for prop in self.properties:
             self[prop] = None
+
+    def _store_results(self):
+        r"""
+        Method to store results from a calculation in
+        the JobResults object.
+        """
 
     @property
     def properties(self):
@@ -131,8 +144,80 @@ class JobResults(dict):
             properties = [properties]
         if isinstance(properties, list):
             if any([not isinstance(prop, str) for prop in properties]):
-                raise("All properties should be given as a string.")
+                raise ("All properties should be given as a string.")
             else:
                 self["properties"] = properties
         else:
-            raise("Properties should be given as a string or a list of strings.")
+            raise ("Properties should be given as a string or a list of strings.")
+
+    @property
+    def positions(self):
+        r"""
+        Returns
+        -------
+        list of Posinps
+            List containing the base Posinp objects for the predictions.
+        """
+        return self["positions"]
+
+    @positions.setter
+    def positions(self, positions):
+        self["positions"] = positions
+
+    @property
+    def n_at(self):
+        r"""
+        Returns
+        -------
+        list of ints
+            List containing the number of atoms of each structure.
+        """
+        return self["n_at"]
+
+    @n_at.setter
+    def n_at(self, n_at):
+        self["n_at"] = n_at
+
+    @property
+    def atom_types(self):
+        r"""
+        Returns
+        -------
+        list of sets
+            List containing sets of the elements present in each structure.
+        """
+        return self["atom_types"]
+
+    @atom_types.setter
+    def atom_types(self, atom_types):
+        self["atom_types"] = atom_types
+
+    @property
+    def boundary_conditions(self):
+        r"""
+        Returns
+        -------
+        list of strings
+            List containing the boundary conditions, either `free`,
+            `surface` or `periodic`, of each structure.
+        """
+        return self["boundary_conditions"]
+
+    @boundary_conditions.setter
+    def boundary_conditions(self, boundary_conditions):
+        self["boundary_conditions"] = boundary_conditions
+
+    @property
+    def cell(self):
+        r"""
+        Returns
+        -------
+        list of lists of floats
+            List containing cell dimensions of each structure,
+            None for free boundary conditions.
+        """
+        return self["cell"]
+
+    @cell.setter
+    def cell(self, cell):
+        self["cell"] = cell
