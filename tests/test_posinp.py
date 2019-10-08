@@ -6,7 +6,6 @@ from mlcalcdriver.base import Atom
 
 tests_fol = "tests/posinp_files/"
 
-
 class TestPosinp:
 
     # Posinp with surface boundary conditions
