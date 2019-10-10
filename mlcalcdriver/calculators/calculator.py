@@ -10,14 +10,18 @@ class Calculator:
     of models.
     """
 
-    def __init__(self, available_properties):
+    def __init__(self, available_properties=None):
         r"""
         Parameters
         ----------
         available_properties : str or list of str
-            Properties that can be predicted by the model.
+            Properties that can be predicted by the Calculator. If `None`,
+            the _get_available_properties method will be used.
         """
-        self.available_properties = available_properties 
+        if available_properties is None:
+            self.available_properties = self._get_available_properties()
+        else:
+            self.available_properties = available_properties
 
     def run(self):
         r"""
@@ -25,9 +29,19 @@ class Calculator:
         """
         raise NotImplementedError
 
+    def _get_available_properties(self):
+        r"""
+        To be implemented for each type of model
+        """
+        raise NotImplementedError
+
     @property
     def available_properties(self):
         r"""
+        Returns
+        -------
+        str or list of str
+            Properties that can be predicted by the Calculator
         """
         return self._available_properties
 

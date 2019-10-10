@@ -4,7 +4,9 @@ predictions for a single or many atomic configurations.
 """
 
 import numpy as np
+import torch
 from copy import deepcopy
+from mlcalcdriver.calculators import Calculator
 from mlcalcdriver.base import Posinp
 
 
@@ -30,6 +32,7 @@ class Job:
         self.posinp = posinp
         self.num_struct = len(posinp)
         self.results = JobResults(positions=self.posinp, properties="energy")
+        self.calculator = calculator
 
     @property
     def posinp(self):
@@ -85,11 +88,147 @@ class Job:
 
     @property
     def results(self):
+        r"""
+        Returns
+        -------
+        JobResults
+            The dictionnary containing the results of the calculation
+        """
         return self._results
 
     @results.setter
     def results(self, results):
         self._results = results
+
+    @property
+    def calculator(self):
+        r"""
+        Returns
+        -------
+        Calculator
+            The Calculator object to use for the Job
+        """
+        return self._calculator
+
+    @calculator.setter
+    def calculator(self, calculator):
+        if isinstance(calculator, Calculator):
+            self._calculator = calculator
+        else:
+            raise TypeError(
+                """
+                The calculator for the Job must be a class or a
+                metaclass derived from mlcalcdriver.calculators.Calculator.
+                """
+            )
+
+    def run(self, property, device="cpu", batch_size=128):
+        r"""
+        Main method to call to obtain results for a Job
+
+        Parameters
+        ----------
+        property : str
+            Property to calculate. Must be in the
+            available_properties of the Calculator except the
+            forces which can be derived from an energy
+            Calculator.
+        device : str
+            Device on which to run the calculation.
+            Either `"cpu"` or `"cuda"` to run on cpu or gpu.
+            Default is `"cpu"` and should not be changed, except
+            for very large systems.
+        batch_size : int
+            Size of the mini-batches used in predictions.
+            Default is 128.
+        """
+        device = str(device)
+        if device.startswith("cuda"):
+            if not torch.cuda.is_available():
+                raise Warning("CUDA was asked for, but is not available.")
+
+        if property not in self.calculator.available_properties:
+            if not (
+                property == "forces"
+                and "energy" in self.calculator.available_properties
+            ):
+                raise ValueError("The property {} is not available".format(property))
+            else:
+                self._create_additional_structures()
+                raw_predictions = self.calculator.run(
+                    property="energy", posinp=self.posinp
+                )
+                pred_idx = 0
+                predictions = {}
+                predictions["energy"], predictions["forces"] = [], []
+                for struct_idx in range(self.num_struct):
+                    predictions["energy"].append(raw_predictions["energy"][pred_idx][0])
+                    pred_idx += 1
+                    predictions["forces"].append(
+                        self._calculate_forces(
+                            raw_predictions["energy"][
+                                pred_idx : pred_idx
+                                + 12 * len(self._init_posinp[struct_idx])
+                            ]
+                        )
+                    )
+                    pred_idx += 12 * len(self._init_posinp[struct_idx])
+        else:
+            predictions = self.calculator.run(property=property, posinp=self.posinp)
+
+    def _create_additional_structures(self, deriv_length=0.015):
+        r"""
+        Creates the additional structures needed to do a numeric
+        derivation of the energy to calculate the forces.
+        """
+        self._init_posinp = deepcopy(self.posinp)
+        self._deriv_length = deriv_length
+        all_structs = []
+        # Second order forces calculations
+        for str_idx, struct in enumerate(self.posinp):
+            all_structs.append(struct)
+            for factor in [2, 1, -1, -2]:
+                for dim in [
+                    np.array([1, 0, 0]),
+                    np.array([0, 1, 0]),
+                    np.array([0, 0, 1]),
+                ]:
+                    all_structs.extend(
+                        [
+                            struct.translate_atom(atom_idx, deriv_length * factor * dim)
+                            for atom_idx in range(len(struct))
+                        ]
+                    )
+        self.posinp = all_structs
+
+    def _calculate_forces(self, predictions):
+        r"""
+        Method to calculate forces from the displaced atomic positions
+
+        Parameters
+        ----------
+        predictions : 1D numpy array (size 6*n_at)
+             Contains the predictions obtained from the neural network
+
+        Returns
+        -------
+        forces : 2D numpy array (size (n_at, 3))
+            Forces for each structure
+        """
+        nat = int(len(predictions) / 12)
+        forces = np.zeros((nat, 3))
+        for i in range(3):
+            ener1, ener2, ener3, ener4 = (
+                predictions[np.arange(i * nat, (i + 1) * nat, 1)],
+                predictions[np.arange((i + 3) * nat, (i + 4) * nat, 1)],
+                predictions[np.arange((i + 6) * nat, (i + 7) * nat, 1)],
+                predictions[np.arange((i + 9) * nat, (i + 10) * nat, 1)],
+            )
+            forces[:, i] = -(
+                (-ener1 + 8 * (ener2 - ener3) + ener4).reshape(nat)
+                / (12 * self._deriv_length)
+            )
+        return forces
 
 
 class JobResults(dict):
@@ -133,6 +272,7 @@ class JobResults(dict):
         Method to store results from a calculation in
         the JobResults object.
         """
+        pass
 
     @property
     def properties(self):
