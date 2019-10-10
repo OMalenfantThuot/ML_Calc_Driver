@@ -6,6 +6,7 @@ from mlcalcdriver.base import Atom
 
 tests_fol = "tests/posinp_files/"
 
+
 class TestPosinp:
 
     # Posinp with surface boundary conditions
@@ -63,38 +64,39 @@ C    7.327412521    0.000000000   3.461304757"""
         assert new_pos != self.pos
         assert new_pos[0] == Atom("C", [0.58333333333, 0.5, 0.25])
 
-
-    @pytest.mark.parametrize("fname", [
-        "free_reduced.xyz",
-        "missing_atom.xyz",
-        "additional_atom.xyz",
-    ])
+    @pytest.mark.parametrize(
+        "fname", ["free_reduced.xyz", "missing_atom.xyz", "additional_atom.xyz"]
+    )
     def test_init_raises_ValueError(self, fname):
         with pytest.raises(ValueError):
             Posinp.from_file(os.path.join(tests_fol, fname))
 
-    @pytest.mark.parametrize("to_evaluate", [
-        "Posinp([Atom('C', [0, 0, 0])], 'bohr', 'periodic')",
-        "Posinp([Atom('C', [0, 0, 0])], 'bohr', 'periodic', cell=[1, 1])",
-        "Posinp([Atom('C', [0, 0, 0])], 'bohr', 'periodic', cell=[1,'inf',1])",
-    ])
+    @pytest.mark.parametrize(
+        "to_evaluate",
+        [
+            "Posinp([Atom('C', [0, 0, 0])], 'bohr', 'periodic')",
+            "Posinp([Atom('C', [0, 0, 0])], 'bohr', 'periodic', cell=[1, 1])",
+            "Posinp([Atom('C', [0, 0, 0])], 'bohr', 'periodic', cell=[1,'inf',1])",
+        ],
+    )
     def test_init_raises_ValueError2(self, to_evaluate):
         with pytest.raises(ValueError):
             eval(to_evaluate)
 
     def test_positions(self):
         expected = [7.327412521, 0.0, 3.461304757]
-        pos1 = Posinp([Atom('C', expected)], units="angstroem",
-                      boundary_conditions="free")
+        pos1 = Posinp(
+            [Atom("C", expected)], units="angstroem", boundary_conditions="free"
+        )
         pos2 = pos1.translate_atom(0, [-7.327412521, 0.0, -3.461304757])
         assert np.allclose(pos1.positions, expected)
         assert np.allclose(pos2.positions, [0, 0, 0])
 
     def test___eq__(self):
-        atom1 = Atom('N', [0.0, 0.0, 0.0])
-        atom2 = Atom('N', [0.0, 0.0, 1.1])
-        pos1 = Posinp([atom1, atom2], 'angstroem', 'free')
-        pos2 = Posinp([atom2, atom1], 'angstroem', 'free')
+        atom1 = Atom("N", [0.0, 0.0, 0.0])
+        atom2 = Atom("N", [0.0, 0.0, 1.1])
+        pos1 = Posinp([atom1, atom2], "angstroem", "free")
+        pos2 = Posinp([atom2, atom1], "angstroem", "free")
         assert pos1 == pos2  # The order of the atoms in the list do not count
         assert pos1 != 1  # No error if other object is not a posinp
 
@@ -102,42 +104,71 @@ C    7.327412521    0.000000000   3.461304757"""
         # Two Posinp instances with surface BC are the same even if they
         # have a different cell size along y-axis
         pos_with_inf = Posinp(
-            [Atom('N', [2.97630782434901e-23, 6.87220595204354e-23,
-                        0.0107161998748779]),
-             Atom('N', [-1.10434491945017e-23, -4.87342174483075e-23,
-                        1.10427379608154])],
-            'angstroem', 'surface', cell=[40, ".inf", 40])
+            [
+                Atom(
+                    "N",
+                    [2.97630782434901e-23, 6.87220595204354e-23, 0.0107161998748779],
+                ),
+                Atom(
+                    "N",
+                    [-1.10434491945017e-23, -4.87342174483075e-23, 1.10427379608154],
+                ),
+            ],
+            "angstroem",
+            "surface",
+            cell=[40, ".inf", 40],
+        )
         pos_wo_inf = Posinp(
-            [Atom('N', [2.97630782434901e-23, 6.87220595204354e-23,
-                        0.0107161998748779]),
-             Atom('N', [-1.10434491945017e-23, -4.87342174483075e-23,
-                        1.10427379608154])],
-            'angstroem', 'surface', cell=[40, 40, 40])
+            [
+                Atom(
+                    "N",
+                    [2.97630782434901e-23, 6.87220595204354e-23, 0.0107161998748779],
+                ),
+                Atom(
+                    "N",
+                    [-1.10434491945017e-23, -4.87342174483075e-23, 1.10427379608154],
+                ),
+            ],
+            "angstroem",
+            "surface",
+            cell=[40, 40, 40],
+        )
         assert pos_with_inf == pos_wo_inf
         # They are obviously different if the cell size along the other
         # directions are not the same
         pos2_wo_inf = Posinp(
-            [Atom('N', [2.97630782434901e-23, 6.87220595204354e-23,
-                        0.0107161998748779]),
-             Atom('N', [-1.10434491945017e-23, -4.87342174483075e-23,
-                        1.10427379608154])],
-            'angstroem', 'surface', cell=[20, "inf", 40])
+            [
+                Atom(
+                    "N",
+                    [2.97630782434901e-23, 6.87220595204354e-23, 0.0107161998748779],
+                ),
+                Atom(
+                    "N",
+                    [-1.10434491945017e-23, -4.87342174483075e-23, 1.10427379608154],
+                ),
+            ],
+            "angstroem",
+            "surface",
+            cell=[20, "inf", 40],
+        )
         assert pos_with_inf != pos2_wo_inf
         # They still have the same BC
         assert pos2_wo_inf.boundary_conditions == pos_with_inf.boundary_conditions
 
     def test_to_centroid(self):
-        atoms = [Atom('N', [0, 0, 0]), Atom('N', [0, 0, 1.1])]
+        atoms = [Atom("N", [0, 0, 0]), Atom("N", [0, 0, 1.1])]
         pos = Posinp(atoms, units="angstroem", boundary_conditions="free")
-        expected_atoms = [Atom('N', [0, 0, -0.55]), Atom('N', [0, 0, 0.55])]
-        expected_pos = Posinp(expected_atoms, units="angstroem",
-                              boundary_conditions="free")
+        expected_atoms = [Atom("N", [0, 0, -0.55]), Atom("N", [0, 0, 0.55])]
+        expected_pos = Posinp(
+            expected_atoms, units="angstroem", boundary_conditions="free"
+        )
         assert pos.to_centroid() == expected_pos
 
     def test_to_barycenter(self):
-        atoms = [Atom('N', [0, 0, 0]), Atom('N', [0, 0, 1.1])]
+        atoms = [Atom("N", [0, 0, 0]), Atom("N", [0, 0, 1.1])]
         pos = Posinp(atoms, units="angstroem", boundary_conditions="free")
-        expected_atoms = [Atom('N', [0, 0, -0.55]), Atom('N', [0, 0, 0.55])]
-        expected_pos = Posinp(expected_atoms, units="angstroem",
-                              boundary_conditions="free")
+        expected_atoms = [Atom("N", [0, 0, -0.55]), Atom("N", [0, 0, 0.55])]
+        expected_pos = Posinp(
+            expected_atoms, units="angstroem", boundary_conditions="free"
+        )
         assert pos.to_barycenter() == expected_pos
