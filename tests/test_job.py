@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 from mlcalcdriver import Posinp, Job
 from mlcalcdriver.base import JobResults
+from mlcalcdriver.calculators import Calculator
 
 pos_folder = "tests/posinp_files/"
 
@@ -19,20 +20,20 @@ class TestJob:
         Posinp.from_file(file2),
         Posinp.from_file(file3),
     )
-
-    job = Job(posinp=[pos1, pos2, pos3])
+    dummy = Calculator(available_properties="")
+    job = Job(posinp=[pos1, pos2, pos3], calculator=dummy)
 
     def test_raises_no_positions(self):
         with pytest.raises(ValueError):
-            j = Job()
+            j = Job(calculator=self.dummy)
 
     def test_raises_posinp_types(self):
         with pytest.raises(TypeError):
-            j = Job(posinp=[self.pos1, 1])
+            j = Job(posinp=[self.pos1, 1], calculator=self.dummy)
 
     def test_posinp_types(self):
-        job1 = Job(posinp=self.pos1)
-        job2 = Job(posinp=[self.pos1])
+        job1 = Job(posinp=self.pos1, calculator=self.dummy)
+        job2 = Job(posinp=[self.pos1], calculator=self.dummy)
         assert job1.posinp == job2.posinp
 
     @pytest.mark.parametrize(
