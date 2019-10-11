@@ -31,8 +31,10 @@ class Job:
         self.name = name
         self.posinp = posinp
         self.num_struct = len(self.posinp)
-        self.results = JobResults(positions=self.posinp, properties="energy")
         self.calculator = calculator
+        self.results = JobResults(
+            positions=self.posinp, properties=self.calculator.available_properties
+        )
 
     @property
     def posinp(self):
@@ -174,11 +176,10 @@ class Job:
                     )
                     pred_idx += 12 * len(self._init_posinp[struct_idx])
                 self.posinp = deepcopy(self._init_posinp)
-                print(predictions)
         else:
             predictions = self.calculator.run(property=property, posinp=self.posinp)
         for pred in predictions.keys():
-            self.results.update()
+            self.results.update({pred: predictions[pred]})
 
     def _create_additional_structures(self, deriv_length=0.015):
         r"""
@@ -270,13 +271,6 @@ class JobResults(dict):
         self.properties = properties
         for prop in self.properties:
             self[prop] = None
-
-    def _store_results(self):
-        r"""
-        Method to store results from a calculation in
-        the JobResults object.
-        """
-        pass
 
     @property
     def properties(self):

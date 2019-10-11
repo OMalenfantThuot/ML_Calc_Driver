@@ -87,7 +87,7 @@ class SchnetPackCalculator(Calculator):
         avail_prop
             Properties that the SchnetPack model will return
         """
-        avail_prop = set([om.property for om in self.model.output_modules])
+        avail_prop = list(set([om.property for om in self.model.output_modules]))
         return avail_prop
 
     def _get_representation_type(self):
