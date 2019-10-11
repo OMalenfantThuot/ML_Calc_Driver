@@ -1,1 +1,2 @@
-from mlcalcdriver.base.posinp import Posinp, Atom
+from mlcalcdriver.base.posinp import Posinp
+from mlcalcdriver.base.job import Job
