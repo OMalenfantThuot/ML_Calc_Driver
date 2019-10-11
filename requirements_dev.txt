@@ -1,9 +1,9 @@
 pip==19.2.3
 wheel==0.33.6
 black==19.3b0
-numpy==1.16.5
+numpy==1.17.2
 twine==2.0.0
-pytest==5.2.0
-pytest-cov==2.7.1
+pytest==5.2.1
+pytest-cov==2.8.1
 coveralls==1.8.2
 schnetpack==0.3
