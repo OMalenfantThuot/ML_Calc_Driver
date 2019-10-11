@@ -30,7 +30,7 @@ class Job:
         """
         self.name = name
         self.posinp = posinp
-        self.num_struct = len(posinp)
+        self.num_struct = len(self.posinp)
         self.results = JobResults(positions=self.posinp, properties="energy")
         self.calculator = calculator
 
@@ -173,8 +173,12 @@ class Job:
                         )
                     )
                     pred_idx += 12 * len(self._init_posinp[struct_idx])
+                self.posinp = deepcopy(self._init_posinp)
+                print(predictions)
         else:
             predictions = self.calculator.run(property=property, posinp=self.posinp)
+        for pred in predictions.keys():
+            self.results.update()
 
     def _create_additional_structures(self, deriv_length=0.015):
         r"""

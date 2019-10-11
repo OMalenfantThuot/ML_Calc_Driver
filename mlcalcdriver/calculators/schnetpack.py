@@ -4,9 +4,12 @@ trained using the SchnetPack package.
 """
 
 import os
-import numpy
+import numpy as np
 import torch
+from schnetpack import AtomsLoader
 from mlcalcdriver.calculators import Calculator
+from mlcalcdriver.interfaces import posinp_to_ase_atoms, SchnetPackData
+from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProvider
 
 
 class SchnetPackCalculator(Calculator):
@@ -37,18 +40,46 @@ class SchnetPackCalculator(Calculator):
             self.model = load_model(model_dir=model_dir, device=device)
         super(SchnetPackCalculator, self).__init__()
 
-    def run(self, property, posinp=None):
+    def run(self, property, posinp=None, device="cpu", batch_size=128):
         r"""
         Main method to use when making a calculation with
         the calculator.
         """
         if property not in self.available_properties:
             raise ValueError(
-                    "The property {} is not in the available properties of the model : {}.".format(
+                "The property {} is not in the available properties of the model : {}.".format(
                     property, self.available_properties
                 )
             )
-            
+
+        self._get_representation_type()
+
+        data = [posinp_to_ase_atoms(pos) for pos in posinp]
+        pbc = True if any(pos.pbc.any() for pos in data) else False
+        environment_provider = (
+            AseEnvironmentProvider(cutoff=self.cutoff)
+            if pbc
+            else SimpleEnvironmentProvider()
+        )
+        data = SchnetPackData(
+            data=data,
+            environment_provider=environment_provider,
+            collect_triples=self.model_type == "wacsf",
+        )
+        data_loader = AtomsLoader(data, batch_size=batch_size)
+
+        with torch.no_grad():
+            pred = []
+            for batch in data_loader:
+                batch = {k: v.to(device) for k, v in batch.items()}
+                pred.append(self.model(batch))
+
+        predictions = {}
+        predictions[property] = np.concatenate(
+            [batch[property].cpu().numpy() for batch in pred]
+        )
+        return predictions
+
     def _get_available_properties(self):
         r"""
         Returns
@@ -58,6 +89,37 @@ class SchnetPackCalculator(Calculator):
         """
         avail_prop = set([om.property for om in self.model.output_modules])
         return avail_prop
+
+    def _get_representation_type(self):
+        r"""
+        """
+        if "representation.cutoff.cutoff" in self.model.state_dict().keys():
+            self.model_type = "wacsf"
+            self.cutoff = float(self.model.state_dict()["representation.cutoff.cutoff"])
+        elif any(
+            [
+                name in self.model.state_dict().keys()
+                for name in [
+                    "module.representation.embedding.weight",
+                    "representation.embedding.weight",
+                ]
+            ]
+        ):
+            self.model_type = "schnet"
+            try:
+                self.cutoff = float(
+                    self.model.state_dict()[
+                        "module.representation.interactions.0.cutoff_network.cutoff"
+                    ]
+                )
+            except KeyError:
+                self.cutoff = float(
+                    self.model.state_dict()[
+                        "representation.interactions.0.cutoff_network.cutoff"
+                    ]
+                )
+        else:
+            raise NotImplementedError("Model type is not recognized.")
 
 
 def load_model(model_dir, device):
