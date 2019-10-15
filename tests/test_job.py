@@ -21,7 +21,8 @@ class TestJob:
         Posinp.from_file(file3),
     )
     dummy = Calculator(available_properties="")
-    job = Job(posinp=[pos1, pos2, pos3], calculator=dummy)
+    badCalc = dict()
+    job = Job(name="test", posinp=[pos1, pos2, pos3], calculator=dummy)
 
     def test_raises_no_positions(self):
         with pytest.raises(ValueError):
@@ -31,6 +32,10 @@ class TestJob:
         with pytest.raises(TypeError):
             j = Job(posinp=[self.pos1, 1], calculator=self.dummy)
 
+    def test_raises_bad_calc(self):
+        with pytest.raises(TypeError):
+            j = Job(posinp=[self.pos1], calculator=self.badCalc)
+
     def test_posinp_types(self):
         job1 = Job(posinp=self.pos1, calculator=self.dummy)
         job2 = Job(posinp=[self.pos1], calculator=self.dummy)
@@ -39,6 +44,7 @@ class TestJob:
     @pytest.mark.parametrize(
         "value, expected",
         [
+            (job.name, "test"),
             (job.num_struct, 3),
             (job.posinp[1], pos2),
             (job.results.positions, job.posinp),

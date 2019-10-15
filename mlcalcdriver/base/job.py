@@ -8,6 +8,7 @@ import torch
 from copy import deepcopy
 from mlcalcdriver.calculators import Calculator
 from mlcalcdriver.base import Posinp
+import warnings
 
 
 class Job:
@@ -147,7 +148,7 @@ class Job:
         device = str(device)
         if device.startswith("cuda"):
             if not torch.cuda.is_available():
-                raise Warning("CUDA was asked for, but is not available.")
+                warnings.warn("CUDA was asked for, but is not available.", UserWarning)
 
         if property not in self.calculator.available_properties:
             if not (
