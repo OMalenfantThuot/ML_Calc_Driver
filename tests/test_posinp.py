@@ -21,7 +21,7 @@ class TestPosinp:
 free
 C    0.6661284109   0.000000000   1.153768252
 C    3.330642055    0.000000000   1.153768252
-C    4.662898877    0.000000000   3.461304757
+C    4.662898877    1.000000000   3.461304757
 C    7.327412521    0.000000000   3.461304757"""
     str_pos = Posinp.from_string(string)
 
@@ -172,3 +172,6 @@ C    7.327412521    0.000000000   3.461304757"""
             expected_atoms, units="angstroem", boundary_conditions="free"
         )
         assert pos.to_barycenter() == expected_pos
+
+    def test_distance(self):
+        assert np.isclose(self.free_pos.distance(0, 2), 4.722170992308181)
