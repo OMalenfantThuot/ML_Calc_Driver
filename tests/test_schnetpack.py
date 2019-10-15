@@ -12,8 +12,11 @@ class TestSchnetPack:
 
     pos1 = Posinp.from_file(os.path.join(pos_folder, "N2.xyz"))
     model1 = os.path.join(model_folder, "N2_model")
+    model2 = os.path.join(model_folder, "wacsf_model")
     calc1 = SchnetPackCalculator(model_dir=model1)
+    calc2 = SchnetPackCalculator(model_dir=model2)
     job = Job(posinp=pos1, calculator=calc1)
+    jobwacsf = Job(posinp=pos1, calculator=calc2)
 
     def test_only_energy(self):
         self.job.run("energy")
@@ -32,6 +35,10 @@ class TestSchnetPack:
         assert self.job.results.atom_types == [{"N"}]
         assert self.job.results.boundary_conditions == ["free"]
         assert self.job.results.cell == [None]
+
+    def test_wacsf(self):
+        self.jobwacsf.run("energy_U0")
+        assert self.jobwacsf.results["energy_U0"] is not None
 
     def test_bad_property(self):
         with pytest.raises(ValueError):
