@@ -25,4 +25,4 @@ class TestSchnetPack:
         job.run("forces")
         assert np.float32(-2979.6067) == job.results["energy"][0]
         ref_forces = np.array([[-0.0, -0.0, -0.32416448], [-0.0, -0.0, 0.32416448]])
-        assert np.isclose(job.results["forces"][0],ref_forces).all()
+        assert np.isclose(job.results["forces"][0], ref_forces).all()
