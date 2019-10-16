@@ -4,6 +4,7 @@ import numpy as np
 from mlcalcdriver.calculators import Calculator
 
 
+
 class TestCalc:
     def test_calc_needs_methods(self):
         with pytest.raises(NotImplementedError):
