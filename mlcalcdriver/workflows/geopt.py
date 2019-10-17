@@ -25,6 +25,9 @@ class Geopt:
         ----------
         posinp : mybigdft.Posinp
             Starting configuration to relax
+        calculator : Calculator
+            mlcalcdriver.Calculator instance that will be used in
+            the created Job to evaluate properties.
         forcemax : float
             Stopping criterion on the forces (in eV/Angstrom). 
             Default is `0.01`.

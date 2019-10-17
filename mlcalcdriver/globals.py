@@ -3,8 +3,6 @@ Defines some global values and parameters used in
 classes and workflows of the package.
 """
 
-__all__ = ["ATOMS_MASS"]
-
 # Mass of the different types of atoms in atomic mass units
 # TODO: Add more types of atoms
 # (found in $SRC_DIR/bigdft/src/orbitals/eleconf-inc.f90)
@@ -33,3 +31,26 @@ ATOMS_MASS = {
     "Ti": 47.88,
     "V": 50.9415,
 }
+
+####
+# Conversion factors
+####
+
+# Conversion from atomic to electronic mass unit
+AMU_TO_EMU = 1.660538782e-27 / 9.10938215e-31
+# Conversion from electronic to atomic mass unit
+EMU_TO_AMU = 1.0 / AMU_TO_EMU
+# Conversion factor from bohr to angstroem
+B_TO_ANG = 0.529177249
+# Conversion factor from angstroem to bohr
+ANG_TO_B = 1.0 / B_TO_ANG
+# Conversion factor from Hartree to cm^-1
+HA_TO_CMM1 = 219474.6313705
+# Conversion factor from Hartree to electron-Volt
+HA_TO_EV = 27.21138602
+# Conversion factor from electron-Volt to Hartree
+EV_TO_HA = 1 / HA_TO_EV
+# Conversion factor from Debye to atomic units of dipole moment
+DEBYE_TO_AU = 0.393430307
+# Conversion factor from atomic units of dipole moment to Debye
+AU_TO_DEBYE = 1 / DEBYE_TO_AU

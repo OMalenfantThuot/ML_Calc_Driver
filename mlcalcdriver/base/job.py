@@ -28,6 +28,9 @@ class Job:
             Atomic positions for the job. Many different configurations
             may be predicted at the same time, in that case they should
             be passed in a list.
+        calculator : Calculator
+            mlcalcdriver.Calculator instance to use to evaluate
+            properties in the run() method.
         """
         self.name = name
         self.posinp = posinp

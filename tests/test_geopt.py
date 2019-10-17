@@ -13,7 +13,7 @@ class TestGeopt:
 
     posN2 = Posinp.from_file(os.path.join(pos_folder, "N2_unrelaxed.xyz"))
     posH2O = Posinp.from_file(os.path.join(pos_folder, "H2O_unrelaxed.xyz"))
-    calcN2 = SchnetPackCalculator(os.path.join(model_folder, "N2_model"))
+    calcN2 = SchnetPackCalculator(os.path.join(model_folder, "ani1_N2_model"))
     calcH2O = SchnetPackCalculator(os.path.join(model_folder, "H2O_model"))
 
     def test_N2(self, capsys):
