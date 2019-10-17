@@ -6,6 +6,7 @@ learning trained model.
 
 import numpy as np
 from mlcalcdriver import Job, Posinp
+from mlcalcdriver.calculators import Calculator
 from mlcalcdriver.workflows import Geopt
 from copy import deepcopy
 from mlcalcdriver.globals import ANG_TO_B, B_TO_ANG, EV_TO_HA, HA_TO_CMM1, AMU_TO_EMU
@@ -261,7 +262,7 @@ class Phonon:
         r"""
         Creates the masses matrix
         """
-        to_mesh = [atom.mass for atom in self.ground_state for _ in range(3)]
+        to_mesh = [atom.mass for atom in self._ground_state for _ in range(3)]
         m_i, m_j = np.meshgrid(to_mesh, to_mesh)
         return np.sqrt(m_i * m_j) * AMU_TO_EMU
 

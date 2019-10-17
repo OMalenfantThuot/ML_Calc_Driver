@@ -11,7 +11,7 @@ model_folder = "tests/models/"
 class TestSchnetPack:
 
     pos1 = Posinp.from_file(os.path.join(pos_folder, "N2.xyz"))
-    model1 = os.path.join(model_folder, "N2_model")
+    model1 = os.path.join(model_folder, "ani1_N2_model")
     model2 = os.path.join(model_folder, "wacsf_model")
     calc1 = SchnetPackCalculator(model_dir=model1)
     calc2 = SchnetPackCalculator(model_dir=model2)
