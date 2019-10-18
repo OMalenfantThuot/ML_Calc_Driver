@@ -25,7 +25,6 @@ def ase_atoms_to_posinp(atoms):
     for at in atoms:
         positions.append({at.symbol: at.position})
     cell = atoms.get_cell()
-    print(cell)
     if cell.orthorhombic:
         if (cell==0.0).all():
             new_cell = None
@@ -35,7 +34,6 @@ def ase_atoms_to_posinp(atoms):
             new_cell = [dim[i] for i, dim in enumerate(cell)]
     else:
         raise NotImplementedError("Non orthorhombic cells are not supported yet.")
-    print(new_cell)
     pos_dict["positions"] = positions
     pos_dict["cell"] = new_cell
     return Posinp.from_dict(pos_dict)
