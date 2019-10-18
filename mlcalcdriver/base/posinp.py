@@ -194,6 +194,78 @@ class Posinp(Sequence):
             atoms.append(Atom(atom_type, position))
         return cls(atoms, units, boundary_conditions, cell=cell)
 
+    @classmethod
+    def from_dict(cls, posinp):
+        r"""
+        Initialize the input positions from a dictionary.
+
+        Parameters
+        ----------
+        posinp : dict
+            Posinp as a dictionary coming from an InputParams or
+            Logfile instance.
+
+        Returns
+        -------
+        Posinp
+            Posinp initialized from an dictionary.
+
+
+        >>> pos_dict = {
+        ...     "units": "reduced",
+        ...     "cell": [8.07007483423, 'inf', 4.65925987792],
+        ...     "positions": [
+        ...         {'C': [0.08333333333, 0.5, 0.25]},
+        ...         {'C': [0.41666666666, 0.5, 0.25]},
+        ...         {'C': [0.58333333333, 0.5, 0.75]},
+        ...         {'C': [0.91666666666, 0.5, 0.75]},
+        ...     ]
+        ... }
+        >>> pos = Posinp.from_dict(pos_dict)
+        >>> pos.boundary_conditions
+        'surface'
+
+        The value of the "cell" key allows to derive the boundary
+        conditions. Replacing 'inf' by a number gives a posinp with
+        periodic boundary conditions:
+
+        >>> pos_dict["cell"] = [8.07007483423, 10.0, 4.65925987792]
+        >>> pos = Posinp.from_dict(pos_dict)
+        >>> pos.boundary_conditions
+        'periodic'
+
+        If there is no "cell" key, then the boundary conditions are set
+        to "free". Here, given that the units are reduced, this raises
+        a ValueError:
+
+        >>> del pos_dict["cell"]
+        >>> pos = Posinp.from_dict(pos_dict)
+        Traceback (most recent call last):
+        ...
+        ValueError: Cannot use reduced units with free boundary conditions
+        """
+        # Lower the keys of the posinp if needed
+        if "positions" not in posinp:
+            ref_posinp = deepcopy(posinp)
+            for key in ref_posinp:
+                posinp[key.lower()] = ref_posinp[key]
+                del posinp[key]
+        # Read data from the dictionary
+        atoms = []  # atomic positions
+        for atom in posinp["positions"]:
+            atoms.append(Atom.from_dict(atom))
+        units = posinp.get("units", "atomic")  # Units of the coordinates
+        cell = posinp.get("cell")  # Simulation cell size
+        # Infer the boundary conditions from the value of cell
+        if cell is None:
+            boundary_conditions = "free"
+        else:
+            if cell[1] in [".inf", "inf"]:
+                boundary_conditions = "surface"
+            else:
+                boundary_conditions = "periodic"
+        return cls(atoms, units, boundary_conditions, cell=cell)
+
     @property
     def atoms(self):
         r"""
@@ -550,6 +622,19 @@ class Atom(object):
         self.type = atom_type
         self.position = position
         self.mass = ATOMS_MASS[self.type]
+
+    @classmethod
+    def from_dict(cls, atom_dict):
+        r"""
+        Parameters
+        ----------
+        atom_dict : dict
+            Information about an atom given by a dict whose only key is
+            the atom type and the value is the atomic position. This
+            format is mainly found in bigdft logfiles.
+        """
+        [(atom_type, position)] = atom_dict.items()
+        return cls(atom_type, position)
 
     @property
     def type(self):

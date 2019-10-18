@@ -1,4 +1,6 @@
 import ase
+import numpy as np
+from mlcalcdriver.base import Posinp
 
 def posinp_to_ase_atoms(posinp):
     symbols, positions, masses = "", [], []
@@ -16,3 +18,24 @@ def posinp_to_ase_atoms(posinp):
         symbols=symbols, positions=positions, masses=masses, cell=posinp.cell, pbc=pbc
     )
     return atoms
+
+def ase_atoms_to_posinp(atoms):
+    pos_dict = {"units": "angstroem"}
+    positions = []
+    for at in atoms:
+        positions.append({at.symbol: at.position})
+    cell = atoms.get_cell()
+    print(cell)
+    if cell.orthorhombic:
+        if (cell==0.0).all():
+            new_cell = None
+        elif cell[1,1] in [0.0, np.inf]:
+            new_cell = [cell[0,0], str(np.inf), cell[2,2]]
+        else:
+            new_cell = [dim[i] for i, dim in enumerate(cell)]
+    else:
+        raise NotImplementedError("Non orthorhombic cells are not supported yet.")
+    print(new_cell)
+    pos_dict["positions"] = positions
+    pos_dict["cell"] = new_cell
+    return Posinp.from_dict(pos_dict)
