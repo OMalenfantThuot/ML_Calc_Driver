@@ -40,7 +40,8 @@ extensions = [
 
 pygments_style = "sphinx"
 autodoc_member_order = "bysource"
-autodoc_default_flags = ['members', 'show-inheritance']
+#autodoc_default_flags = ['members', 'show-inheritance']
+autodoc_default_options = {"show-inheritance": True}
 autoclass_content = "both"
 
 # Napoleon settings
