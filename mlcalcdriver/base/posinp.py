@@ -44,6 +44,7 @@ class Posinp(Sequence):
             Size of the simulation domain in the three space
             coordinates.
 
+
         >>> posinp = Posinp([Atom('N', [0, 0, 0]), Atom('N', [0, 0, 1.1])],
         ...                 'angstroem', 'free')
         >>> len(posinp)
@@ -271,7 +272,7 @@ class Posinp(Sequence):
         r"""
         Returns
         -------
-        list of Atoms
+        list of :class:`Atom`
             Atoms of the system (atomic type and positions).
         """
         return self._atoms
@@ -331,8 +332,8 @@ class Posinp(Sequence):
         r"""
         Returns
         -------
-        list of three float or None
-            Cell size.
+        list of three `float` or `None`
+            Cell size if the simulation includes periodic boundary conditions.
         """
         return self._cell
 
@@ -350,7 +351,7 @@ class Posinp(Sequence):
         r"""
         Returns
         -------
-        2D numpy array of shape (:math:`n_{at}`, 3)
+        2D :class:`numpy.array` of shape (:math:`n_{at}`, 3)
             Position of all the atoms in the system.
         """
         return np.array([atom.position for atom in self])
@@ -360,7 +361,7 @@ class Posinp(Sequence):
         r"""
         Returns
         -------
-        numpy array of length :math:`n_{at}`
+        :class:`numpy.array` of length :math:`n_{at}`
             Masses of all the atoms in the system.
         """
         return np.array([atom.mass for atom in self])
@@ -505,7 +506,7 @@ class Posinp(Sequence):
         ----------
         i_at : int
             Index of the atom.
-        vector : list or numpy.array of length 3
+        vector : list or :class:`numpy.array` of length 3
             Translation vector to apply.
 
         Returns
@@ -541,7 +542,7 @@ class Posinp(Sequence):
 
         Parameters
         ----------
-        vector : list or numpy.array of length 3
+        vector : list or :class:`numpy.array` of length 3
             Translation vector to apply.
 
         Returns
@@ -606,7 +607,7 @@ class Atom(object):
         ----------
         atom_type : str
             Type of the atom.
-        position : list or numpy.array of length 3
+        position : list or :class:`numpy.array` of length 3
             Position of the atom.
 
 
@@ -658,7 +659,7 @@ class Atom(object):
         r"""
         Returns
         -------
-        list or numpy.array of length 3
+        list or :class:`numpy.array` of length 3
             Position of the atom in cartesian coordinates.
         """
         return self._position
@@ -694,7 +695,7 @@ class Atom(object):
 
         Parameters
         ----------
-        vector : list or numpy.array of length 3
+        vector : list or :class:`numpy.array` of length 3
             Translation vector to apply.
 
 

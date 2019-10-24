@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Job Object &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Calculators" href="calculators.html" />
+    <link rel="prev" title="Posinp and Atom Objects" href="posinp.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ML_Calc_Driver
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Modules:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="base.html">Base Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="posinp.html">Posinp and Atom Objects</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Job Object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ML_Calc_Driver</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="base.html">Base Module</a> &raquo;</li>
+        
+      <li>Job Object</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/job.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="job-object">
+<h1>Job Object<a class="headerlink" href="#job-object" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="mlcalcdriver.base.Job">
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.</code><code class="sig-name descname">Job</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">posinp=None</em>, <em class="sig-param">calculator=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mlcalcdriver.base.Job" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines a machine learning prediction. It must
+contain a mlcalcdriver.Posinp instance to define the atomic
+configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the job. Will be used to name the created files.</p></li>
+<li><p><strong>posinp</strong> (<a class="reference internal" href="posinp.html#mlcalcdriver.base.Posinp" title="mlcalcdriver.base.Posinp"><em>Posinp</em></a><em> or </em><em>list of Posinp</em>) – Atomic positions for the job. Many different configurations
+may be predicted at the same time, in that case they should
+be passed in a list.</p></li>
+<li><p><strong>calculator</strong> (<em>Calculator</em>) – mlcalcdriver.Calculator instance to use to evaluate
+properties in the run() method.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="mlcalcdriver.base.Job.posinp">
+<em class="property">property </em><code class="sig-name descname">posinp</code><a class="headerlink" href="#mlcalcdriver.base.Job.posinp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Initial positions of the prediction</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="posinp.html#mlcalcdriver.base.Posinp" title="mlcalcdriver.base.Posinp">Posinp</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.Job.name">
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#mlcalcdriver.base.Job.name" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Base name of the prediction used to set the names
+of files and directories.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.Job.num_struct">
+<em class="property">property </em><code class="sig-name descname">num_struct</code><a class="headerlink" href="#mlcalcdriver.base.Job.num_struct" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Number of different structures when Job is declared</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.Job.results">
+<em class="property">property </em><code class="sig-name descname">results</code><a class="headerlink" href="#mlcalcdriver.base.Job.results" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The dictionnary containing the results of the calculation</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#mlcalcdriver.base.JobResults" title="mlcalcdriver.base.JobResults">JobResults</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.Job.calculator">
+<em class="property">property </em><code class="sig-name descname">calculator</code><a class="headerlink" href="#mlcalcdriver.base.Job.calculator" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The Calculator object to use for the Job</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Calculator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.Job.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">property</em>, <em class="sig-param">device='cpu'</em>, <em class="sig-param">batch_size=128</em><span class="sig-paren">)</span><a class="headerlink" href="#mlcalcdriver.base.Job.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main method to call to obtain results for a Job</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property</strong> (<em>str</em>) – Property to calculate. Must be in the
+available_properties of the Calculator except the
+forces which can be derived from an energy
+Calculator.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – Device on which to run the calculation.
+Either <cite>“cpu”</cite> or <cite>“cuda”</cite> to run on cpu or gpu.
+Default is <cite>“cpu”</cite> and should not be changed, except
+for very large systems.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Size of the mini-batches used in predictions.
+Default is 128.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mlcalcdriver.base.JobResults">
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.</code><code class="sig-name descname">JobResults</code><span class="sig-paren">(</span><em class="sig-param">positions</em>, <em class="sig-param">properties</em><span class="sig-paren">)</span><a class="headerlink" href="#mlcalcdriver.base.JobResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Dictionnary containing results from a Job after the run() method
+is completed. A JobResults instance is created for each Job, and
+the results of the latter should be accessed through the former,
+by using the <cite>Job.results</cite> property.</p>
+<p>Predicted values can be accessed as in a standard dictionnary</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">energy</span> <span class="o">=</span> <span class="n">Job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span>
+<span class="go">&lt;class &#39;list&#39;&gt;</span>
+</pre></div>
+</div>
+<p>The returned values will be <cite>None</cite> if the Job was not complete.
+Otherwise, the list contains one value for each structure in the Job.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>properties</strong> (<em>str</em><em> or </em><em>list of str</em>) – Property or properties that are returned by the chosen
+model.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="mlcalcdriver.base.JobResults.positions">
+<em class="property">property </em><code class="sig-name descname">positions</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.positions" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List containing the base Posinp objects for the predictions.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of Posinps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.JobResults.n_at">
+<em class="property">property </em><code class="sig-name descname">n_at</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.n_at" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List containing the number of atoms of each structure.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of ints</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.JobResults.atom_types">
+<em class="property">property </em><code class="sig-name descname">atom_types</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.atom_types" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List containing sets of the elements present in each structure.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of sets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.JobResults.boundary_conditions">
+<em class="property">property </em><code class="sig-name descname">boundary_conditions</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.boundary_conditions" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List containing the boundary conditions, either <cite>free</cite>,
+<cite>surface</cite> or <cite>periodic</cite>, of each structure.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of strings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.base.JobResults.cell">
+<em class="property">property </em><code class="sig-name descname">cell</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.cell" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List containing cell dimensions of each structure,
+None for free boundary conditions.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of lists of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="calculators.html" class="btn btn-neutral float-right" title="Calculators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="posinp.html" class="btn btn-neutral float-left" title="Posinp and Atom Objects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Olivier Malenfant-Thuot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

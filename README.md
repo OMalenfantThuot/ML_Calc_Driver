@@ -1,4 +1,4 @@
-# ML\_Calc\_Driver
+# Machine Learning Calculations Driver (ML\_Calc\_Driver)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![Build Status](https://travis-ci.org/OMalenfantThuot/ML_Calc_Driver.svg?branch=master&kill_cache=1)](https://travis-ci.org/OMalenfantThuot/ML_Calc_Driver)
@@ -18,7 +18,7 @@ which served as a foundation for this work. Some classes have been directly adap
 
 ## Documentation
 
-No documentation for the moment.
+The documentation is available [here](https://omalenfantthuot.github.io/ML_Calc_Driver/).
 
 ## Installation
 
