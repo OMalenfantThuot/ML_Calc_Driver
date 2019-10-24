@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Interfaces &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>SchnetPackCalculator &mdash; ML_Calc_Driver 0.2.0 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Workflows" href="workflows.html" />
-    <link rel="prev" title="Globals" href="globals.html" /> 
+    <link rel="next" title="Globals" href="globals.html" />
+    <link rel="prev" title="Basic Calculator Class" href="calculator.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,9 +84,13 @@
               <p class="caption"><span class="caption-text">Modules:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="calculators.html">Calculators Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="calculator.html">Basic Calculator Class</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SchnetPackCalculator</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows</a></li>
 </ul>
 
@@ -133,13 +137,15 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Interfaces</li>
+          <li><a href="calculators.html">Calculators Module</a> &raquo;</li>
+        
+      <li>SchnetPackCalculator</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/interfaces.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/schnetcalc.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -152,8 +158,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-mlcalcdriver.interfaces">
-<span id="interfaces"></span><h1>Interfaces<a class="headerlink" href="#module-mlcalcdriver.interfaces" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-mlcalcdriver.calculators.schnetpack">
+<span id="schnetpackcalculator"></span><h1>SchnetPackCalculator<a class="headerlink" href="#module-mlcalcdriver.calculators.schnetpack" title="Permalink to this headline">¶</a></h1>
+<p>Calculator metaclass to accomodate machine learning models
+trained using the SchnetPack package.</p>
+<dl class="class">
+<dt id="mlcalcdriver.calculators.schnetpack.SchnetPackCalculator">
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.calculators.schnetpack.</code><code class="sig-name descname">SchnetPackCalculator</code><span class="sig-paren">(</span><em class="sig-param">model_dir</em>, <em class="sig-param">available_properties=None</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/schnetpack.html#SchnetPackCalculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="calculator.html#mlcalcdriver.calculators.calculator.Calculator" title="mlcalcdriver.calculators.calculator.Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlcalcdriver.calculators.calculator.Calculator</span></code></a></p>
+<p>Calculator based on a SchnetPack model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_dir</strong> (<em>str</em>) – Path to the stored model on which the calculator
+will be based. If $MODELDIR is defined, the path can
+be relative to it. If not, the path must be absolute
+or relative to the working directory.</p></li>
+<li><p><strong>available_properties</strong> (<em>str</em><em> or </em><em>list of str</em>) – Properties that the model can predict. If <cite>None</cite>, they
+automatically determined from the model. Default is <cite>None</cite>.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – Can be either <cite>“cpu”</cite> to use cpu or <cite>“cuda”</cite> to use “gpu”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="mlcalcdriver.calculators.schnetpack.SchnetPackCalculator.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">property</em>, <em class="sig-param">posinp=None</em>, <em class="sig-param">device='cpu'</em>, <em class="sig-param">batch_size=128</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/schnetpack.html#SchnetPackCalculator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main method to use when making a calculation with
+the calculator.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -164,10 +199,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="workflows.html" class="btn btn-neutral float-right" title="Workflows" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="globals.html" class="btn btn-neutral float-right" title="Globals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="globals.html" class="btn btn-neutral float-left" title="Globals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="calculator.html" class="btn btn-neutral float-left" title="Basic Calculator Class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

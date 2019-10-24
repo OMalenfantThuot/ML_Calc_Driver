@@ -31,26 +31,56 @@ ATOMS_MASS = {
     "Ti": 47.88,
     "V": 50.9415,
 }
+r"""
+`Dictionnary` containing elemental masses, in atomic mass units. Used to compute
+vibrational energies.
+"""
 
 ####
 # Conversion factors
 ####
 
-# Conversion from atomic to electronic mass unit
 AMU_TO_EMU = 1.660538782e-27 / 9.10938215e-31
-# Conversion from electronic to atomic mass unit
+r"""
+Conversion factor for atomic mass unit to electronic mass unit.
+"""
+
 EMU_TO_AMU = 1.0 / AMU_TO_EMU
-# Conversion factor from bohr to angstroem
+r"""
+Conversion factor for electronic mass unit to atomic mass unit.
+"""
+
 B_TO_ANG = 0.529177249
-# Conversion factor from angstroem to bohr
+r"""
+Conversion factor for bohr to angstroem.
+"""
+
 ANG_TO_B = 1.0 / B_TO_ANG
-# Conversion factor from Hartree to cm^-1
+r"""
+Conversion factor from angstroem to bohr.
+"""
+
 HA_TO_CMM1 = 219474.6313705
-# Conversion factor from Hartree to electron-Volt
+r"""
+Conversion factor from Hartree to :math:`cm^{-1}`.
+"""
+
 HA_TO_EV = 27.21138602
-# Conversion factor from electron-Volt to Hartree
+r"""
+Conversion factor for Hartree to eV.
+"""
+
 EV_TO_HA = 1 / HA_TO_EV
-# Conversion factor from Debye to atomic units of dipole moment
+r"""
+Conversion factor for eV to Hartree.
+"""
+
 DEBYE_TO_AU = 0.393430307
-# Conversion factor from atomic units of dipole moment to Debye
+r"""
+Conversion factor for Debye to atomic units of dipole moment.
+"""
+
 AU_TO_DEBYE = 1 / DEBYE_TO_AU
+r"""
+Conversion factor for atomic units of dipole moment to Debye.
+"""

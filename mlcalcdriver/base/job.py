@@ -24,12 +24,12 @@ class Job:
         ----------
         name : str
             Name of the job. Will be used to name the created files.
-        posinp : Posinp or list of Posinp
+        posinp : :class:`Posinp` or list of :class:`Posinp`
             Atomic positions for the job. Many different configurations
             may be predicted at the same time, in that case they should
             be passed in a list.
-        calculator : Calculator
-            mlcalcdriver.Calculator instance to use to evaluate
+        calculator : :class:`Calculator`
+            `Calculator` instance to use to evaluate
             properties in the run() method.
         """
         self.name = name

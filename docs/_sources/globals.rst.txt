@@ -1,3 +1,4 @@
 Globals
 -------
 
+.. automodule:: mlcalcdriver.globals
