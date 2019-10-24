@@ -8,7 +8,13 @@ Welcome to ML_Calc_Driver's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Modules:
+
+   base
+   calculators
+   globals
+   interfaces
+   workflows
 
 .. mdinclude:: ../../README.md
 
