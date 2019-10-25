@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Calculators" href="calculators.html" />
+    <link rel="next" title="Calculators Module" href="calculators.html" />
     <link rel="prev" title="Posinp and Atom Objects" href="posinp.html" /> 
 </head>
 
@@ -88,7 +88,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Job Object</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows</a></li>
@@ -158,11 +158,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="job-object">
-<h1>Job Object<a class="headerlink" href="#job-object" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-mlcalcdriver.base.job">
+<span id="job-object"></span><h1>Job Object<a class="headerlink" href="#module-mlcalcdriver.base.job" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="#mlcalcdriver.base.job.Job" title="mlcalcdriver.base.job.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a> class is the base object defining similar machine learning
+predictions for a single or many atomic configurations.</p>
 <dl class="class">
-<dt id="mlcalcdriver.base.Job">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.</code><code class="sig-name descname">Job</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">posinp=None</em>, <em class="sig-param">calculator=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mlcalcdriver.base.Job" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.Job">
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.job.</code><code class="sig-name descname">Job</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">posinp=None</em>, <em class="sig-param">calculator=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#Job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.Job" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class defines a machine learning prediction. It must
 contain a mlcalcdriver.Posinp instance to define the atomic
@@ -171,30 +173,30 @@ configuration.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name of the job. Will be used to name the created files.</p></li>
-<li><p><strong>posinp</strong> (<a class="reference internal" href="posinp.html#mlcalcdriver.base.Posinp" title="mlcalcdriver.base.Posinp"><em>Posinp</em></a><em> or </em><em>list of Posinp</em>) – Atomic positions for the job. Many different configurations
+<li><p><strong>posinp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Posinp</span></code> or list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Posinp</span></code>) – Atomic positions for the job. Many different configurations
 may be predicted at the same time, in that case they should
 be passed in a list.</p></li>
-<li><p><strong>calculator</strong> (<em>Calculator</em>) – mlcalcdriver.Calculator instance to use to evaluate
+<li><p><strong>calculator</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Calculator</span></code>) – <cite>Calculator</cite> instance to use to evaluate
 properties in the run() method.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="method">
-<dt id="mlcalcdriver.base.Job.posinp">
-<em class="property">property </em><code class="sig-name descname">posinp</code><a class="headerlink" href="#mlcalcdriver.base.Job.posinp" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.Job.posinp">
+<em class="property">property </em><code class="sig-name descname">posinp</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.posinp" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Initial positions of the prediction</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="posinp.html#mlcalcdriver.base.Posinp" title="mlcalcdriver.base.Posinp">Posinp</a></p>
+<dd class="field-even"><p><a class="reference internal" href="posinp.html#mlcalcdriver.base.posinp.Posinp" title="mlcalcdriver.base.posinp.Posinp">Posinp</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.Job.name">
-<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#mlcalcdriver.base.Job.name" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.Job.name">
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.name" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Base name of the prediction used to set the names
@@ -207,8 +209,8 @@ of files and directories.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.Job.num_struct">
-<em class="property">property </em><code class="sig-name descname">num_struct</code><a class="headerlink" href="#mlcalcdriver.base.Job.num_struct" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.Job.num_struct">
+<em class="property">property </em><code class="sig-name descname">num_struct</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.num_struct" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Number of different structures when Job is declared</p>
@@ -220,34 +222,34 @@ of files and directories.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.Job.results">
-<em class="property">property </em><code class="sig-name descname">results</code><a class="headerlink" href="#mlcalcdriver.base.Job.results" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.Job.results">
+<em class="property">property </em><code class="sig-name descname">results</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.results" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The dictionnary containing the results of the calculation</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#mlcalcdriver.base.JobResults" title="mlcalcdriver.base.JobResults">JobResults</a></p>
+<dd class="field-even"><p><a class="reference internal" href="#mlcalcdriver.base.job.JobResults" title="mlcalcdriver.base.job.JobResults">JobResults</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.Job.calculator">
-<em class="property">property </em><code class="sig-name descname">calculator</code><a class="headerlink" href="#mlcalcdriver.base.Job.calculator" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.Job.calculator">
+<em class="property">property </em><code class="sig-name descname">calculator</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.calculator" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The Calculator object to use for the Job</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Calculator</p>
+<dd class="field-even"><p><a class="reference internal" href="calculator.html#mlcalcdriver.calculators.calculator.Calculator" title="mlcalcdriver.calculators.calculator.Calculator">Calculator</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.Job.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">property</em>, <em class="sig-param">device='cpu'</em>, <em class="sig-param">batch_size=128</em><span class="sig-paren">)</span><a class="headerlink" href="#mlcalcdriver.base.Job.run" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.Job.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">property</em>, <em class="sig-param">device='cpu'</em>, <em class="sig-param">batch_size=128</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#Job.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.Job.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main method to call to obtain results for a Job</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -270,8 +272,8 @@ Default is 128.</p></li>
 </dd></dl>
 
 <dl class="class">
-<dt id="mlcalcdriver.base.JobResults">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.</code><code class="sig-name descname">JobResults</code><span class="sig-paren">(</span><em class="sig-param">positions</em>, <em class="sig-param">properties</em><span class="sig-paren">)</span><a class="headerlink" href="#mlcalcdriver.base.JobResults" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.JobResults">
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.job.</code><code class="sig-name descname">JobResults</code><span class="sig-paren">(</span><em class="sig-param">positions</em>, <em class="sig-param">properties</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#JobResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.JobResults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>Dictionnary containing results from a Job after the run() method
 is completed. A JobResults instance is created for each Job, and
@@ -292,8 +294,8 @@ model.</p>
 </dd>
 </dl>
 <dl class="method">
-<dt id="mlcalcdriver.base.JobResults.positions">
-<em class="property">property </em><code class="sig-name descname">positions</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.positions" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.JobResults.positions">
+<em class="property">property </em><code class="sig-name descname">positions</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.positions" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>List containing the base Posinp objects for the predictions.</p>
@@ -305,8 +307,8 @@ model.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.JobResults.n_at">
-<em class="property">property </em><code class="sig-name descname">n_at</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.n_at" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.JobResults.n_at">
+<em class="property">property </em><code class="sig-name descname">n_at</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.n_at" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>List containing the number of atoms of each structure.</p>
@@ -318,8 +320,8 @@ model.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.JobResults.atom_types">
-<em class="property">property </em><code class="sig-name descname">atom_types</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.atom_types" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.JobResults.atom_types">
+<em class="property">property </em><code class="sig-name descname">atom_types</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.atom_types" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>List containing sets of the elements present in each structure.</p>
@@ -331,8 +333,8 @@ model.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.JobResults.boundary_conditions">
-<em class="property">property </em><code class="sig-name descname">boundary_conditions</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.boundary_conditions" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.JobResults.boundary_conditions">
+<em class="property">property </em><code class="sig-name descname">boundary_conditions</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.boundary_conditions" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>List containing the boundary conditions, either <cite>free</cite>,
@@ -345,8 +347,8 @@ model.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="mlcalcdriver.base.JobResults.cell">
-<em class="property">property </em><code class="sig-name descname">cell</code><a class="headerlink" href="#mlcalcdriver.base.JobResults.cell" title="Permalink to this definition">¶</a></dt>
+<dt id="mlcalcdriver.base.job.JobResults.cell">
+<em class="property">property </em><code class="sig-name descname">cell</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.cell" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>List containing cell dimensions of each structure,
@@ -370,7 +372,7 @@ None for free boundary conditions.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="calculators.html" class="btn btn-neutral float-right" title="Calculators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="calculators.html" class="btn btn-neutral float-right" title="Calculators Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="posinp.html" class="btn btn-neutral float-left" title="Posinp and Atom Objects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

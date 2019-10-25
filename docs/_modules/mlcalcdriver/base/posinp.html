@@ -1,0 +1,951 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlcalcdriver.base.posinp &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ML_Calc_Driver
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Code Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../base.html">Base Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../calculators.html">Calculators Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../globals.html">Globals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../interfaces.html">Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../workflows.html">Workflows</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ML_Calc_Driver</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>mlcalcdriver.base.posinp</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mlcalcdriver.base.posinp</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The :class:`Posinp` and :class:`Atom` classes are represent the</span>
+<span class="sd">atomic systems used as input for a calculation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="k">import</span> <span class="n">Sequence</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">ATOMS_MASS</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Posinp&quot;</span><span class="p">,</span> <span class="s2">&quot;Atom&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="Posinp"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp">[docs]</a><span class="k">class</span> <span class="nc">Posinp</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class allowing to initialize, read, write and interact with the</span>
+<span class="sd">    input atomic geometry of a calculation in the form of an xyz file.</span>
+
+<span class="sd">    Such a file is made of a few lines, containing all the necessary</span>
+<span class="sd">    information to specify a given system of interest:</span>
+
+<span class="sd">    * the first line contains the number of atoms :math:`n_{at}` and the</span>
+<span class="sd">      units for the coordinates (and possibly the cell size),</span>
+<span class="sd">    * the second line contains the boundary conditions used and possibly</span>
+<span class="sd">      the simulation cell size (for periodic or surface boundary</span>
+<span class="sd">      conditions),</span>
+<span class="sd">    * the subsequent :math:`n_{at}` lines are used to define each atom</span>
+<span class="sd">      of the system: first its type, then its position given by three</span>
+<span class="sd">      coordinates (for :math:`x`, :math:`y` and :math:`z`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;angstroem&quot;</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="o">=</span><span class="s2">&quot;free&quot;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atoms : list</span>
+<span class="sd">            List of :class:`Atom` instances.</span>
+<span class="sd">        units : str</span>
+<span class="sd">            Units of the coordinate system.</span>
+<span class="sd">        boundary_conditions : str</span>
+<span class="sd">            Boundary conditions.</span>
+<span class="sd">        cell : Sequence of length 3 or None</span>
+<span class="sd">            Size of the simulation domain in the three space</span>
+<span class="sd">            coordinates.</span>
+
+
+<span class="sd">        &gt;&gt;&gt; posinp = Posinp([Atom(&#39;N&#39;, [0, 0, 0]), Atom(&#39;N&#39;, [0, 0, 1.1])],</span>
+<span class="sd">        ...                 &#39;angstroem&#39;, &#39;free&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; len(posinp)</span>
+<span class="sd">        2</span>
+<span class="sd">        &gt;&gt;&gt; posinp.boundary_conditions</span>
+<span class="sd">        &#39;free&#39;</span>
+<span class="sd">        &gt;&gt;&gt; posinp.units</span>
+<span class="sd">        &#39;angstroem&#39;</span>
+<span class="sd">        &gt;&gt;&gt; for atom in posinp:</span>
+<span class="sd">        ...     repr(atom)</span>
+<span class="sd">        &quot;Atom(&#39;N&#39;, [0.0, 0.0, 0.0])&quot;</span>
+<span class="sd">        &quot;Atom(&#39;N&#39;, [0.0, 0.0, 1.1])&quot;</span>
+<span class="sd">        &gt;&gt;&gt; posinp.masses</span>
+<span class="sd">        array([14.00674, 14.00674])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check initial values</span>
+        <span class="c1"># Set the base attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="n">atoms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">boundary_conditions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_initial_values</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If some initial values are invalid, contradictory or</span>
+<span class="sd">            missing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The cell size must be of length 3 (one value per &quot;</span>
+                    <span class="s2">&quot;space coordinate)&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">!=</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;You must give a cell size to use &#39;</span><span class="si">{}</span><span class="s2">&#39; boundary conditions&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">boundary_conditions</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;periodic&quot;</span> <span class="ow">and</span> <span class="s2">&quot;inf&quot;</span> <span class="ow">in</span> <span class="n">cell</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Cannot use periodic boundary conditions with a cell meant &quot;</span>
+                <span class="s2">&quot;for a surface calculation.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;free&quot;</span> <span class="ow">and</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot use reduced units with free boundary conditions&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Posinp.from_file"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the input positions from a file on disk.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            Name of the input positions file on disk.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            Posinp read from a file on disk.</span>
+
+
+<span class="sd">        &gt;&gt;&gt; posinp = Posinp.from_file(&quot;tests/surface.xyz&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; posinp.cell</span>
+<span class="sd">        [8.07007483423, &#39;inf&#39;, 4.65925987792]</span>
+<span class="sd">        &gt;&gt;&gt; print(posinp)</span>
+<span class="sd">        4   reduced</span>
+<span class="sd">        surface   8.07007483423   inf   4.65925987792</span>
+<span class="sd">        C   0.08333333333   0.5   0.25</span>
+<span class="sd">        C   0.41666666666   0.5   0.25</span>
+<span class="sd">        C   0.58333333333   0.5   0.75</span>
+<span class="sd">        C   0.91666666666   0.5   0.75</span>
+<span class="sd">        &lt;BLANKLINE&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Posinp.from_string"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.from_string">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">posinp</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the input positions from a string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        posinp : str</span>
+<span class="sd">            Content of an xyz file as a string.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            Posinp read from the string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">posinp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">line</span><span class="p">]</span>  <span class="c1"># Remove empty lines</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_from_lines</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the input positions from a list of lines that mimics</span>
+<span class="sd">        an xyz file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lines : list</span>
+<span class="sd">            List of the lines of the xyz file, each line being a list.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            Posinp read from the list of lines.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Decode the first line</span>
+        <span class="n">line1</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">n_at</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">line1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Decode the second line</span>
+        <span class="n">line2</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">line2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">!=</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">line2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Remove the lines about the forces, if there are some</span>
+        <span class="n">first_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;forces&quot;</span> <span class="ow">in</span> <span class="n">first_elements</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">first_elements</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;forces&quot;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[:</span><span class="n">index</span><span class="p">]</span>
+        <span class="c1"># Check the number of atoms is correct</span>
+        <span class="k">if</span> <span class="n">n_at</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The number of atoms received is different from the expected &quot;</span>
+                <span class="s2">&quot;number of atoms (</span><span class="si">{}</span><span class="s2"> != </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span> <span class="n">n_at</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="c1"># Decode the atoms</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="n">atom_type</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Atom</span><span class="p">(</span><span class="n">atom_type</span><span class="p">,</span> <span class="n">position</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Posinp.from_dict"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">posinp</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the input positions from a dictionary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        posinp : dict</span>
+<span class="sd">            Posinp as a dictionary coming from an InputParams or</span>
+<span class="sd">            Logfile instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            Posinp initialized from an dictionary.</span>
+
+
+<span class="sd">        &gt;&gt;&gt; pos_dict = {</span>
+<span class="sd">        ...     &quot;units&quot;: &quot;reduced&quot;,</span>
+<span class="sd">        ...     &quot;cell&quot;: [8.07007483423, &#39;inf&#39;, 4.65925987792],</span>
+<span class="sd">        ...     &quot;positions&quot;: [</span>
+<span class="sd">        ...         {&#39;C&#39;: [0.08333333333, 0.5, 0.25]},</span>
+<span class="sd">        ...         {&#39;C&#39;: [0.41666666666, 0.5, 0.25]},</span>
+<span class="sd">        ...         {&#39;C&#39;: [0.58333333333, 0.5, 0.75]},</span>
+<span class="sd">        ...         {&#39;C&#39;: [0.91666666666, 0.5, 0.75]},</span>
+<span class="sd">        ...     ]</span>
+<span class="sd">        ... }</span>
+<span class="sd">        &gt;&gt;&gt; pos = Posinp.from_dict(pos_dict)</span>
+<span class="sd">        &gt;&gt;&gt; pos.boundary_conditions</span>
+<span class="sd">        &#39;surface&#39;</span>
+
+<span class="sd">        The value of the &quot;cell&quot; key allows to derive the boundary</span>
+<span class="sd">        conditions. Replacing &#39;inf&#39; by a number gives a posinp with</span>
+<span class="sd">        periodic boundary conditions:</span>
+
+<span class="sd">        &gt;&gt;&gt; pos_dict[&quot;cell&quot;] = [8.07007483423, 10.0, 4.65925987792]</span>
+<span class="sd">        &gt;&gt;&gt; pos = Posinp.from_dict(pos_dict)</span>
+<span class="sd">        &gt;&gt;&gt; pos.boundary_conditions</span>
+<span class="sd">        &#39;periodic&#39;</span>
+
+<span class="sd">        If there is no &quot;cell&quot; key, then the boundary conditions are set</span>
+<span class="sd">        to &quot;free&quot;. Here, given that the units are reduced, this raises</span>
+<span class="sd">        a ValueError:</span>
+
+<span class="sd">        &gt;&gt;&gt; del pos_dict[&quot;cell&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; pos = Posinp.from_dict(pos_dict)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        ValueError: Cannot use reduced units with free boundary conditions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Lower the keys of the posinp if needed</span>
+        <span class="k">if</span> <span class="s2">&quot;positions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">posinp</span><span class="p">:</span>
+            <span class="n">ref_posinp</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">posinp</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ref_posinp</span><span class="p">:</span>
+                <span class="n">posinp</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">ref_posinp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">posinp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="c1"># Read data from the dictionary</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># atomic positions</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">posinp</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]:</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Atom</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">atom</span><span class="p">))</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">posinp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="s2">&quot;atomic&quot;</span><span class="p">)</span>  <span class="c1"># Units of the coordinates</span>
+        <span class="n">cell</span> <span class="o">=</span> <span class="n">posinp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cell&quot;</span><span class="p">)</span>  <span class="c1"># Simulation cell size</span>
+        <span class="c1"># Infer the boundary conditions from the value of cell</span>
+        <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;free&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]:</span>
+                <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;surface&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;periodic&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of :class:`Atom`</span>
+<span class="sd">            Atoms of the system (atomic type and positions).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atoms</span>
+
+    <span class="nd">@atoms</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">Atom</span><span class="p">)</span> <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_atoms</span> <span class="o">=</span> <span class="n">atoms</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All atoms should be mybigdft.Atoms instances&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Atoms should be given in a list&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Units used to represent the atomic positions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
+
+    <span class="nd">@units</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;d0&quot;</span><span class="p">):</span>
+                <span class="n">units</span> <span class="o">=</span> <span class="n">units</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Units should be given as a string.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">boundary_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Boundary conditions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boundary_conditions</span>
+
+    <span class="nd">@boundary_conditions</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">boundary_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">):</span>
+        <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">boundary_conditions</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;free&quot;</span><span class="p">,</span> <span class="s2">&quot;periodic&quot;</span><span class="p">,</span> <span class="s2">&quot;surface&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_boundary_conditions</span> <span class="o">=</span> <span class="n">boundary_conditions</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Boundary conditions </span><span class="si">{}</span><span class="s2"> are not recognized.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">boundary_conditions</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of three `float` or `None`</span>
+<span class="sd">            Cell size if the simulation includes periodic boundary conditions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span>
+
+    <span class="nd">@cell</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;inf&quot;</span>
+                <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">cell</span>
+            <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span> <span class="o">=</span> <span class="n">cell</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        2D :class:`numpy.array` of shape (:math:`n_{at}`, 3)</span>
+<span class="sd">            Position of all the atoms in the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">masses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :class:`numpy.array` of length :math:`n_{at}`</span>
+<span class="sd">            Masses of all the atoms in the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">mass</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The items of a Posinp instance actually are the atoms (so as to</span>
+<span class="sd">        behave like an immutable list of atoms).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            Index of a given atom</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Atom</span>
+<span class="sd">            The required atom.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : object</span>
+<span class="sd">            Any other object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            `True` if both initial positions have the same number of</span>
+<span class="sd">            atoms, the same units and boundary conditions and the same</span>
+<span class="sd">            atoms (whatever the order of the atoms in the initial list</span>
+<span class="sd">            of atoms).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Check that both cells are the same, but first make sure</span>
+            <span class="c1"># that the unimportant cell size are not compared</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">other_cell</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;surface&quot;</span><span class="p">:</span>
+                <span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;surface&quot;</span><span class="p">:</span>
+                <span class="n">other_cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">same_cell</span> <span class="o">=</span> <span class="n">cell</span> <span class="o">==</span> <span class="n">other_cell</span>
+            <span class="c1"># Check the other basic attributes</span>
+            <span class="n">same_BC</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">boundary_conditions</span>
+            <span class="n">same_base</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">same_BC</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">units</span>
+                <span class="ow">and</span> <span class="n">same_cell</span>
+            <span class="p">)</span>
+            <span class="c1"># Finally check the atoms only if the base is similar, as it</span>
+            <span class="c1"># might be time-consuming for large systems</span>
+            <span class="k">if</span> <span class="n">same_base</span><span class="p">:</span>
+                <span class="n">same_atoms</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="n">atom</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">atoms</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">])</span>
+                <span class="k">return</span> <span class="n">same_atoms</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the Posinp to a string in the xyz format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The Posinp instance as a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create the first two lines of the posinp file</span>
+        <span class="n">pos_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">   </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="n">pos_str</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pos_str</span> <span class="o">+=</span> <span class="s2">&quot;   </span><span class="si">{}</span><span class="s2">   </span><span class="si">{}</span><span class="s2">   </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="c1"># Add all the other lines, representing the atoms</span>
+        <span class="n">pos_str</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">pos_str</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            The string representation of a Posinp instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;Posinp(</span><span class="si">{0.atoms}</span><span class="s2">, &#39;</span><span class="si">{0.units}</span><span class="s2">&#39;, &#39;</span><span class="si">{0.boundary_conditions}</span><span class="s2">&#39;, &quot;</span>
+            <span class="s2">&quot;cell=</span><span class="si">{0.cell}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Posinp.write"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write the Posinp on disk.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            Name of the input positions file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Posinp.distance"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.distance">[docs]</a>    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_at_1</span><span class="p">,</span> <span class="n">i_at_2</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the distance between two atoms.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i_at_1: int</span>
+<span class="sd">            Index of the first atom.</span>
+<span class="sd">        i_at_2: int</span>
+<span class="sd">            Index of the second atom.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Distance between both atoms.</span>
+
+
+<span class="sd">        &gt;&gt;&gt; atoms = [Atom(&#39;N&#39;, [0, 0, 0]), Atom(&#39;N&#39;, [3, 4, 0])]</span>
+<span class="sd">        &gt;&gt;&gt; pos = Posinp(atoms, units=&quot;angstroem&quot;, boundary_conditions=&quot;free&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; assert pos.distance(0, 1) == 5.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_1</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i_at_1</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+        <span class="n">pos_2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i_at_2</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">([(</span><span class="n">pos_1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]))</span></div>
+
+<div class="viewcode-block" id="Posinp.translate_atom"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.translate_atom">[docs]</a>    <span class="k">def</span> <span class="nf">translate_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_at</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translate the `i_at` atom along the three space coordinates</span>
+<span class="sd">        according to the value of `vector`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i_at : int</span>
+<span class="sd">            Index of the atom.</span>
+<span class="sd">        vector : list or :class:`numpy.array` of length 3</span>
+<span class="sd">            Translation vector to apply.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            New posinp where the `i_at` atom was translated by `vector`.</span>
+
+
+<span class="sd">        .. Warning::</span>
+
+<span class="sd">            You have to make sure that the units of the vector match</span>
+<span class="sd">            those used by the posinp.</span>
+
+
+<span class="sd">        &gt;&gt;&gt; posinp = Posinp([Atom(&#39;N&#39;, [0, 0, 0]), Atom(&#39;N&#39;, [0, 0, 1.1])],</span>
+<span class="sd">        ...                 &#39;angstroem&#39;, &#39;free&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; new_posinp = posinp.translate_atom(1, [0.0, 0.0, 0.05])</span>
+<span class="sd">        &gt;&gt;&gt; print(new_posinp)</span>
+<span class="sd">        2   angstroem</span>
+<span class="sd">        free</span>
+<span class="sd">        N   0.0   0.0   0.0</span>
+<span class="sd">        N   0.0   0.0   1.15</span>
+<span class="sd">        &lt;BLANKLINE&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_posinp</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">new_posinp</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">i_at</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i_at</span><span class="p">]</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_posinp</span></div>
+
+<div class="viewcode-block" id="Posinp.translate"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translate all the atoms along the three space coordinates</span>
+<span class="sd">        according to the value of `vector`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector : list or :class:`numpy.array` of length 3</span>
+<span class="sd">            Translation vector to apply.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            New posinp where all the atoms were translated by `vector`.</span>
+
+
+<span class="sd">        .. Warning::</span>
+
+<span class="sd">            You have to make sure that the units of the vector match</span>
+<span class="sd">            those used by the posinp.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Atom</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">new_positions</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">Posinp</span><span class="p">(</span>
+            <span class="n">atoms</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
+            <span class="n">cell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span>
+            <span class="n">boundary_conditions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Posinp.to_centroid"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.to_centroid">[docs]</a>    <span class="k">def</span> <span class="nf">to_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Center the system to its centroid (*i.e.*, geometric center).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            New posinp where all the atoms are centered on the geometric</span>
+<span class="sd">            center of the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">centroid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="n">centroid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Posinp.to_barycenter"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.to_barycenter">[docs]</a>    <span class="k">def</span> <span class="nf">to_barycenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Center the system to its barycenter (*i.e.*, center of mass).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            New posinp where all the atoms are centered on the center</span>
+<span class="sd">            of mass of the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">masses</span>
+        <span class="n">barycenter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="n">barycenter</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Atom"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Atom">[docs]</a><span class="k">class</span> <span class="nc">Atom</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class allowing to represent an atom by its type and position.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_type</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atom_type : str</span>
+<span class="sd">            Type of the atom.</span>
+<span class="sd">        position : list or :class:`numpy.array` of length 3</span>
+<span class="sd">            Position of the atom.</span>
+
+
+<span class="sd">        &gt;&gt;&gt; a = Atom(&#39;C&#39;, [0, 0, 0])</span>
+<span class="sd">        &gt;&gt;&gt; a.type</span>
+<span class="sd">        &#39;C&#39;</span>
+<span class="sd">        &gt;&gt;&gt; a.position</span>
+<span class="sd">        array([0., 0., 0.])</span>
+<span class="sd">        &gt;&gt;&gt; a.mass</span>
+<span class="sd">        12.011</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: Check that the atom type exists</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">atom_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">ATOMS_MASS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Atom.from_dict"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Atom.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">atom_dict</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atom_dict : dict</span>
+<span class="sd">            Information about an atom given by a dict whose only key is</span>
+<span class="sd">            the atom type and the value is the atomic position. This</span>
+<span class="sd">            format is mainly found in bigdft logfiles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">[(</span><span class="n">atom_type</span><span class="p">,</span> <span class="n">position</span><span class="p">)]</span> <span class="o">=</span> <span class="n">atom_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">atom_type</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Type of the atom.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
+
+    <span class="nd">@type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Atom type should be given as a string.&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list or :class:`numpy.array` of length 3</span>
+<span class="sd">            Position of the atom in cartesian coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span>
+
+    <span class="nd">@position</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;The position must have three components.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Mass of the atom in atomic mass units.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mass</span>
+
+    <span class="nd">@mass</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">mass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mass</span> <span class="o">=</span> <span class="n">mass</span>
+
+<div class="viewcode-block" id="Atom.translate"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Atom.translate">[docs]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translate the coordinates of the atom by the values of the</span>
+<span class="sd">        vector.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Atom</span>
+<span class="sd">            Atom translated according to the given vector.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vector : list or :class:`numpy.array` of length 3</span>
+<span class="sd">            Translation vector to apply.</span>
+
+
+<span class="sd">        &gt;&gt;&gt; Atom(&#39;C&#39;, [0, 0, 0]).translate([0.5, 0.5, 0.5])</span>
+<span class="sd">        Atom(&#39;C&#39;, [0.5, 0.5, 0.5])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;The vector must have three components&quot;</span>
+        <span class="n">new_atom</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">new_atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_atom</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            String representation of the atom, mainly used to create the</span>
+<span class="sd">            string representation of a Posinp instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{t}</span><span class="s2">  </span><span class="si">{: .15}</span><span class="s2">  </span><span class="si">{: .15}</span><span class="s2">  </span><span class="si">{: .15}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            General string representation of an Atom instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Atom(&#39;</span><span class="si">{}</span><span class="s2">&#39;, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Two atoms are the same if they are located on the same position</span>
+<span class="sd">        and have the same type.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other</span>
+<span class="sd">            Other object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if both atoms have the same type and position.</span>
+
+
+<span class="sd">        &gt;&gt;&gt; a = Atom(&#39;C&#39;, [0., 0., 0.])</span>
+<span class="sd">        &gt;&gt;&gt; a == 1</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; a == Atom(&#39;N&#39;, [0., 0., 0.])</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; a == Atom(&#39;C&#39;, [1., 0., 0.])</span>
+<span class="sd">        False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">position</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">type</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Olivier Malenfant-Thuot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

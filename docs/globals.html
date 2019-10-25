@@ -25,6 +25,7 @@
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
         <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -36,7 +37,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Interfaces" href="interfaces.html" />
-    <link rel="prev" title="Calculators" href="calculators.html" /> 
+    <link rel="prev" title="SchnetPackCalculator" href="schnetcalc.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -80,10 +81,10 @@
               
             
             
-              <p class="caption"><span class="caption-text">Modules:</span></p>
+              <p class="caption"><span class="caption-text">Code Documentation:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="base.html">Base</a></li>
-<li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Globals</a></li>
 <li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows</a></li>
@@ -151,8 +152,76 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="globals">
-<h1>Globals<a class="headerlink" href="#globals" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-mlcalcdriver.globals">
+<span id="globals"></span><h1>Globals<a class="headerlink" href="#module-mlcalcdriver.globals" title="Permalink to this headline">¶</a></h1>
+<p>Defines some global values and parameters used in
+classes and workflows of the package.</p>
+<dl class="data">
+<dt id="mlcalcdriver.globals.ATOMS_MASS">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">ATOMS_MASS</code><em class="property"> = {'Al': 26.981539, 'Ar': 39.948, 'B': 10.811, 'Be': 9.012182, 'C': 12.011, 'Ca': 40.078, 'Cl': 35.4527, 'F': 18.9984032, 'H': 1.00794, 'He': 4.002602, 'K': 39.0983, 'Li': 6.941, 'Mg': 24.305, 'N': 14.00674, 'Na': 22.989768, 'Ne': 20.1797, 'O': 15.9994, 'P': 30.973762, 'S': 32.066, 'Sc': 44.95591, 'Si': 28.0855, 'Ti': 47.88, 'V': 50.9415}</em><a class="headerlink" href="#mlcalcdriver.globals.ATOMS_MASS" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>Dictionnary</cite> containing elemental masses, in atomic mass units. Used to compute
+vibrational energies.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.AMU_TO_EMU">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">AMU_TO_EMU</code><em class="property"> = 1822.888484264545</em><a class="headerlink" href="#mlcalcdriver.globals.AMU_TO_EMU" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion factor for atomic mass unit to electronic mass unit.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.EMU_TO_AMU">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">EMU_TO_AMU</code><em class="property"> = 0.0005485799096500715</em><a class="headerlink" href="#mlcalcdriver.globals.EMU_TO_AMU" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion factor for electronic mass unit to atomic mass unit.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.B_TO_ANG">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">B_TO_ANG</code><em class="property"> = 0.529177249</em><a class="headerlink" href="#mlcalcdriver.globals.B_TO_ANG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion factor for bohr to angstroem.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.ANG_TO_B">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">ANG_TO_B</code><em class="property"> = 1.8897259885789233</em><a class="headerlink" href="#mlcalcdriver.globals.ANG_TO_B" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion factor from angstroem to bohr.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.HA_TO_CMM1">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">HA_TO_CMM1</code><em class="property"> = 219474.6313705</em><a class="headerlink" href="#mlcalcdriver.globals.HA_TO_CMM1" title="Permalink to this definition">¶</a></dt>
+<dd><p>math:cm^{-1}.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Conversion factor from Hartree to</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.HA_TO_EV">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">HA_TO_EV</code><em class="property"> = 27.21138602</em><a class="headerlink" href="#mlcalcdriver.globals.HA_TO_EV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion factor for Hartree to eV.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.EV_TO_HA">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">EV_TO_HA</code><em class="property"> = 0.036749322480854656</em><a class="headerlink" href="#mlcalcdriver.globals.EV_TO_HA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion factor for eV to Hartree.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.DEBYE_TO_AU">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">DEBYE_TO_AU</code><em class="property"> = 0.393430307</em><a class="headerlink" href="#mlcalcdriver.globals.DEBYE_TO_AU" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion factor for Debye to atomic units of dipole moment.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="mlcalcdriver.globals.AU_TO_DEBYE">
+<code class="sig-prename descclassname">mlcalcdriver.globals.</code><code class="sig-name descname">AU_TO_DEBYE</code><em class="property"> = 2.5417462310548435</em><a class="headerlink" href="#mlcalcdriver.globals.AU_TO_DEBYE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Conversion factor for atomic units of dipole moment to Debye.</p>
+</dd></dl>
+
 </div>
 
 
@@ -166,7 +235,7 @@
         <a href="interfaces.html" class="btn btn-neutral float-right" title="Interfaces" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="calculators.html" class="btn btn-neutral float-left" title="Calculators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="schnetcalc.html" class="btn btn-neutral float-left" title="SchnetPackCalculator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
