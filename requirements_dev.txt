@@ -8,6 +8,6 @@ pytest-cov==2.8.1
 pytest-sugar==0.9.2
 coveralls==1.8.2
 schnetpack==0.3
-sphinx==2.2.0
+sphinx==2.2.1
 sphinx-rtd-theme==0.4.3
 m2r==0.2.1
