@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlcalcdriver.workflows.geopt &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ML_Calc_Driver
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Code Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../base.html">Base Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../calculators.html">Calculators Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../interfaces.html">Interfaces Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../workflows.html">Workflows Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../globals.html">Globals</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ML_Calc_Driver</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>mlcalcdriver.workflows.geopt</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mlcalcdriver.workflows.geopt</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The :class:`Geopt` class allows to perform a geometry optimization to</span>
+<span class="sd">relax the forces on a given structure, using a machine</span>
+<span class="sd">learning model.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver</span> <span class="k">import</span> <span class="n">Posinp</span><span class="p">,</span> <span class="n">Job</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="k">import</span> <span class="n">Calculator</span>
+
+
+<div class="viewcode-block" id="Geopt"><a class="viewcode-back" href="../../../geopt.html#mlcalcdriver.workflows.geopt.Geopt">[docs]</a><span class="k">class</span> <span class="nc">Geopt</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class allows to relax the input geometry of a given system in</span>
+<span class="sd">    order to find the structure that minimizes the forces. The final</span>
+<span class="sd">    result obtained depends on the trained machine learning model used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">posinp</span><span class="p">,</span> <span class="n">calculator</span><span class="p">,</span> <span class="n">forcemax</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span>
+    <span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        posinp : mybigdft.Posinp</span>
+<span class="sd">            Starting configuration to relax</span>
+<span class="sd">        calculator : Calculator</span>
+<span class="sd">            mlcalcdriver.Calculator instance that will be used in</span>
+<span class="sd">            the created Job to evaluate properties.</span>
+<span class="sd">        forcemax : float</span>
+<span class="sd">            Stopping criterion on the forces (in eV/Angstrom). </span>
+<span class="sd">            Default is `0.01`.</span>
+<span class="sd">        step_size : float</span>
+<span class="sd">            Step size for each relaxation step. Default</span>
+<span class="sd">            is `0.003` Angstrom&lt;sup&gt;2&lt;/sup&gt;/eV.</span>
+<span class="sd">        max_iter : int</span>
+<span class="sd">            Maximum number of iterations. Default is 500.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posinp</span> <span class="o">=</span> <span class="n">posinp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span> <span class="o">=</span> <span class="n">calculator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">forcemax</span> <span class="o">=</span> <span class="n">forcemax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_size</span> <span class="o">=</span> <span class="n">step_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">=</span> <span class="n">max_iter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_posinp</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">posinp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp</span>
+<span class="sd">            Initial posinp of the geometry optimization procedure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posinp</span>
+
+    <span class="nd">@posinp</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">posinp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">posinp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">posinp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No initial positions were provided.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_posinp</span> <span class="o">=</span> <span class="n">posinp</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Calculator</span>
+<span class="sd">            The Calculator object to use for the Jobs necessary to</span>
+<span class="sd">            perform the geometry optimisation.	</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span>
+
+    <span class="nd">@calculator</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calculator</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">calculator</span><span class="p">,</span> <span class="n">Calculator</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span> <span class="o">=</span> <span class="n">calculator</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                The calculator for the Geopt instance must be a class or a</span>
+<span class="sd">                metaclass derived from mlcalcdriver.calculators.Calculator.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">final_posinp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Posinp or None</span>
+<span class="sd">            Final posinp of the geometry optimization or None if</span>
+<span class="sd">            the the optimization has not been completed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_posinp</span>
+
+    <span class="nd">@final_posinp</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">final_posinp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">final_posinp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_final_posinp</span> <span class="o">=</span> <span class="n">final_posinp</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">forcemax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Stopping criterion on the forces (in eV/Angstrom)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forcemax</span>
+
+    <span class="nd">@forcemax</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">forcemax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forcemax</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forcemax</span> <span class="o">=</span> <span class="n">forcemax</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">step_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Step size for each relaxation step</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step_size</span>
+
+    <span class="nd">@step_size</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">step_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_size</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_step_size</span> <span class="o">=</span> <span class="n">step_size</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Maximum number of iterations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span>
+
+    <span class="nd">@max_iter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">max_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_iter</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Geopt.run"><a class="viewcode-back" href="../../../geopt.html#mlcalcdriver.workflows.geopt.Geopt.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">recenter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : str</span>
+<span class="sd">            Either &#39;cpu&#39; or &#39;cuda&#39; to run on cpu or gpu. Default is &#39;cpu&#39;</span>
+<span class="sd">            and should be faster in most cases.</span>
+<span class="sd">        batch_size : int</span>
+<span class="sd">            Size of the mini-batches used in predictions. Default is 128.</span>
+<span class="sd">        recenter : bool</span>
+<span class="sd">            If `True`, the structure is recentered on its</span>
+<span class="sd">            centroid after the relaxation. Default is `False`.</span>
+<span class="sd">        verbose : int</span>
+<span class="sd">            Controls the verbosity of the output. If 0 (Default), no written output.</span>
+<span class="sd">            If 1, a message will indicate if the optimization was succesful or not</span>
+<span class="sd">            and the remaining forces. If 2 or more, each iteration will provide</span>
+<span class="sd">            an output.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">temp_posinp</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">)</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># Optimization loop</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># Forces calculation</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="n">temp_posinp</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="p">)</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+            <span class="c1"># Moving the atoms</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">n_at</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">temp_posinp</span> <span class="o">=</span> <span class="n">temp_posinp</span><span class="o">.</span><span class="n">translate_atom</span><span class="p">(</span>
+                    <span class="n">j</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_size</span> <span class="o">*</span> <span class="n">job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="n">fmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;At iteration </span><span class="si">{}</span><span class="s2">, the maximum remaining force is </span><span class="si">{:6.4f}</span><span class="s2"> eV/Ha.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">i</span><span class="p">,</span> <span class="n">fmax</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="c1"># Stopping condition</span>
+            <span class="k">if</span> <span class="n">fmax</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">forcemax</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Geometry optimization stopped at iteration </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                <span class="k">break</span>
+            <span class="c1"># Step size reduction to help forces optimization</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">step_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_size</span> <span class="o">*</span> <span class="mf">0.9</span>
+            <span class="c1"># Maximum iterations check</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="s2">&quot;Geometry optimization was not succesful at iteration </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">i</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Max remaining force is </span><span class="si">{:6.4f}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fmax</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_posinp</span> <span class="o">=</span> <span class="n">temp_posinp</span>
+        <span class="k">if</span> <span class="n">recenter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">final_posinp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_posinp</span><span class="o">.</span><span class="n">to_centroid</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Olivier Malenfant-Thuot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

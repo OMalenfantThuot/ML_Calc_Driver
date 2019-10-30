@@ -81,7 +81,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Modules:</span></p>
+              <p class="caption"><span class="caption-text">Code Documentation:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Calculators Module</a><ul>
@@ -158,6 +158,12 @@
             
   <div class="section" id="module-mlcalcdriver.calculators">
 <span id="calculators-module"></span><h1>Calculators Module<a class="headerlink" href="#module-mlcalcdriver.calculators" title="Permalink to this headline">¶</a></h1>
+<p>To use a given type of machine learning model in conjunction with
+ML_Calc_Driver, a related Calculator object must be defined.
+If the class needed does not exist, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Calculator</span></code> class
+must be used as a base for it. The <cite>run()</cite> and
+<cite>_get_available_properties()</cite> methods must be defined, similarly
+to the <code class="xref py py-class docutils literal notranslate"><span class="pre">SchnetPackCalculator</span></code> class.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Related classes</span></p>
 <ul>

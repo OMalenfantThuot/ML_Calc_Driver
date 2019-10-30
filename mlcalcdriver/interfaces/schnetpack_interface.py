@@ -3,6 +3,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from schnetpack.data.atoms import _convert_atoms
 
+
 class SchnetPackData(Dataset):
     r"""
     Class used to interface data from the mlcalcdriver package
@@ -10,11 +11,7 @@ class SchnetPackData(Dataset):
     """
 
     def __init__(
-        self,
-        data,
-        environment_provider,
-        collect_triples=False,
-        center_positions=False,
+        self, data, environment_provider, collect_triples=False, center_positions=False
     ):
         self.data = data
         self.environment_provider = environment_provider
@@ -22,16 +19,22 @@ class SchnetPackData(Dataset):
         self.center_positions = center_positions
 
     def __len__(self):
+        r"""
+        Needed to create a PyTorch dataset.
+        """
         return len(self.data)
 
     def __getitem__(self, idx):
+        r"""
+        Needed to create a PyTorch Dataset
+        """
         _, properties = self.get_properties(idx)
         properties["_idx"] = torch.LongTensor(np.array([idx], dtype=np.int))
         return properties
 
     def get_properties(self, idx):
-        """
-        Return property dictionary at given index.
+        r"""
+        Returns property dictionary at given index.
 
         Args:
             idx (int): data index

@@ -39,6 +39,8 @@ extensions = [
     "m2r",
 ]
 
+autodoc_mock_imports = ["torch"]
+
 pygments_style = "sphinx"
 autodoc_member_order = "bysource"
 #autodoc_default_flags = ['members', 'show-inheritance']

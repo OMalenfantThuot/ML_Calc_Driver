@@ -84,9 +84,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows</a></li>
 </ul>
 
             
@@ -153,12 +153,14 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#J"><strong>J</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -171,6 +173,20 @@
  | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData.__getitem__">__getitem__() (mlcalcdriver.interfaces.SchnetPackData method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData.__len__">__len__() (mlcalcdriver.interfaces.SchnetPackData method)</a>
+</li>
+      <li><a href="calculator.html#mlcalcdriver.calculators.calculator.Calculator._get_available_properties">_get_available_properties() (mlcalcdriver.calculators.calculator.Calculator method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -178,12 +194,14 @@
 </li>
       <li><a href="globals.html#mlcalcdriver.globals.ANG_TO_B">ANG_TO_B (in module mlcalcdriver.globals)</a>
 </li>
-      <li><a href="posinp.html#mlcalcdriver.base.posinp.Atom">Atom (class in mlcalcdriver.base.posinp)</a>
+      <li><a href="ase_interface.html#mlcalcdriver.interfaces.ase_atoms_to_posinp">ase_atoms_to_posinp() (in module mlcalcdriver.interfaces)</a>
 </li>
-      <li><a href="job.html#mlcalcdriver.base.job.JobResults.atom_types">atom_types() (mlcalcdriver.base.job.JobResults property)</a>
+      <li><a href="posinp.html#mlcalcdriver.base.posinp.Atom">Atom (class in mlcalcdriver.base.posinp)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="job.html#mlcalcdriver.base.job.JobResults.atom_types">atom_types() (mlcalcdriver.base.job.JobResults property)</a>
+</li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.atoms">atoms() (mlcalcdriver.base.posinp.Posinp property)</a>
 </li>
       <li><a href="globals.html#mlcalcdriver.globals.ATOMS_MASS">ATOMS_MASS (in module mlcalcdriver.globals)</a>
@@ -217,7 +235,13 @@
       <li><a href="calculator.html#mlcalcdriver.calculators.calculator.Calculator">Calculator (class in mlcalcdriver.calculators.calculator)</a>
 </li>
       <li><a href="job.html#mlcalcdriver.base.job.Job.calculator">calculator() (mlcalcdriver.base.job.Job property)</a>
+
+      <ul>
+        <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.calculator">(mlcalcdriver.workflows.geopt.Geopt property)</a>
 </li>
+        <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.calculator">(mlcalcdriver.workflows.phonon.Phonon property)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="job.html#mlcalcdriver.base.job.JobResults.cell">cell() (mlcalcdriver.base.job.JobResults property)</a>
@@ -238,6 +262,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.distance">distance() (mlcalcdriver.base.posinp.Posinp method)</a>
 </li>
+      <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.dyn_mat">dyn_mat() (mlcalcdriver.workflows.phonon.Phonon property)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -248,6 +274,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.energies">energies() (mlcalcdriver.workflows.phonon.Phonon property)</a>
+</li>
       <li><a href="globals.html#mlcalcdriver.globals.EV_TO_HA">EV_TO_HA (in module mlcalcdriver.globals)</a>
 </li>
   </ul></td>
@@ -256,6 +284,10 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.final_posinp">final_posinp() (mlcalcdriver.workflows.geopt.Geopt property)</a>
+</li>
+      <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.forcemax">forcemax() (mlcalcdriver.workflows.geopt.Geopt property)</a>
+</li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Atom.from_dict">from_dict() (mlcalcdriver.base.posinp.Atom class method)</a>
 
       <ul>
@@ -267,6 +299,18 @@
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.from_file">from_file() (mlcalcdriver.base.posinp.Posinp class method)</a>
 </li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.from_string">from_string() (mlcalcdriver.base.posinp.Posinp class method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt">Geopt (class in mlcalcdriver.workflows.geopt)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData.get_properties">get_properties() (mlcalcdriver.interfaces.SchnetPackData method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -302,16 +346,18 @@
 </li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.masses">masses() (mlcalcdriver.base.posinp.Posinp property)</a>
 </li>
+      <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.max_iter">max_iter() (mlcalcdriver.workflows.geopt.Geopt property)</a>
+</li>
       <li><a href="base.html#module-mlcalcdriver.base">mlcalcdriver.base (module)</a>
 </li>
       <li><a href="job.html#module-mlcalcdriver.base.job">mlcalcdriver.base.job (module)</a>
 </li>
       <li><a href="posinp.html#module-mlcalcdriver.base.posinp">mlcalcdriver.base.posinp (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="calculators.html#module-mlcalcdriver.calculators">mlcalcdriver.calculators (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="calculator.html#module-mlcalcdriver.calculators.calculator">mlcalcdriver.calculators.calculator (module)</a>
 </li>
       <li><a href="schnetcalc.html#module-mlcalcdriver.calculators.schnetpack">mlcalcdriver.calculators.schnetpack (module)</a>
@@ -322,6 +368,10 @@
 </li>
       <li><a href="workflows.html#module-mlcalcdriver.workflows">mlcalcdriver.workflows (module)</a>
 </li>
+      <li><a href="geopt.html#module-mlcalcdriver.workflows.geopt">mlcalcdriver.workflows.geopt (module)</a>
+</li>
+      <li><a href="phonon.html#module-mlcalcdriver.workflows.phonon">mlcalcdriver.workflows.phonon (module)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -330,9 +380,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="job.html#mlcalcdriver.base.job.JobResults.n_at">n_at() (mlcalcdriver.base.job.JobResults property)</a>
 </li>
+      <li><a href="job.html#mlcalcdriver.base.job.Job.name">name() (mlcalcdriver.base.job.Job property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="job.html#mlcalcdriver.base.job.Job.name">name() (mlcalcdriver.base.job.Job property)</a>
+      <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.normal_modes">normal_modes() (mlcalcdriver.workflows.phonon.Phonon property)</a>
 </li>
       <li><a href="job.html#mlcalcdriver.base.job.Job.num_struct">num_struct() (mlcalcdriver.base.job.Job property)</a>
 </li>
@@ -342,12 +394,22 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon">Phonon (class in mlcalcdriver.workflows.phonon)</a>
+</li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp">Posinp (class in mlcalcdriver.base.posinp)</a>
 </li>
       <li><a href="job.html#mlcalcdriver.base.job.Job.posinp">posinp() (mlcalcdriver.base.job.Job property)</a>
+
+      <ul>
+        <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.posinp">(mlcalcdriver.workflows.geopt.Geopt property)</a>
 </li>
+        <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.posinp">(mlcalcdriver.workflows.phonon.Phonon property)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="ase_interface.html#mlcalcdriver.interfaces.ase_interface.posinp_to_ase_atoms">posinp_to_ase_atoms() (in module mlcalcdriver.interfaces.ase_interface)</a>
+</li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Atom.position">position() (mlcalcdriver.base.posinp.Atom property)</a>
 </li>
       <li><a href="job.html#mlcalcdriver.base.job.JobResults.positions">positions() (mlcalcdriver.base.job.JobResults property)</a>
@@ -362,6 +424,8 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.relax">relax() (mlcalcdriver.workflows.phonon.Phonon property)</a>
+</li>
       <li><a href="job.html#mlcalcdriver.base.job.Job.results">results() (mlcalcdriver.base.job.Job property)</a>
 </li>
       <li><a href="job.html#mlcalcdriver.base.job.Job.run">run() (mlcalcdriver.base.job.Job method)</a>
@@ -371,6 +435,10 @@
 </li>
         <li><a href="schnetcalc.html#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator.run">(mlcalcdriver.calculators.schnetpack.SchnetPackCalculator method)</a>
 </li>
+        <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.run">(mlcalcdriver.workflows.geopt.Geopt method)</a>
+</li>
+        <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.run">(mlcalcdriver.workflows.phonon.Phonon method)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -379,6 +447,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="schnetcalc.html#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator">SchnetPackCalculator (class in mlcalcdriver.calculators.schnetpack)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData">SchnetPackData (class in mlcalcdriver.interfaces)</a>
+</li>
+      <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.step_size">step_size() (mlcalcdriver.workflows.geopt.Geopt property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -399,6 +473,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.translate_atom">translate_atom() (mlcalcdriver.base.posinp.Posinp method)</a>
+</li>
+      <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.translation_amplitudes">translation_amplitudes() (mlcalcdriver.workflows.phonon.Phonon property)</a>
 </li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Atom.type">type() (mlcalcdriver.base.posinp.Atom property)</a>
 </li>

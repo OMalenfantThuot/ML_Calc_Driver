@@ -2,7 +2,12 @@ import ase
 import numpy as np
 from mlcalcdriver.base import Posinp
 
+
 def posinp_to_ase_atoms(posinp):
+    r"""
+    Converts a :class:`Posinp` instance to an :class:`ase.Atoms`
+    instance.
+    """
     symbols, positions, masses = "", [], []
     for atom in posinp.atoms:
         symbols += atom.type
@@ -19,17 +24,22 @@ def posinp_to_ase_atoms(posinp):
     )
     return atoms
 
+
 def ase_atoms_to_posinp(atoms):
+    r"""
+    Converts an :class:`ase.Atoms` instance to a
+    :class:`Posinp` instance.
+    """
     pos_dict = {"units": "angstroem"}
     positions = []
     for at in atoms:
         positions.append({at.symbol: at.position})
     cell = atoms.get_cell()
     if cell.orthorhombic:
-        if (cell==0.0).all():
+        if (cell == 0.0).all():
             new_cell = None
-        elif cell[1,1] in [0.0, np.inf]:
-            new_cell = [cell[0,0], str(np.inf), cell[2,2]]
+        elif cell[1, 1] in [0.0, np.inf]:
+            new_cell = [cell[0, 0], str(np.inf), cell[2, 2]]
         else:
             new_cell = [dim[i] for i, dim in enumerate(cell)]
     else:

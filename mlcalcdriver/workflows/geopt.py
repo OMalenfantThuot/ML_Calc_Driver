@@ -1,5 +1,5 @@
 r"""
-The :class:`Geopt` allows to perform a geometry optimization to
+The :class:`Geopt` class allows to perform a geometry optimization to
 relax the forces on a given structure, using a machine
 learning model.
 """
