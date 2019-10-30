@@ -1,0 +1,484 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mlcalcdriver.workflows.phonon &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ML_Calc_Driver
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Code Documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../base.html">Base Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../calculators.html">Calculators Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../interfaces.html">Interfaces Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../workflows.html">Workflows Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../globals.html">Globals</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ML_Calc_Driver</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>mlcalcdriver.workflows.phonon</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mlcalcdriver.workflows.phonon</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The :class:`Phonon` class allows to compute the normal modes</span>
+<span class="sd">and vibration energies of a system using a machine</span>
+<span class="sd">learning trained model.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver</span> <span class="k">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">Posinp</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="k">import</span> <span class="n">Calculator</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.workflows</span> <span class="k">import</span> <span class="n">Geopt</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">ANG_TO_B</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">EV_TO_HA</span><span class="p">,</span> <span class="n">HA_TO_CMM1</span><span class="p">,</span> <span class="n">AMU_TO_EMU</span>
+
+
+<div class="viewcode-block" id="Phonon"><a class="viewcode-back" href="../../../phonon.html#mlcalcdriver.workflows.Phonon">[docs]</a><span class="k">class</span> <span class="nc">Phonon</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class allows to run all the calculations enabling the</span>
+<span class="sd">    computation of the phonon energies of a given system, using</span>
+<span class="sd">    machine learning models.</span>
+
+<span class="sd">    To get the phonon energies of the system, one needs to find the</span>
+<span class="sd">    eigenvalues of the dynamical matrix, that is closely related to the</span>
+<span class="sd">    Hessian matrix. To build these matrices, one must find the</span>
+<span class="sd">    derivatives of the forces when each coordinate of each atom is</span>
+<span class="sd">    translated by a small amount around the equilibrium positions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">posinp</span><span class="p">,</span> <span class="n">calculator</span><span class="p">,</span> <span class="n">relax</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">translation_amplitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The initial position fo the atoms are taken from the `init_state`</span>
+<span class="sd">        Posinp instance. If they are not part of a relaxed geometry, the</span>
+<span class="sd">        relax parameter should stay at `True`.</span>
+
+<span class="sd">        WARNING: Relaxed geometries are dependent on the model chosen to</span>
+<span class="sd">        define the calculator. In doubt, `relax` parameter should be ignored.</span>
+
+<span class="sd">        The distance of the displacement in each direction is controlled</span>
+<span class="sd">        by `translation_amplitudes`.</span>
+
+<span class="sd">        Phonon energies and normal modes are calculated using the `run()`method.</span>
+<span class="sd">        This method creates the additional structures needed, passes them to a </span>
+<span class="sd">        `Job` instance, then post-processes the obtained forces</span>
+<span class="sd">        to obtain them.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        posinp : mlcaldriver.Posinp</span>
+<span class="sd">            Initial positions of the system under consideration.</span>
+<span class="sd">        calculator : Calculator</span>
+<span class="sd">            mlcalcdriver.Calculator instance that will be used in</span>
+<span class="sd">            the created Jobs to evaluate properties.</span>
+<span class="sd">        relax : bool</span>
+<span class="sd">            Wether the initial positions need to be relaxed or not.</span>
+<span class="sd">            Default is `True`.</span>
+<span class="sd">        translation_amplitudes: list of length 3</span>
+<span class="sd">            Amplitudes of the translations to be applied to each atom</span>
+<span class="sd">            along each of the three space coordinates (in angstroms).</span>
+<span class="sd">        order : int</span>
+<span class="sd">            Order of the numerical differentiation used to compute the</span>
+<span class="sd">            dynamical matrix. Can be either 1, 2 or 3.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posinp</span> <span class="o">=</span> <span class="n">posinp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span> <span class="o">=</span> <span class="n">calculator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relax</span> <span class="o">=</span> <span class="n">relax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">translation_amplitudes</span> <span class="o">=</span> <span class="n">translation_amplitudes</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">relax</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dyn_mat</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normal_modes</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">posinp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        posinp : Posinp</span>
+<span class="sd">            Initial positions of the system for which phonon properties</span>
+<span class="sd">            will be calculated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_posinp</span>
+
+    <span class="nd">@posinp</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">posinp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">posinp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">posinp</span><span class="p">,</span> <span class="n">Posinp</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_posinp</span> <span class="o">=</span> <span class="n">posinp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Initial positions should be given in a mlcalcdriver.Posinp instance.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Calculator</span>
+<span class="sd">            The Calculator object to use for the Jobs necessary to</span>
+<span class="sd">            perform the phonons calculations.	</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span>
+
+    <span class="nd">@calculator</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calculator</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">calculator</span><span class="p">,</span> <span class="n">Calculator</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span> <span class="o">=</span> <span class="n">calculator</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                The calculator for the Phonon instance must be a class or a</span>
+<span class="sd">                metaclass derived from mlcalcdriver.calculators.Calculator.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">translation_amplitudes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        translation_amplitudes : float</span>
+<span class="sd">            Displacements of atoms in all three dimensions to calculate</span>
+<span class="sd">            the phonon properties. Default is 0.03 Angstroms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translation_amplitudes</span>
+
+    <span class="nd">@translation_amplitudes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">translation_amplitudes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translation_amplitudes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">translation_amplitudes</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_translation_amplitudes</span> <span class="o">=</span> <span class="mf">0.03</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_translation_amplitudes</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">translation_amplitudes</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">relax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        relax : bool</span>
+<span class="sd">            If `True`, which is default, the initial positions are relaxed</span>
+<span class="sd">            before the phonon properties are calculated. Recommended,</span>
+<span class="sd">            especially if more than one model is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relax</span>
+
+    <span class="nd">@relax</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">relax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relax</span><span class="p">):</span>
+        <span class="n">relax</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">relax</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_relax</span> <span class="o">=</span> <span class="n">relax</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">energies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.array or None</span>
+<span class="sd">            Phonon energies of the system (units: cm^-1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_energies</span>
+
+    <span class="nd">@energies</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">energies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">energies</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_energies</span> <span class="o">=</span> <span class="n">energies</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dyn_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.array or None</span>
+<span class="sd">            Dynamical matrix deduced from the calculations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dyn_mat</span>
+
+    <span class="nd">@dyn_mat</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">dyn_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dyn_mat</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dyn_mat</span> <span class="o">=</span> <span class="n">dyn_mat</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">normal_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.array or None</span>
+<span class="sd">            Normal modes of the system found as eigenvectors of the</span>
+<span class="sd">            dynamical matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normal_modes</span>
+
+    <span class="nd">@normal_modes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">normal_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normal_modes</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_normal_modes</span> <span class="o">=</span> <span class="n">normal_modes</span>
+
+<div class="viewcode-block" id="Phonon.run"><a class="viewcode-back" href="../../../phonon.html#mlcalcdriver.workflows.Phonon.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : str</span>
+<span class="sd">            Either &quot;cpu&quot; or &quot;cuda&quot; to run on cpu or gpu. Default is &#39;cpu&#39;</span>
+<span class="sd">            and should be faster in most cases.</span>
+<span class="sd">        batch_size : int</span>
+<span class="sd">            Batch size used when passing the structures to the model</span>
+<span class="sd">        **kwargs : </span>
+<span class="sd">            Optional arguments for the geometry optimization.</span>
+<span class="sd">            Only useful if the relaxation is unstable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">relax</span><span class="p">:</span>
+            <span class="n">geopt</span> <span class="o">=</span> <span class="n">Geopt</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">geopt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">geopt</span><span class="o">.</span><span class="n">final_posinp</span><span class="p">)</span>
+        
+        <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_displacements</span><span class="p">(),</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="p">)</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_post_proc</span><span class="p">(</span><span class="n">job</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_displacements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the displacements each atom must undergo from the amplitudes</span>
+<span class="sd">        of displacement in each direction. The numerical derivatives are obtained</span>
+<span class="sd">        with the five-point stencil method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">structs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]:</span>
+                <span class="k">for</span> <span class="n">factor</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+                    <span class="n">structs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span><span class="o">.</span><span class="n">translate_atom</span><span class="p">(</span>
+                            <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">translation_amplitudes</span> <span class="o">*</span> <span class="n">dim</span> <span class="o">*</span> <span class="n">factor</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+        <span class="k">return</span> <span class="n">structs</span>
+
+    <span class="k">def</span> <span class="nf">_post_proc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the energies and normal modes from the results</span>
+<span class="sd">        obtained from the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dyn_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_dyn_mat</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal_modes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_dyn_mat</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">*=</span> <span class="n">HA_TO_CMM1</span>
+
+    <span class="k">def</span> <span class="nf">_compute_dyn_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the dynamical matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hessian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_hessian</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="n">masses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_masses</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">hessian</span> <span class="o">/</span> <span class="n">masses</span>
+
+    <span class="k">def</span> <span class="nf">_compute_masses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the masses matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">to_mesh</span> <span class="o">=</span> <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">mass</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+        <span class="n">m_i</span><span class="p">,</span> <span class="n">m_j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">to_mesh</span><span class="p">,</span> <span class="n">to_mesh</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m_i</span> <span class="o">*</span> <span class="n">m_j</span><span class="p">)</span> <span class="o">*</span> <span class="n">AMU_TO_EMU</span>
+
+    <span class="k">def</span> <span class="nf">_compute_hessian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the hessian matrix from the forces</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_at</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">)</span>
+        <span class="n">hessian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">))</span>
+        <span class="n">forces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">EV_TO_HA</span> <span class="o">*</span> <span class="n">B_TO_ANG</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">):</span>
+            <span class="n">hessian</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="o">-</span><span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="o">+</span> <span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="p">(</span><span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">-</span> <span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+            <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">12</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">translation_amplitudes</span> <span class="o">*</span> <span class="n">ANG_TO_B</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">hessian</span> <span class="o">+</span> <span class="n">hessian</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+    <span class="k">def</span> <span class="nf">_solve_dyn_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtains the eigenvalues and eigenvectors from</span>
+<span class="sd">        the dynamical matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">eigs</span><span class="p">,</span> <span class="n">vecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dyn_mat</span><span class="p">)</span>
+        <span class="n">eigs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">eigs</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">eigs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">eigs</span><span class="p">,</span> <span class="n">eigs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">eigs</span><span class="p">,</span> <span class="n">vecs</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Olivier Malenfant-Thuot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

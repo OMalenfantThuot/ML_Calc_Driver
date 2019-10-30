@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python Module Index &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>ASE Interface &mdash; ML_Calc_Driver 0.2.0 documentation</title>
   
 
   
@@ -36,9 +36,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
- 
-
-
+    <link rel="next" title="SchnetPack Interface" href="schnet_interface.html" />
+    <link rel="prev" title="Interfaces" href="interfaces.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,12 +82,16 @@
             
             
               <p class="caption"><span class="caption-text">Code Documentation:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="interfaces.html">Interfaces</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ASE Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schnet_interface.html">SchnetPack Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows</a></li>
 </ul>
 
             
@@ -134,10 +137,16 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Python Module Index</li>
+          <li><a href="interfaces.html">Interfaces</a> &raquo;</li>
+        
+      <li>ASE Interface</li>
     
     
       <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/ase_interface.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
@@ -149,85 +158,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
+  <div class="section" id="ase-interface">
+<h1>ASE Interface<a class="headerlink" href="#ase-interface" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mlcalcdriver.interfaces.ase_interface.posinp_to_ase_atoms">
+<code class="sig-prename descclassname">mlcalcdriver.interfaces.ase_interface.</code><code class="sig-name descname">posinp_to_ase_atoms</code><span class="sig-paren">(</span><em class="sig-param">posinp</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/interfaces/ase_interface.html#posinp_to_ase_atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.interfaces.ase_interface.posinp_to_ase_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a <code class="xref py py-class docutils literal notranslate"><span class="pre">Posinp</span></code> instance to an <code class="xref py py-class docutils literal notranslate"><span class="pre">ase.Atoms</span></code>
+instance.</p>
+</dd></dl>
 
-   <h1>Python Module Index</h1>
+<dl class="function">
+<dt id="mlcalcdriver.interfaces.ase_atoms_to_posinp">
+<code class="sig-prename descclassname">mlcalcdriver.interfaces.</code><code class="sig-name descname">ase_atoms_to_posinp</code><span class="sig-paren">(</span><em class="sig-param">atoms</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/interfaces/ase_interface.html#ase_atoms_to_posinp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.interfaces.ase_atoms_to_posinp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts an <code class="xref py py-class docutils literal notranslate"><span class="pre">ase.Atoms</span></code> instance to a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Posinp</span></code> instance.</p>
+</dd></dl>
 
-   <div class="modindex-jumpbox">
-   <a href="#cap-m"><strong>m</strong></a>
-   </div>
-
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-m"><td></td><td>
-       <strong>m</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">mlcalcdriver</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="base.html#module-mlcalcdriver.base"><code class="xref">mlcalcdriver.base</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="job.html#module-mlcalcdriver.base.job"><code class="xref">mlcalcdriver.base.job</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="posinp.html#module-mlcalcdriver.base.posinp"><code class="xref">mlcalcdriver.base.posinp</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="calculators.html#module-mlcalcdriver.calculators"><code class="xref">mlcalcdriver.calculators</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="calculator.html#module-mlcalcdriver.calculators.calculator"><code class="xref">mlcalcdriver.calculators.calculator</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="schnetcalc.html#module-mlcalcdriver.calculators.schnetpack"><code class="xref">mlcalcdriver.calculators.schnetpack</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="globals.html#module-mlcalcdriver.globals"><code class="xref">mlcalcdriver.globals</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="interfaces.html#module-mlcalcdriver.interfaces"><code class="xref">mlcalcdriver.interfaces</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="workflows.html#module-mlcalcdriver.workflows"><code class="xref">mlcalcdriver.workflows</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="geopt.html#module-mlcalcdriver.workflows.geopt"><code class="xref">mlcalcdriver.workflows.geopt</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="phonon.html#module-mlcalcdriver.workflows.phonon"><code class="xref">mlcalcdriver.workflows.phonon</code></a></td><td>
-       <em></em></td></tr>
-   </table>
+</div>
 
 
            </div>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="schnet_interface.html" class="btn btn-neutral float-right" title="SchnetPack Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="interfaces.html" class="btn btn-neutral float-left" title="Interfaces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

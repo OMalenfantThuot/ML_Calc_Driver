@@ -22,16 +22,22 @@ class SchnetPackData(Dataset):
         self.center_positions = center_positions
 
     def __len__(self):
+        r"""
+        Needed to create a PyTorch dataset.
+        """
         return len(self.data)
 
     def __getitem__(self, idx):
+        r"""
+        Needed to create a PyTorch Dataset
+        """
         _, properties = self.get_properties(idx)
         properties["_idx"] = torch.LongTensor(np.array([idx], dtype=np.int))
         return properties
 
     def get_properties(self, idx):
-        """
-        Return property dictionary at given index.
+        r"""
+        Returns property dictionary at given index.
 
         Args:
             idx (int): data index

@@ -3,6 +3,10 @@ import numpy as np
 from mlcalcdriver.base import Posinp
 
 def posinp_to_ase_atoms(posinp):
+    r"""
+    Converts a :class:`Posinp` instance to an :class:`ase.Atoms`
+    instance.
+    """
     symbols, positions, masses = "", [], []
     for atom in posinp.atoms:
         symbols += atom.type
@@ -20,6 +24,10 @@ def posinp_to_ase_atoms(posinp):
     return atoms
 
 def ase_atoms_to_posinp(atoms):
+    r"""
+    Converts an :class:`ase.Atoms` instance to a
+    :class:`Posinp` instance.
+    """
     pos_dict = {"units": "angstroem"}
     positions = []
     for at in atoms:
