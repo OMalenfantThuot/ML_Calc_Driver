@@ -4,6 +4,7 @@ calculator. A specific class derived from this one must be implemented
 for each new type of model.
 """
 
+
 class Calculator:
     r"""
     Class to be implemented individually for each type

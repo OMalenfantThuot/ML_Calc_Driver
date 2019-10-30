@@ -3,6 +3,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from schnetpack.data.atoms import _convert_atoms
 
+
 class SchnetPackData(Dataset):
     r"""
     Class used to interface data from the mlcalcdriver package
@@ -10,11 +11,7 @@ class SchnetPackData(Dataset):
     """
 
     def __init__(
-        self,
-        data,
-        environment_provider,
-        collect_triples=False,
-        center_positions=False,
+        self, data, environment_provider, collect_triples=False, center_positions=False
     ):
         self.data = data
         self.environment_provider = environment_provider

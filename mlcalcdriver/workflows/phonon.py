@@ -209,18 +209,11 @@ class Phonon:
         """
         if self.relax:
             geopt = Geopt(posinp=self.posinp, calculator=self.calculator, **kwargs)
-            geopt.run(
-                device=device,
-                batch_size=batch_size,
-            )
+            geopt.run(device=device, batch_size=batch_size)
             self._ground_state = deepcopy(geopt.final_posinp)
-        
+
         job = Job(posinp=self._create_displacements(), calculator=self.calculator)
-        job.run(
-            property="forces",
-            device=device,
-            batch_size=batch_size,
-        )
+        job.run(property="forces", device=device, batch_size=batch_size)
         self._post_proc(job)
 
     def _create_displacements(self):
