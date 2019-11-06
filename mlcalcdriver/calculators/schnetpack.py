@@ -36,7 +36,7 @@ class SchnetPackCalculator(Calculator):
             self.model = load_model(
                 model_dir=os.environ["MODELDIR"] + model_dir, device=device
             )
-        except:
+        except Exception:
             self.model = load_model(model_dir=model_dir, device=device)
         super(SchnetPackCalculator, self).__init__()
 

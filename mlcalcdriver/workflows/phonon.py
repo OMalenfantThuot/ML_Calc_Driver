@@ -38,7 +38,7 @@ class Phonon:
         by `translation_amplitudes`.
 
         Phonon energies and normal modes are calculated using the `run()`method.
-        This method creates the additional structures needed, passes them to a 
+        This method creates the additional structures needed, passes them to a
         `Job` instance, then post-processes the obtained forces
         to obtain them.
 
@@ -100,7 +100,7 @@ class Phonon:
         -------
         Calculator
             The Calculator object to use for the Jobs necessary to
-            perform the phonons calculations.	
+            perform the phonons calculations.
         """
         return self._calculator
 
@@ -129,7 +129,7 @@ class Phonon:
 
     @translation_amplitudes.setter
     def translation_amplitudes(self, translation_amplitudes):
-        if translation_amplitudes == None:
+        if translation_amplitudes is None:
             self._translation_amplitudes = 0.03
         else:
             self._translation_amplitudes = float(translation_amplitudes)
@@ -203,7 +203,7 @@ class Phonon:
             and should be faster in most cases.
         batch_size : int
             Batch size used when passing the structures to the model
-        **kwargs : 
+        **kwargs :
             Optional arguments for the geometry optimization.
             Only useful if the relaxation is unstable.
         """

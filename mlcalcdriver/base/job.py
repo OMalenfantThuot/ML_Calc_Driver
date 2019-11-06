@@ -37,7 +37,8 @@ class Job:
         self.num_struct = len(self.posinp)
         self.calculator = calculator
         self.results = JobResults(
-            positions=self.posinp, properties=self.calculator.available_properties
+            positions=self.posinp,
+            properties=self.calculator.available_properties,
         )
 
     @property
@@ -59,7 +60,10 @@ class Job:
         for pos in posinp:
             if not isinstance(pos, Posinp):
                 raise TypeError(
-                    "Atomic positions should be given only in Posinp instances."
+                    """
+                    Atomic positions should be given
+                    only in Posinp instances.
+                    """
                 )
         self._posinp = posinp
 
@@ -151,14 +155,18 @@ class Job:
         device = str(device)
         if device.startswith("cuda"):
             if not torch.cuda.is_available():
-                warnings.warn("CUDA was asked for, but is not available.", UserWarning)
+                warnings.warn(
+                    "CUDA was asked for, but is not available.", UserWarning
+                )
 
         if property not in self.calculator.available_properties:
             if not (
                 property == "forces"
                 and "energy" in self.calculator.available_properties
             ):
-                raise ValueError("The property {} is not available".format(property))
+                raise ValueError(
+                    "The property {} is not available".format(property)
+                )
             else:
                 self._create_additional_structures()
                 raw_predictions = self.calculator.run(
@@ -168,7 +176,9 @@ class Job:
                 predictions = {}
                 predictions["energy"], predictions["forces"] = [], []
                 for struct_idx in range(self.num_struct):
-                    predictions["energy"].append(raw_predictions["energy"][pred_idx][0])
+                    predictions["energy"].append(
+                        raw_predictions["energy"][pred_idx][0]
+                    )
                     pred_idx += 1
                     predictions["forces"].append(
                         self._calculate_forces(
@@ -181,7 +191,9 @@ class Job:
                     pred_idx += 12 * len(self._init_posinp[struct_idx])
                 self.posinp = deepcopy(self._init_posinp)
         else:
-            predictions = self.calculator.run(property=property, posinp=self.posinp)
+            predictions = self.calculator.run(
+                property=property, posinp=self.posinp
+            )
         for pred in predictions.keys():
             self.results.update({pred: predictions[pred]})
 
@@ -204,7 +216,9 @@ class Job:
                 ]:
                     all_structs.extend(
                         [
-                            struct.translate_atom(atom_idx, deriv_length * factor * dim)
+                            struct.translate_atom(
+                                atom_idx, deriv_length * factor * dim
+                            )
                             for atom_idx in range(len(struct))
                         ]
                     )
@@ -264,12 +278,16 @@ class JobResults(dict):
         ----------
         properties : str or list of str
             Property or properties that are returned by the chosen
-            model. 
+            model.
         """
         self.positions = positions
         self.n_at = [len(pos) for pos in self.positions]
-        self.atom_types = [set([atom.type for atom in pos]) for pos in self.positions]
-        self.boundary_conditions = [pos.boundary_conditions for pos in self.positions]
+        self.atom_types = [
+            set([atom.type for atom in pos]) for pos in self.positions
+        ]
+        self.boundary_conditions = [
+            pos.boundary_conditions for pos in self.positions
+        ]
         self.cell = [pos.cell for pos in self.positions]
 
         self.properties = properties
@@ -290,7 +308,9 @@ class JobResults(dict):
             else:
                 self["properties"] = properties
         else:
-            raise ("Properties should be given as a string or a list of strings.")
+            raise (
+                "Properties should be given as a string or a list of strings."
+            )
 
     @property
     def positions(self):

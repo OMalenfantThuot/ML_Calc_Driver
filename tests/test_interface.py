@@ -5,6 +5,7 @@ from mlcalcdriver.interfaces import posinp_to_ase_atoms, ase_atoms_to_posinp
 
 pos_folder = "tests/posinp_files/"
 
+
 class TestConversion:
 
     def test_mol(self):
