@@ -11,7 +11,6 @@ model_folder = "tests/models/"
 
 class TestPhonon:
 
-
     posN2 = Posinp.from_file(os.path.join(pos_folder, "N2_unrelaxed.xyz"))
     calcN2 = SchnetPackCalculator(os.path.join(model_folder, "myN2_model"))
 
@@ -21,7 +20,12 @@ class TestPhonon:
         assert np.isclose(ph1.energies.max(), 2339.57, atol=0.01)
         assert all(np.abs(ph1.energies[1:] < 30))
 
-        ph2 = Phonon(posinp=ph1._ground_state, calculator=ph1.calculator, relax=False, translation_amplitudes=0.03)
+        ph2 = Phonon(
+            posinp=ph1._ground_state,
+            calculator=ph1.calculator,
+            relax=False,
+            translation_amplitudes=0.03,
+        )
         ph2.run()
         assert np.allclose(ph1.energies, ph2.energies)
 
@@ -35,6 +39,6 @@ class TestPhonon:
 
     def test_phonon_calc_error(self):
         with pytest.raises(TypeError):
-            ph = Phonon(posinp=self.posN2, calculator = None)
+            ph = Phonon(posinp=self.posN2, calculator=None)
 
     # TODO verifiy normal modes

@@ -1,5 +1,5 @@
 r"""
-Defines some global values and parameters used in 
+Defines some global values and parameters used in
 classes and workflows of the package.
 """
 
@@ -32,8 +32,8 @@ ATOMS_MASS = {
     "V": 50.9415,
 }
 r"""
-`Dictionnary` containing elemental masses, in atomic mass units. Used to compute
-vibrational energies.
+`Dictionnary` containing elemental masses, in atomic mass units.
+Used to compute vibrational energies.
 """
 
 ####

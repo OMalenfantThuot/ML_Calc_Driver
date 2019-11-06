@@ -29,7 +29,7 @@ class Geopt:
             mlcalcdriver.Calculator instance that will be used in
             the created Job to evaluate properties.
         forcemax : float
-            Stopping criterion on the forces (in eV/Angstrom). 
+            Stopping criterion on the forces (in eV/Angstrom).
             Default is `0.01`.
         step_size : float
             Step size for each relaxation step. Default
@@ -67,7 +67,7 @@ class Geopt:
         -------
         Calculator
             The Calculator object to use for the Jobs necessary to
-            perform the geometry optimisation.	
+            perform the geometry optimisation.
         """
         return self._calculator
 
