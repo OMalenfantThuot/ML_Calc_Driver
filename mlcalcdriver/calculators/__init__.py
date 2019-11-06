@@ -7,4 +7,4 @@ must be used as a base for it. The `run()` and
 to the :class:`SchnetPackCalculator` class.
 """
 from .calculator import *
-from .schnetpack import *
+from .schnetpack import SchnetPackCalculator
