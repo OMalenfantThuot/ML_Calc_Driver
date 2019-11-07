@@ -276,6 +276,8 @@ class JobResults(dict):
         r"""
         Parameters
         ----------
+        positions : :class:`Posinp` or list of :class:`Posinp`
+            Atomic positions used in the Job
         properties : str or list of str
             Property or properties that are returned by the chosen
             model.
