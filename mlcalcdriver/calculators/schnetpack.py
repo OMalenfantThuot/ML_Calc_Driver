@@ -68,15 +68,21 @@ class SchnetPackCalculator(Calculator):
         )
         data_loader = AtomsLoader(data, batch_size=batch_size)
 
-        with torch.no_grad():
-            pred = []
+        pred = []
+        if self.model.output_modules[0].derivative is not None:
             for batch in data_loader:
                 batch = {k: v.to(device) for k, v in batch.items()}
                 pred.append(self.model(batch))
+        else:
+            with torch.no_grad():
+                pred = []
+                for batch in data_loader:
+                    batch = {k: v.to(device) for k, v in batch.items()}
+                    pred.append(self.model(batch))
 
         predictions = {}
         predictions[property] = np.concatenate(
-            [batch[property].cpu().numpy() for batch in pred]
+            [batch[property].cpu().detach().numpy() for batch in pred]
         )
         return predictions
 
@@ -85,10 +91,15 @@ class SchnetPackCalculator(Calculator):
         Returns
         -------
         avail_prop
-            Properties that the SchnetPack model will return
+            Properties that the SchnetPack model can return
         """
-        avail_prop = list(set([om.property for om in self.model.output_modules]))
-        return avail_prop
+        avail_prop = set()
+        for out in self.model.output_modules:
+            if out.derivative is not None:
+                avail_prop.update([out.property, out.derivative])
+            else:
+                avail_prop.update([out.property])
+        return list(avail_prop)
 
     def _get_representation_type(self):
         r"""
