@@ -600,21 +600,32 @@ class Posinp(Sequence):
 
     def convert_units(self, new_units):
         r"""
+        Converts the atomic positions in another units.
+
+        Parameters
+        ----------
+        new_units: str
+            The new units in which the positions should be converted.
+            Can either be "angstroem" or "atomic".
         """
         if new_units not in ["angstroem", "atomic"]:
             raise ValueError("New units are not recognized.")
         if self.units == new_units:
             pass
         elif self.units == "atomic" and new_units == "angstroem":
-            self.positions = self.positions * B_TO_ANG
+            for atom in self:
+                atom.position = atom.position * B_TO_ANG
         elif self.units == "angstroem" and new_units == "atomic":
-            self.positions = self.positions * ANG_TO_B
+            for atom in self:
+                atom.position = atom.position * ANG_TO_B
         elif self.units == "reduced" and new_units == "atomic":
-            self.positions = self.positions * np.array(self.cell)
+            for atom in self:
+                atom.position = atom.position * np.array(self.cell)
         elif self.units == "reduced" and new_units == "angstroem":
             self.positions = self.positions * np.array(self.cell) * B_TO_ANG
         else:
             raise NotImplementedError
+        self.units = new_units
 
 
 class Atom(object):
