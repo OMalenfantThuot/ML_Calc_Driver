@@ -6,7 +6,7 @@ atomic systems used as input for a calculation.
 from copy import deepcopy
 from collections.abc import Sequence
 import numpy as np
-from mlcalcdriver.globals import ATOMS_MASS
+from mlcalcdriver.globals import ATOMS_MASS, B_TO_ANG, ANG_TO_B
 
 
 __all__ = ["Posinp", "Atom"]
@@ -303,7 +303,10 @@ class Posinp(Sequence):
             units = units.lower()
             if units.endswith("d0"):
                 units = units[:-2]
-            self._units = units
+            if units in ["angstroem", "atomic", "reduced"]:
+                self._units = units
+            else:
+                raise ValueError("Units are not recognized.")
         else:
             raise TypeError("Units should be given as a string.")
 
@@ -594,6 +597,35 @@ class Posinp(Sequence):
         m = self.masses
         barycenter = np.sum(m * self.positions.T, axis=1) / np.sum(m)
         return self.translate(-barycenter)
+
+    def convert_units(self, new_units):
+        r"""
+        Converts the atomic positions in another units.
+
+        Parameters
+        ----------
+        new_units: str
+            The new units in which the positions should be converted.
+            Can either be "angstroem" or "atomic".
+        """
+        if new_units not in ["angstroem", "atomic"]:
+            raise ValueError("New units are not recognized.")
+        if self.units == new_units:
+            pass
+        elif self.units == "atomic" and new_units == "angstroem":
+            for atom in self:
+                atom.position = atom.position * B_TO_ANG
+        elif self.units == "angstroem" and new_units == "atomic":
+            for atom in self:
+                atom.position = atom.position * ANG_TO_B
+        elif self.units == "reduced" and new_units == "atomic":
+            for atom in self:
+                atom.position = atom.position * np.array(self.cell)
+        elif self.units == "reduced" and new_units == "angstroem":
+            self.positions = self.positions * np.array(self.cell) * B_TO_ANG
+        else:
+            raise NotImplementedError
+        self.units = new_units
 
 
 class Atom(object):

@@ -15,6 +15,8 @@ class TestPosinp:
     # Posinp with free boundary conditions
     free_filename = os.path.join(tests_fol, "free.xyz")
     free_pos = Posinp.from_file(free_filename)
+    periodic_filename = os.path.join(tests_fol, "periodic.xyz")
+    periodic_pos = Posinp.from_file(periodic_filename)
     # Posinp read from a string
     string = """\
 4   atomic
@@ -175,3 +177,25 @@ C    7.327412521    0.000000000   3.461304757"""
 
     def test_distance(self):
         assert np.isclose(self.free_pos.distance(0, 2), 4.722170992308181)
+
+    def test_convert(self):
+        pos1 = self.periodic_pos.positions
+        assert self.periodic_pos.units == "angstroem"
+        self.periodic_pos.convert_units("atomic")
+        assert np.isclose(
+            self.periodic_pos.positions,
+            np.array(
+                [
+                    [0.15747717, 0.94486299, 0.4724315],
+                    [0.78738583, 0.94486299, 0.4724315],
+                    [1.10234016, 0.94486299, 1.41729449],
+                    [1.73224882, 0.94486299, 1.41729449],
+                ]
+            ),
+        ).all()
+        assert self.periodic_pos.units == "atomic"
+        self.periodic_pos.convert_units("angstroem")
+        assert np.isclose(self.periodic_pos.positions, pos1).all()
+        assert self.periodic_pos.units == "angstroem"
+        self.periodic_pos.convert_units("angstroem")
+        assert np.isclose(self.periodic_pos.positions, pos1).all()
