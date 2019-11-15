@@ -615,14 +615,18 @@ class Posinp(Sequence):
         elif self.units == "atomic" and new_units == "angstroem":
             for atom in self:
                 atom.position = atom.position * B_TO_ANG
+            self.cell = list(np.array(self.cell) * B_TO_ANG)
         elif self.units == "angstroem" and new_units == "atomic":
             for atom in self:
                 atom.position = atom.position * ANG_TO_B
+            self.cell = list(np.array(self.cell) * ANG_TO_B)
         elif self.units == "reduced" and new_units == "atomic":
             for atom in self:
                 atom.position = atom.position * np.array(self.cell)
         elif self.units == "reduced" and new_units == "angstroem":
-            self.positions = self.positions * np.array(self.cell) * B_TO_ANG
+            for atom in self:
+                atom.position = atom.position * np.array(self.cell) * B_TO_ANG
+            self.cell = list(np.array(self.cell) * B_TO_ANG)
         else:
             raise NotImplementedError
         self.units = new_units
