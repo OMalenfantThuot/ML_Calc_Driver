@@ -261,7 +261,7 @@ class Posinp(Sequence):
         if cell is None:
             boundary_conditions = "free"
         else:
-            if cell[1] in [".inf", "inf"]:
+            if str(cell[1]) in [".inf", "inf"] or cell[1] == 0.0:
                 boundary_conditions = "surface"
             else:
                 boundary_conditions = "periodic"
