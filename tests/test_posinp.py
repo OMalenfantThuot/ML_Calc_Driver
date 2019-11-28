@@ -199,3 +199,8 @@ C    7.327412521    0.000000000   3.461304757"""
         assert self.periodic_pos.units == "angstroem"
         self.periodic_pos.convert_units("angstroem")
         assert np.isclose(self.periodic_pos.positions, pos1).all()
+
+    def test_periodic_displacement(self):
+        pos1 = Posinp.from_file(tests_fol + "perio1.xyz")
+        pos2 = Posinp.from_file(tests_fol + "perio2.xyz")
+        assert pos1 == pos2
