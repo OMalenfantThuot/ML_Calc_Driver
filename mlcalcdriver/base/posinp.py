@@ -173,7 +173,7 @@ class Posinp(Sequence):
         line2 = lines.pop(0)
         boundary_conditions = line2[0].lower()
         if boundary_conditions != "free":
-            cell = line2[1:4]
+            cell = ["inf" if dim == ".inf" else dim for dim in line2[1:4]]
         else:
             cell = None
         # Remove the lines about the forces, if there are some
@@ -191,7 +191,11 @@ class Posinp(Sequence):
         atoms = []
         for line in lines:
             atom_type = line[0]
-            position = line[1:4]
+            position = np.array(line[1:4], dtype=float)
+            if boundary_conditions != "free":
+                position = periodic_positions(
+                    position, np.array(cell, dtype=float), boundary_conditions
+                )
             atoms.append(Atom(atom_type, position))
         return cls(atoms, units, boundary_conditions, cell=cell)
 
@@ -792,3 +796,13 @@ class Atom(object):
             )
         except AttributeError:
             return False
+
+
+def periodic_positions(position, cell, boundary_conditions):
+    if boundary_conditions == "free":
+        return position
+    else:
+        below, above = np.where(position < 0.0)[0], np.where(position > cell)[0]
+        position[below] = position[below] + cell[below]
+        position[above] = position[above] - cell[above]
+        return position
