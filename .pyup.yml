@@ -1,4 +1,3 @@
 update: all
 branch: master
-schedule: "every week"
 close_prs: True
