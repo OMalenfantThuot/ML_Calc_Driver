@@ -240,7 +240,6 @@ class Phonon:
         """
         self.dyn_mat = self._compute_dyn_mat(job)
         self.energies, self.normal_modes = self._solve_dyn_mat()
-        self.energies[::-1].sort()
         self.energies *= HA_TO_CMM1
 
     def _compute_dyn_mat(self, job):
