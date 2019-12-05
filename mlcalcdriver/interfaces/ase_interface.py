@@ -17,6 +17,7 @@ def posinp_to_ase_atoms(posinp):
         pbc = False
     elif posinp.boundary_conditions == "surface":
         pbc = (True, False, True)
+        posinp.cell[1] = 0
     elif posinp.boundary_conditions == "periodic":
         pbc = True
     atoms = ase.Atoms(

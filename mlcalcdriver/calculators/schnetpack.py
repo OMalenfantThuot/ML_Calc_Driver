@@ -39,6 +39,7 @@ class SchnetPackCalculator(Calculator):
         except Exception:
             self.model = load_model(model_dir=model_dir, device=device)
         super(SchnetPackCalculator, self).__init__()
+        self._get_representation_type()
 
     def run(self, property, posinp=None, device="cpu", batch_size=128):
         r"""
@@ -51,8 +52,6 @@ class SchnetPackCalculator(Calculator):
                     property, self.available_properties
                 )
             )
-
-        self._get_representation_type()
 
         data = [posinp_to_ase_atoms(pos) for pos in posinp]
         pbc = True if any(pos.pbc.any() for pos in data) else False
