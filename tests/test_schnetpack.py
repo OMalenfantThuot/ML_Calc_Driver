@@ -34,8 +34,8 @@ class TestSchnetPack:
         assert np.isclose(self.job.results["forces"][0], ref_forces).all()
 
     def test_wacsf(self):
-        self.jobwacsf.run("energy_U0")
-        assert self.jobwacsf.results["energy_U0"] is not None
+        self.jobwacsf.run("energy")
+        assert self.jobwacsf.results["energy"] is not None
 
     def test_bad_property(self):
         with pytest.raises(ValueError):

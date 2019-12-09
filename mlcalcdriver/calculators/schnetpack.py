@@ -48,11 +48,14 @@ class SchnetPackCalculator(Calculator):
         the calculator.
         """
         if property not in self.available_properties:
-            raise ValueError(
-                "The property {} is not in the available properties of the model : {}.".format(
-                    property, self.available_properties
+            if property == "energy" and "energy_U0" in self.available_properties:
+                pass
+            else:
+                raise ValueError(
+                    "The property {} is not in the available properties of the model : {}.".format(
+                        property, self.available_properties
+                    )
                 )
-            )
 
         data = [posinp_to_ase_atoms(pos) for pos in posinp]
         pbc = True if any(pos.pbc.any() for pos in data) else False
@@ -81,9 +84,15 @@ class SchnetPackCalculator(Calculator):
                     pred.append(self.model(batch))
 
         predictions = {}
-        predictions[property] = np.concatenate(
-            [batch[property].cpu().detach().numpy() for batch in pred]
-        )
+        if "energy_U0" not in self.available_properties:
+            predictions[property] = np.concatenate(
+                [batch[property].cpu().detach().numpy() for batch in pred]
+            )
+        else:
+            predictions[property] = np.concatenate(
+                [batch["energy_U0"].cpu().detach().numpy() for batch in pred]
+            )
+
         return predictions
 
     def _get_available_properties(self):
@@ -99,6 +108,8 @@ class SchnetPackCalculator(Calculator):
                 avail_prop.update([out.property, out.derivative])
             else:
                 avail_prop.update([out.property])
+        if "energy_U0" in avail_prop:
+            avail_prop.add("energy")
         return list(avail_prop)
 
     def _get_representation_type(self):
