@@ -159,6 +159,7 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="k">import</span> <span class="n">Calculator</span>
 <span class="kn">from</span> <span class="nn">mlcalcdriver.base</span> <span class="k">import</span> <span class="n">Posinp</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">HA_TO_EV</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">ANG_TO_B</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 
@@ -184,12 +185,10 @@
 <span class="sd">            properties in the run() method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span> <span class="o">=</span> <span class="n">calculator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">posinp</span> <span class="o">=</span> <span class="n">posinp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_struct</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span> <span class="o">=</span> <span class="n">calculator</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">JobResults</span><span class="p">(</span>
-            <span class="n">positions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">available_properties</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">JobResults</span><span class="p">(</span><span class="n">properties</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">available_properties</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">posinp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -210,8 +209,14 @@
         <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">posinp</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">Posinp</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s2">&quot;Atomic positions should be given only in Posinp instances.&quot;</span>
+                    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    Atomic positions should be given</span>
+<span class="sd">                    only in Posinp instances.</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
                 <span class="p">)</span>
+        <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">posinp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">units</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]:</span>
+                <span class="n">pos</span><span class="o">.</span><span class="n">convert_units</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_posinp</span> <span class="o">=</span> <span class="n">posinp</span>
 
     <span class="nd">@property</span>
@@ -334,6 +339,19 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="nb">property</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="c1"># Future proofing, will probably need some work</span>
+            <span class="k">if</span> <span class="n">pred</span> <span class="o">==</span> <span class="s2">&quot;energy&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hartree&quot;</span><span class="p">:</span>
+                    <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="o">*=</span> <span class="n">HA_TO_EV</span>
+            <span class="k">elif</span> <span class="n">pred</span> <span class="o">==</span> <span class="s2">&quot;forces&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hartree&quot;</span><span class="p">:</span>
+                    <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="o">*=</span> <span class="n">HA_TO_EV</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
+                    <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="o">*=</span> <span class="n">ANG_TO_B</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                    <span class="s2">&quot;The units for this predicted quantity have not been implemented yet.&quot;</span>
+                <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">pred</span><span class="p">:</span> <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]})</span></div>
 
     <span class="k">def</span> <span class="nf">_create_additional_structures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deriv_length</span><span class="o">=</span><span class="mf">0.015</span><span class="p">):</span>
@@ -409,20 +427,14 @@
 <span class="sd">    Otherwise, the list contains one value for each structure in the Job.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        properties : str or list of str</span>
 <span class="sd">            Property or properties that are returned by the chosen</span>
-<span class="sd">            model. </span>
+<span class="sd">            model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="n">positions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_at</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">atom_types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">pos</span><span class="p">])</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos</span><span class="o">.</span><span class="n">cell</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">]</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="n">properties</span>
         <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -441,79 +453,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">properties</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="p">(</span><span class="s2">&quot;Properties should be given as a string or a list of strings.&quot;</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        list of Posinps</span>
-<span class="sd">            List containing the base Posinp objects for the predictions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]</span>
-
-    <span class="nd">@positions</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">positions</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_at</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        list of ints</span>
-<span class="sd">            List containing the number of atoms of each structure.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;n_at&quot;</span><span class="p">]</span>
-
-    <span class="nd">@n_at</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">n_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_at</span><span class="p">):</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;n_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_at</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">atom_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        list of sets</span>
-<span class="sd">            List containing sets of the elements present in each structure.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;atom_types&quot;</span><span class="p">]</span>
-
-    <span class="nd">@atom_types</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">atom_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_types</span><span class="p">):</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;atom_types&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_types</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">boundary_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        list of strings</span>
-<span class="sd">            List containing the boundary conditions, either `free`,</span>
-<span class="sd">            `surface` or `periodic`, of each structure.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;boundary_conditions&quot;</span><span class="p">]</span>
-
-    <span class="nd">@boundary_conditions</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">boundary_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">):</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;boundary_conditions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundary_conditions</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cell</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        list of lists of floats</span>
-<span class="sd">            List containing cell dimensions of each structure,</span>
-<span class="sd">            None for free boundary conditions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span>
-
-    <span class="nd">@cell</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
-        <span class="bp">self</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span></div>
+            <span class="k">raise</span> <span class="p">(</span><span class="s2">&quot;Properties should be given as a string or a list of strings.&quot;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

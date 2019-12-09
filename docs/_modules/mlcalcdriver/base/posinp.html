@@ -157,7 +157,7 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="k">import</span> <span class="n">Sequence</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">ATOMS_MASS</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">ATOMS_MASS</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">ANG_TO_B</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Posinp&quot;</span><span class="p">,</span> <span class="s2">&quot;Atom&quot;</span><span class="p">]</span>
@@ -324,7 +324,7 @@
         <span class="n">line2</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">line2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">!=</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="n">line2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span> <span class="k">if</span> <span class="n">dim</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="n">dim</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">line2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Remove the lines about the forces, if there are some</span>
@@ -342,7 +342,11 @@
         <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="n">atom_type</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">position</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">!=</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
+                <span class="n">position</span> <span class="o">=</span> <span class="n">periodic_positions</span><span class="p">(</span>
+                    <span class="n">position</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">boundary_conditions</span>
+                <span class="p">)</span>
             <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Atom</span><span class="p">(</span><span class="n">atom_type</span><span class="p">,</span> <span class="n">position</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span>
 
@@ -412,7 +416,7 @@
         <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;free&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
                 <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;surface&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;periodic&quot;</span>
@@ -454,7 +458,10 @@
             <span class="n">units</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;d0&quot;</span><span class="p">):</span>
                 <span class="n">units</span> <span class="o">=</span> <span class="n">units</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">units</span>
+            <span class="k">if</span> <span class="n">units</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;angstroem&quot;</span><span class="p">,</span> <span class="s2">&quot;atomic&quot;</span><span class="p">,</span> <span class="s2">&quot;reduced&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">units</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Units are not recognized.&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Units should be given as a string.&quot;</span><span class="p">)</span>
 
@@ -492,7 +499,7 @@
     <span class="k">def</span> <span class="nf">cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;inf&quot;</span>
+                <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mf">0.0</span>
                 <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">cell</span>
             <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span> <span class="o">=</span> <span class="n">cell</span>
@@ -744,7 +751,43 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">masses</span>
         <span class="n">barycenter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="n">barycenter</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="o">-</span><span class="n">barycenter</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Posinp.convert_units"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.convert_units">[docs]</a>    <span class="k">def</span> <span class="nf">convert_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_units</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the atomic positions in another units.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_units: str</span>
+<span class="sd">            The new units in which the positions should be converted.</span>
+<span class="sd">            Can either be &quot;angstroem&quot; or &quot;atomic&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">new_units</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;angstroem&quot;</span><span class="p">,</span> <span class="s2">&quot;atomic&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;New units are not recognized.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="n">new_units</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">B_TO_ANG</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">ANG_TO_B</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">ANG_TO_B</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">B_TO_ANG</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">new_units</span></div></div>
 
 
 <div class="viewcode-block" id="Atom"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Atom">[docs]</a><span class="k">class</span> <span class="nc">Atom</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -907,6 +950,16 @@
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="k">def</span> <span class="nf">periodic_positions</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">position</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">below</span><span class="p">,</span> <span class="n">above</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">position</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">position</span> <span class="o">&gt;</span> <span class="n">cell</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">position</span><span class="p">[</span><span class="n">below</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="n">below</span><span class="p">]</span> <span class="o">+</span> <span class="n">cell</span><span class="p">[</span><span class="n">below</span><span class="p">]</span>
+        <span class="n">position</span><span class="p">[</span><span class="n">above</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="n">above</span><span class="p">]</span> <span class="o">-</span> <span class="n">cell</span><span class="p">[</span><span class="n">above</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">position</span>
 </pre></div>
 
            </div>

@@ -154,6 +154,7 @@
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="k">import</span> <span class="n">Dataset</span>
 <span class="kn">from</span> <span class="nn">schnetpack.data.atoms</span> <span class="k">import</span> <span class="n">_convert_atoms</span>
 
+
 <div class="viewcode-block" id="SchnetPackData"><a class="viewcode-back" href="../../../schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData">[docs]</a><span class="k">class</span> <span class="nc">SchnetPackData</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class used to interface data from the mlcalcdriver package</span>
@@ -161,11 +162,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">,</span>
-        <span class="n">environment_provider</span><span class="p">,</span>
-        <span class="n">collect_triples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">center_positions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">environment_provider</span><span class="p">,</span> <span class="n">collect_triples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">center_positions</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">environment_provider</span> <span class="o">=</span> <span class="n">environment_provider</span>

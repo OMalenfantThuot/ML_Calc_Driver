@@ -155,13 +155,14 @@
 <span class="sd">for each new type of model.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+
 <div class="viewcode-block" id="Calculator"><a class="viewcode-back" href="../../../calculator.html#mlcalcdriver.calculators.calculator.Calculator">[docs]</a><span class="k">class</span> <span class="nc">Calculator</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to be implemented individually for each type</span>
 <span class="sd">    of models.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">available_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">available_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -173,6 +174,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">available_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_available_properties</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">available_properties</span> <span class="o">=</span> <span class="n">available_properties</span>
+        <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_units</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
 
 <div class="viewcode-block" id="Calculator.run"><a class="viewcode-back" href="../../../calculator.html#mlcalcdriver.calculators.calculator.Calculator.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -183,6 +188,14 @@
 <div class="viewcode-block" id="Calculator._get_available_properties"><a class="viewcode-back" href="../../../calculator.html#mlcalcdriver.calculators.calculator.Calculator._get_available_properties">[docs]</a>    <span class="k">def</span> <span class="nf">_get_available_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        To be implemented for each type of model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Calculator._get_units"><a class="viewcode-back" href="../../../calculator.html#mlcalcdriver.calculators.calculator.Calculator._get_units">[docs]</a>    <span class="k">def</span> <span class="nf">_get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        May be implemented for models for which it is possible.</span>
+<span class="sd">        If not implemented, the units must be specified when creating</span>
+<span class="sd">        the :class:`Calculator` instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -198,7 +211,28 @@
 
     <span class="nd">@available_properties</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">available_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">available_properties</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_available_properties</span> <span class="o">=</span> <span class="n">available_properties</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_available_properties</span> <span class="o">=</span> <span class="n">available_properties</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict:</span>
+<span class="sd">            Dictionary containing the units used by the model</span>
+<span class="sd">            keys() are `positions` and `energy`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
+
+    <span class="nd">@units</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">,</span> <span class="s2">&quot;energy&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">keys</span><span class="p">()]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">units</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Units key not recognized.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Units should be given in a dictionary.&quot;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

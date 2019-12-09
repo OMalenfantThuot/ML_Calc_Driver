@@ -89,9 +89,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows</a></li>
 </ul>
 
             
@@ -273,7 +273,7 @@ Default is 128.</p></li>
 
 <dl class="class">
 <dt id="mlcalcdriver.base.job.JobResults">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.job.</code><code class="sig-name descname">JobResults</code><span class="sig-paren">(</span><em class="sig-param">positions</em>, <em class="sig-param">properties</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#JobResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.JobResults" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.job.</code><code class="sig-name descname">JobResults</code><span class="sig-paren">(</span><em class="sig-param">properties</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#JobResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.JobResults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>Dictionnary containing results from a Job after the run() method
 is completed. A JobResults instance is created for each Job, and
@@ -293,73 +293,6 @@ Otherwise, the list contains one value for each structure in the Job.</p>
 model.</p>
 </dd>
 </dl>
-<dl class="method">
-<dt id="mlcalcdriver.base.job.JobResults.positions">
-<em class="property">property </em><code class="sig-name descname">positions</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.positions" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>List containing the base Posinp objects for the predictions.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list of Posinps</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mlcalcdriver.base.job.JobResults.n_at">
-<em class="property">property </em><code class="sig-name descname">n_at</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.n_at" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>List containing the number of atoms of each structure.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list of ints</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mlcalcdriver.base.job.JobResults.atom_types">
-<em class="property">property </em><code class="sig-name descname">atom_types</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.atom_types" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>List containing sets of the elements present in each structure.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list of sets</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mlcalcdriver.base.job.JobResults.boundary_conditions">
-<em class="property">property </em><code class="sig-name descname">boundary_conditions</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.boundary_conditions" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>List containing the boundary conditions, either <cite>free</cite>,
-<cite>surface</cite> or <cite>periodic</cite>, of each structure.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list of strings</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="mlcalcdriver.base.job.JobResults.cell">
-<em class="property">property </em><code class="sig-name descname">cell</code><a class="headerlink" href="#mlcalcdriver.base.job.JobResults.cell" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>List containing cell dimensions of each structure,
-None for free boundary conditions.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list of lists of floats</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </div>

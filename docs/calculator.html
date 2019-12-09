@@ -89,9 +89,9 @@
 <li class="toctree-l2"><a class="reference internal" href="schnetcalc.html">SchnetPackCalculator</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows</a></li>
 </ul>
 
             
@@ -165,7 +165,7 @@ calculator. A specific class derived from this one must be implemented
 for each new type of model.</p>
 <dl class="class">
 <dt id="mlcalcdriver.calculators.calculator.Calculator">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.calculators.calculator.</code><code class="sig-name descname">Calculator</code><span class="sig-paren">(</span><em class="sig-param">available_properties=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/calculator.html#Calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.calculators.calculator.</code><code class="sig-name descname">Calculator</code><span class="sig-paren">(</span><em class="sig-param">available_properties=None</em>, <em class="sig-param">units=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/calculator.html#Calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class to be implemented individually for each type
 of models.</p>
@@ -188,6 +188,14 @@ the _get_available_properties method will be used.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="mlcalcdriver.calculators.calculator.Calculator._get_units">
+<code class="sig-name descname">_get_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/calculator.html#Calculator._get_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator._get_units" title="Permalink to this definition">¶</a></dt>
+<dd><p>May be implemented for models for which it is possible.
+If not implemented, the units must be specified when creating
+the <a class="reference internal" href="#mlcalcdriver.calculators.calculator.Calculator" title="mlcalcdriver.calculators.calculator.Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Calculator</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="mlcalcdriver.calculators.calculator.Calculator.available_properties">
 <em class="property">property </em><code class="sig-name descname">available_properties</code><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator.available_properties" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -196,6 +204,20 @@ the _get_available_properties method will be used.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>str or list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="mlcalcdriver.calculators.calculator.Calculator.units">
+<em class="property">property </em><code class="sig-name descname">units</code><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator.units" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary containing the units used by the model
+keys() are <cite>positions</cite> and <cite>energy</cite>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>

@@ -163,7 +163,7 @@
 <span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">ANG_TO_B</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">EV_TO_HA</span><span class="p">,</span> <span class="n">HA_TO_CMM1</span><span class="p">,</span> <span class="n">AMU_TO_EMU</span>
 
 
-<div class="viewcode-block" id="Phonon"><a class="viewcode-back" href="../../../phonon.html#mlcalcdriver.workflows.Phonon">[docs]</a><span class="k">class</span> <span class="nc">Phonon</span><span class="p">:</span>
+<div class="viewcode-block" id="Phonon"><a class="viewcode-back" href="../../../phonon.html#mlcalcdriver.workflows.phonon.Phonon">[docs]</a><span class="k">class</span> <span class="nc">Phonon</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class allows to run all the calculations enabling the</span>
 <span class="sd">    computation of the phonon energies of a given system, using</span>
@@ -189,7 +189,7 @@
 <span class="sd">        by `translation_amplitudes`.</span>
 
 <span class="sd">        Phonon energies and normal modes are calculated using the `run()`method.</span>
-<span class="sd">        This method creates the additional structures needed, passes them to a </span>
+<span class="sd">        This method creates the additional structures needed, passes them to a</span>
 <span class="sd">        `Job` instance, then post-processes the obtained forces</span>
 <span class="sd">        to obtain them.</span>
 
@@ -251,7 +251,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Calculator</span>
 <span class="sd">            The Calculator object to use for the Jobs necessary to</span>
-<span class="sd">            perform the phonons calculations.	</span>
+<span class="sd">            perform the phonons calculations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculator</span>
 
@@ -280,7 +280,7 @@
 
     <span class="nd">@translation_amplitudes</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">translation_amplitudes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translation_amplitudes</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">translation_amplitudes</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">translation_amplitudes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_translation_amplitudes</span> <span class="o">=</span> <span class="mf">0.03</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_translation_amplitudes</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">translation_amplitudes</span><span class="p">)</span>
@@ -345,7 +345,7 @@
     <span class="k">def</span> <span class="nf">normal_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normal_modes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_normal_modes</span> <span class="o">=</span> <span class="n">normal_modes</span>
 
-<div class="viewcode-block" id="Phonon.run"><a class="viewcode-back" href="../../../phonon.html#mlcalcdriver.workflows.Phonon.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Phonon.run"><a class="viewcode-back" href="../../../phonon.html#mlcalcdriver.workflows.phonon.Phonon.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -354,24 +354,17 @@
 <span class="sd">            and should be faster in most cases.</span>
 <span class="sd">        batch_size : int</span>
 <span class="sd">            Batch size used when passing the structures to the model</span>
-<span class="sd">        **kwargs : </span>
+<span class="sd">        **kwargs :</span>
 <span class="sd">            Optional arguments for the geometry optimization.</span>
 <span class="sd">            Only useful if the relaxation is unstable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">relax</span><span class="p">:</span>
             <span class="n">geopt</span> <span class="o">=</span> <span class="n">Geopt</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">geopt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-                <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="n">geopt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">geopt</span><span class="o">.</span><span class="n">final_posinp</span><span class="p">)</span>
-        
+
         <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_displacements</span><span class="p">(),</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="p">)</span>
-        <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-            <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span>
-            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_proc</span><span class="p">(</span><span class="n">job</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_create_displacements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -398,7 +391,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dyn_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_dyn_mat</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal_modes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_dyn_mat</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">*=</span> <span class="n">HA_TO_CMM1</span>
 
     <span class="k">def</span> <span class="nf">_compute_dyn_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>

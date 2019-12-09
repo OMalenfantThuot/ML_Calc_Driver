@@ -158,6 +158,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">schnetpack</span> <span class="k">import</span> <span class="n">AtomsLoader</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">eVA</span>
 <span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="k">import</span> <span class="n">Calculator</span>
 <span class="kn">from</span> <span class="nn">mlcalcdriver.interfaces</span> <span class="k">import</span> <span class="n">posinp_to_ase_atoms</span><span class="p">,</span> <span class="n">SchnetPackData</span>
 <span class="kn">from</span> <span class="nn">schnetpack.environment</span> <span class="k">import</span> <span class="n">SimpleEnvironmentProvider</span><span class="p">,</span> <span class="n">AseEnvironmentProvider</span>
@@ -168,7 +169,7 @@
 <span class="sd">    Calculator based on a SchnetPack model</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">,</span> <span class="n">available_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">,</span> <span class="n">available_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">eVA</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -187,9 +188,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span>
                 <span class="n">model_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;MODELDIR&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">model_dir</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
             <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="n">model_dir</span><span class="o">=</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SchnetPackCalculator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SchnetPackCalculator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_representation_type</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SchnetPackCalculator.run"><a class="viewcode-back" href="../../../schnetcalc.html#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -197,13 +199,14 @@
 <span class="sd">        the calculator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">property</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_properties</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The property </span><span class="si">{}</span><span class="s2"> is not in the available properties of the model : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="nb">property</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_properties</span>
+            <span class="k">if</span> <span class="nb">property</span> <span class="o">==</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">and</span> <span class="s2">&quot;energy_U0&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_properties</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The property </span><span class="si">{}</span><span class="s2"> is not in the available properties of the model : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="nb">property</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_properties</span>
+                    <span class="p">)</span>
                 <span class="p">)</span>
-            <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_representation_type</span><span class="p">()</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">posinp_to_ase_atoms</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">posinp</span><span class="p">]</span>
         <span class="n">pbc</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">pbc</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span>
@@ -219,16 +222,28 @@
         <span class="p">)</span>
         <span class="n">data_loader</span> <span class="o">=</span> <span class="n">AtomsLoader</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-            <span class="n">pred</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">output_modules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">derivative</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">data_loader</span><span class="p">:</span>
                 <span class="n">batch</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
                 <span class="n">pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">batch</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">pred</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">data_loader</span><span class="p">:</span>
+                    <span class="n">batch</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                    <span class="n">pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">batch</span><span class="p">))</span>
 
         <span class="n">predictions</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">predictions</span><span class="p">[</span><span class="nb">property</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">batch</span><span class="p">[</span><span class="nb">property</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;energy_U0&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_properties</span><span class="p">:</span>
+            <span class="n">predictions</span><span class="p">[</span><span class="nb">property</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">batch</span><span class="p">[</span><span class="nb">property</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">predictions</span><span class="p">[</span><span class="nb">property</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">batch</span><span class="p">[</span><span class="s2">&quot;energy_U0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">]</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">predictions</span></div>
 
     <span class="k">def</span> <span class="nf">_get_available_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -236,10 +251,17 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        avail_prop</span>
-<span class="sd">            Properties that the SchnetPack model will return</span>
+<span class="sd">            Properties that the SchnetPack model can return</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">avail_prop</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">om</span><span class="o">.</span><span class="n">property</span> <span class="k">for</span> <span class="n">om</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">output_modules</span><span class="p">]))</span>
-        <span class="k">return</span> <span class="n">avail_prop</span>
+        <span class="n">avail_prop</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">output_modules</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">derivative</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">avail_prop</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">out</span><span class="o">.</span><span class="n">property</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">derivative</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">avail_prop</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">out</span><span class="o">.</span><span class="n">property</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;energy_U0&quot;</span> <span class="ow">in</span> <span class="n">avail_prop</span><span class="p">:</span>
+            <span class="n">avail_prop</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;energy&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">avail_prop</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_representation_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
