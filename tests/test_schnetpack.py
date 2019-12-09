@@ -13,8 +13,10 @@ class TestSchnetPack:
     pos1 = Posinp.from_file(os.path.join(pos_folder, "N2.xyz"))
     model1 = os.path.join(model_folder, "ani1_N2_model")
     model2 = os.path.join(model_folder, "wacsf_model")
+    model3 = os.path.join(model_folder, "H2O_model")
     calc1 = SchnetPackCalculator(model_dir=model1)
     calc2 = SchnetPackCalculator(model_dir=model2)
+    calc3 = SchnetPackCalculator(model_dir=model3)
     job = Job(posinp=pos1, calculator=calc1)
     jobwacsf = Job(posinp=pos1, calculator=calc2)
 
@@ -40,3 +42,12 @@ class TestSchnetPack:
     def test_bad_property(self):
         with pytest.raises(ValueError):
             self.job.run("dipole")
+
+    def test_convert(self):
+        pos_angstroem = Posinp.from_file(os.path.join(pos_folder, "H2O_unrelaxed.xyz"))
+        pos_atomic = Posinp.from_file(os.path.join(pos_folder, "H2O_atomic.xyz"))
+        job1 = Job(posinp=pos_angstroem, calculator=self.calc3)
+        job2 = Job(posinp=pos_atomic, calculator=self.calc3)
+        job1.run("energy")
+        job2.run("energy")
+        assert job1.results["energy"] == job2.results["energy"]
