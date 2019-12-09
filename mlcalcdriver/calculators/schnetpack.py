@@ -7,6 +7,7 @@ import os
 import numpy as np
 import torch
 from schnetpack import AtomsLoader
+from mlcalcdriver.globals import eVA
 from mlcalcdriver.calculators import Calculator
 from mlcalcdriver.interfaces import posinp_to_ase_atoms, SchnetPackData
 from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProvider
@@ -17,7 +18,7 @@ class SchnetPackCalculator(Calculator):
     Calculator based on a SchnetPack model
     """
 
-    def __init__(self, model_dir, available_properties=None, device="cpu"):
+    def __init__(self, model_dir, available_properties=None, device="cpu", units=eVA):
         r"""
         Parameters
         ----------
@@ -38,7 +39,7 @@ class SchnetPackCalculator(Calculator):
             )
         except Exception:
             self.model = load_model(model_dir=model_dir, device=device)
-        super(SchnetPackCalculator, self).__init__()
+        super(SchnetPackCalculator, self).__init__(units=units)
         self._get_representation_type()
 
     def run(self, property, posinp=None, device="cpu", batch_size=128):

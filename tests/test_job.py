@@ -20,7 +20,7 @@ class TestJob:
         Posinp.from_file(file2),
         Posinp.from_file(file3),
     )
-    dummy = Calculator(available_properties="")
+    dummy = Calculator(available_properties="", units={"energy": "eV"})
     badCalc = dict()
     job = Job(name="test", posinp=[pos1, pos2, pos3], calculator=dummy)
 
