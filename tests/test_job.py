@@ -47,8 +47,6 @@ class TestJob:
             (job.name, "test"),
             (job.num_struct, 3),
             (job.posinp[1], pos2),
-            (job.results.positions, job.posinp),
-            (job.results.n_at, [4, 4, 2]),
         ],
     )
     def test_values(self, value, expected):

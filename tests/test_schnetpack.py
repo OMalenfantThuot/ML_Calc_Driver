@@ -32,9 +32,6 @@ class TestSchnetPack:
         assert np.float32(-2979.6067) == self.job.results["energy"][0]
         ref_forces = np.array([[-0.0, -0.0, -0.32416448], [-0.0, -0.0, 0.32416448]])
         assert np.isclose(self.job.results["forces"][0], ref_forces).all()
-        assert self.job.results.atom_types == [{"N"}]
-        assert self.job.results.boundary_conditions == ["free"]
-        assert self.job.results.cell == [None]
 
     def test_wacsf(self):
         self.jobwacsf.run("energy_U0")

@@ -168,7 +168,7 @@ class Geopt:
             job = Job(posinp=temp_posinp, calculator=self.calculator)
             job.run("forces", device=device, batch_size=batch_size)
             # Moving the atoms
-            for j in range(job.results.n_at[0]):
+            for j in range(len(job.posinp[0])):
                 temp_posinp = temp_posinp.translate_atom(
                     j, self.step_size * job.results["forces"][0][j]
                 )
