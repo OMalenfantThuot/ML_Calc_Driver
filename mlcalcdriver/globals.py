@@ -84,3 +84,7 @@ AU_TO_DEBYE = 1 / DEBYE_TO_AU
 r"""
 Conversion factor for atomic units of dipole moment to Debye.
 """
+
+# Units dictionary
+
+eVA = {"positions": "angstroem", "energy": "eV"}
