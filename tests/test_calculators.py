@@ -15,13 +15,12 @@ class TestCalc:
         assert c.available_properties == "energy"
         with pytest.raises(NotImplementedError):
             c.run()
-    
+
     def test_units(self):
         with pytest.raises(TypeError):
-            c = Calculator(available_properties="energy", units="atomic") 
+            c = Calculator(available_properties="energy", units="atomic")
         with pytest.raises(KeyError):
             c = Calculator(available_properties="energy", units={"atomic": True})
         c = Calculator(available_properties="energy", units=eVA)
         assert c.units["positions"] == "angstroem"
         assert c.units["energy"] == "eV"
-
