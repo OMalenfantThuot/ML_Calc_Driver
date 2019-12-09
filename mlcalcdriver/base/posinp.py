@@ -173,7 +173,7 @@ class Posinp(Sequence):
         line2 = lines.pop(0)
         boundary_conditions = line2[0].lower()
         if boundary_conditions != "free":
-            cell = ["inf" if dim == ".inf" else dim for dim in line2[1:4]]
+            cell = [0.0 if dim in [".inf", "inf"] else dim for dim in line2[1:4]]
         else:
             cell = None
         # Remove the lines about the forces, if there are some
@@ -348,7 +348,7 @@ class Posinp(Sequence):
     def cell(self, cell):
         if cell is not None:
             cell = [
-                abs(float(size)) if size not in [".inf", "inf"] else "inf"
+                abs(float(size)) if size not in [".inf", "inf"] else 0.0
                 for size in cell
             ]
         self._cell = cell
@@ -619,18 +619,21 @@ class Posinp(Sequence):
         elif self.units == "atomic" and new_units == "angstroem":
             for atom in self:
                 atom.position = atom.position * B_TO_ANG
-            self.cell = list(np.array(self.cell) * B_TO_ANG)
+            if self.cell:
+                self.cell = list(np.array(self.cell) * B_TO_ANG)
         elif self.units == "angstroem" and new_units == "atomic":
             for atom in self:
                 atom.position = atom.position * ANG_TO_B
-            self.cell = list(np.array(self.cell) * ANG_TO_B)
+            if self.cell:
+                self.cell = list(np.array(self.cell) * ANG_TO_B)
         elif self.units == "reduced" and new_units == "atomic":
             for atom in self:
                 atom.position = atom.position * np.array(self.cell)
         elif self.units == "reduced" and new_units == "angstroem":
             for atom in self:
                 atom.position = atom.position * np.array(self.cell) * B_TO_ANG
-            self.cell = list(np.array(self.cell) * B_TO_ANG)
+            if self.cell:
+                self.cell = list(np.array(self.cell) * B_TO_ANG)
         else:
             raise NotImplementedError
         self.units = new_units

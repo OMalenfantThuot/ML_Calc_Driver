@@ -20,7 +20,9 @@ class TestJob:
         Posinp.from_file(file2),
         Posinp.from_file(file3),
     )
-    dummy = Calculator(available_properties="", units={"energy": "eV"})
+    dummy = Calculator(
+        available_properties="", units={"positions": "atomic", "energy": "eV"}
+    )
     badCalc = dict()
     job = Job(name="test", posinp=[pos1, pos2, pos3], calculator=dummy)
 
@@ -43,11 +45,7 @@ class TestJob:
 
     @pytest.mark.parametrize(
         "value, expected",
-        [
-            (job.name, "test"),
-            (job.num_struct, 3),
-            (job.posinp[1], pos2),
-        ],
+        [(job.name, "test"), (job.num_struct, 3), (job.posinp[1], pos2)],
     )
     def test_values(self, value, expected):
         assert value == expected

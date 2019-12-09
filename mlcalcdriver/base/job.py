@@ -34,12 +34,10 @@ class Job:
             properties in the run() method.
         """
         self.name = name
+        self.calculator = calculator
         self.posinp = posinp
         self.num_struct = len(self.posinp)
-        self.calculator = calculator
-        self.results = JobResults(
-            positions=self.posinp, properties=self.calculator.available_properties
-        )
+        self.results = JobResults(properties=self.calculator.available_properties)
 
     @property
     def posinp(self):
@@ -65,6 +63,9 @@ class Job:
                     only in Posinp instances.
                     """
                 )
+        for pos in posinp:
+            if pos.units != self.calculator.units["positions"]:
+                pos.convert_units(self.calculator.units["positions"])
         self._posinp = posinp
 
     @property
@@ -275,12 +276,10 @@ class JobResults(dict):
     Otherwise, the list contains one value for each structure in the Job.
     """
 
-    def __init__(self, positions, properties):
+    def __init__(self, properties):
         r"""
         Parameters
         ----------
-        positions : :class:`Posinp` or list of :class:`Posinp`
-            Atomic positions used in the Job
         properties : str or list of str
             Property or properties that are returned by the chosen
             model.
