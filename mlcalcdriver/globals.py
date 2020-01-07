@@ -87,4 +87,4 @@ Conversion factor for atomic units of dipole moment to Debye.
 
 # Units dictionary
 
-eVA = {"positions": "angstroem", "energy": "eV"}
+eVA = {"positions": "angstroem", "energy": "eV", "dipole_moment": "Debye"}
