@@ -76,7 +76,9 @@ class Calculator:
     @units.setter
     def units(self, units):
         if isinstance(units, dict):
-            if all([k in ["positions", "energy"] for k in units.keys()]):
+            if all(
+                [k in ["positions", "energy", "dipole_moment"] for k in units.keys()]
+            ):
                 self._units = units
             else:
                 raise KeyError("Units key not recognized.")

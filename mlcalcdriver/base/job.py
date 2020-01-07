@@ -189,7 +189,7 @@ class Job:
             predictions = self.calculator.run(property=property, posinp=self.posinp)
         for pred in predictions.keys():
             # Future proofing, will probably need some work
-            if pred == "energy":
+            if pred in ["energy", "gap"]:
                 if self.calculator.units["energy"] == "hartree":
                     predictions[pred] *= HA_TO_EV
             elif pred == "forces":
@@ -197,6 +197,15 @@ class Job:
                     predictions[pred] *= HA_TO_EV
                 if self.calculator.units["positions"] == "atomic":
                     predictions[pred] *= ANG_TO_B
+            elif pred in ["dipole_moment", "mu"]:
+                if self.calculator.units["dipole_moment"] == "Debye":
+                    pass
+                else:
+                    raise NotImplementedError(
+                        "The unit {} of dipole moment is not implemented yet.".format(
+                            self.calculator.units["dipole_moment"]
+                        )
+                    )
             else:
                 raise KeyError(
                     "The units for this predicted quantity have not been implemented yet."
