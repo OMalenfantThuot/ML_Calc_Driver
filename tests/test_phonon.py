@@ -17,7 +17,7 @@ class TestPhonon:
     def test_ph_N2(self):
         ph1 = Phonon(posinp=self.posN2, calculator=self.calcN2)
         ph1.run()
-        assert np.isclose(ph1.energies.max(), 2339.57, atol=0.01)
+        assert np.isclose(ph1.energies.max(), 2339.53, atol=0.01)
         assert all(np.abs(np.delete(ph1.energies, np.argmax(ph1.energies))) < 30)
 
         ph2 = Phonon(

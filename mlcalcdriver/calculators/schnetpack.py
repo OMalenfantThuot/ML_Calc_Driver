@@ -42,20 +42,40 @@ class SchnetPackCalculator(Calculator):
         super(SchnetPackCalculator, self).__init__(units=units)
         self._get_representation_type()
 
-    def run(self, property, posinp=None, device="cpu", batch_size=128):
+    def run(
+        self, property, derivative=False, posinp=None, device="cpu", batch_size=128,
+    ):
         r"""
         Main method to use when making a calculation with
         the calculator.
         """
         if property not in self.available_properties:
-            if property == "energy" and "energy_U0" in self.available_properties:
-                pass
+            if derivative:
+                if property == "forces":
+                    if "energy" in self.available_properties:
+                        init_property, deriv_name, out_name = (
+                            "energy",
+                            "forces",
+                            "forces",
+                        )
+                    else:
+                        raise ValueError(
+                            "This model can't be used for forces predictions."
+                        )
+                else:
+                    raise NotImplementedError(
+                        "Derivatives of other quantities than the energy are not implemented yet."
+                    )
             else:
                 raise ValueError(
                     "The property {} is not in the available properties of the model : {}.".format(
                         property, self.available_properties
                     )
                 )
+        elif property == "energy" and "energy_U0" in self.available_properties:
+            init_property, out_name = "energy_U0", "energy"
+        else:
+            init_property, out_name = property, property
 
         data = [posinp_to_ase_atoms(pos) for pos in posinp]
         pbc = True if any(pos.pbc.any() for pos in data) else False
@@ -76,6 +96,22 @@ class SchnetPackCalculator(Calculator):
             for batch in data_loader:
                 batch = {k: v.to(device) for k, v in batch.items()}
                 pred.append(self.model(batch))
+        elif derivative:
+            for batch in data_loader:
+                batch = {k: v.to(device) for k, v in batch.items()}
+                batch["_positions"].requires_grad_()
+                results = self.model(batch)
+                drdx = (
+                    -1.0
+                    * torch.autograd.grad(
+                        results[init_property],
+                        batch["_positions"],
+                        grad_outputs=torch.ones_like(results[init_property]),
+                        create_graph=True,
+                        retain_graph=True,
+                    )[0]
+                )
+                pred.append({deriv_name: drdx})
         else:
             with torch.no_grad():
                 pred = []
@@ -84,15 +120,15 @@ class SchnetPackCalculator(Calculator):
                     pred.append(self.model(batch))
 
         predictions = {}
-        if "energy_U0" not in self.available_properties:
-            predictions[property] = np.concatenate(
-                [batch[property].cpu().detach().numpy() for batch in pred]
+        if derivative:
+            predictions[out_name] = np.concatenate(
+                [batch[deriv_name].cpu().detach().numpy() for batch in pred]
             )
         else:
-            predictions[property] = np.concatenate(
-                [batch["energy_U0"].cpu().detach().numpy() for batch in pred]
+            print(init_property)
+            predictions[out_name] = np.concatenate(
+                [batch[init_property].cpu().detach().numpy() for batch in pred]
             )
-
         return predictions
 
     def _get_available_properties(self):

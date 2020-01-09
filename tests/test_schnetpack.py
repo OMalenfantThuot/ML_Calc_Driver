@@ -32,6 +32,13 @@ class TestSchnetPack:
         assert self.job.calculator.available_properties == ["energy"]
         self.job.run("forces")
         assert np.float32(-2979.6067) == self.job.results["energy"][0]
+        ref_forces = np.array([[-0.0, -0.0, -0.31532133], [-0.0, -0.0, 0.31532133]])
+        assert np.isclose(self.job.results["forces"][0], ref_forces).all()
+
+    def test_forces_from_finite_difference(self):
+        assert self.job.calculator.available_properties == ["energy"]
+        self.job.run("forces", finite_difference=True)
+        assert np.float32(-2979.6067) == self.job.results["energy"][0]
         ref_forces = np.array([[-0.0, -0.0, -0.32416448], [-0.0, -0.0, 0.32416448]])
         assert np.isclose(self.job.results["forces"][0], ref_forces).all()
 

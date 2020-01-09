@@ -133,7 +133,7 @@ class Job:
                 """
             )
 
-    def run(self, property, device="cpu", batch_size=128):
+    def run(self, property, device="cpu", batch_size=128, finite_difference=False):
         r"""
         Main method to call to obtain results for a Job
 
@@ -164,6 +164,10 @@ class Job:
                 and "energy" in self.calculator.available_properties
             ):
                 raise ValueError("The property {} is not available".format(property))
+            elif not finite_difference:
+                predictions = self.calculator.run(
+                    property="forces", posinp=self.posinp, derivative=True
+                )
             else:
                 self._create_additional_structures()
                 raw_predictions = self.calculator.run(
