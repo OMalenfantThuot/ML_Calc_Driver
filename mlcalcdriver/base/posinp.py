@@ -172,8 +172,10 @@ class Posinp(Sequence):
         # Decode the second line
         line2 = lines.pop(0)
         boundary_conditions = line2[0].lower()
-        if boundary_conditions != "free":
-            cell = [0.0 if dim in [".inf", "inf"] else dim for dim in line2[1:4]]
+        if boundary_conditions == "periodic":
+            cell = line2[1:4]
+        elif boundary_conditions == "surface":
+            cell = [line2[1], 0.0, line2[3]]
         else:
             cell = None
         # Remove the lines about the forces, if there are some
