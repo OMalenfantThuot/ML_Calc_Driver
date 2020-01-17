@@ -125,7 +125,6 @@ class SchnetPackCalculator(Calculator):
                 [batch[deriv_name].cpu().detach().numpy() for batch in pred]
             )
         else:
-            print(init_property)
             predictions[out_name] = np.concatenate(
                 [batch[init_property].cpu().detach().numpy() for batch in pred]
             )
