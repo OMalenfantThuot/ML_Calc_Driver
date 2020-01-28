@@ -101,6 +101,8 @@ class SchnetPackCalculator(Calculator):
                 batch = {k: v.to(device) for k, v in batch.items()}
                 batch["_positions"].requires_grad_()
                 results = self.model(batch)
+                print(results[init_property])
+                print(torch.ones_like(results[init_property]))
                 drdx = (
                     -1.0
                     * torch.autograd.grad(
@@ -112,6 +114,19 @@ class SchnetPackCalculator(Calculator):
                     )[0]
                 )
                 pred.append({deriv_name: drdx})
+            if derivative == 2:
+                print(drdx)
+                drdx.requires_grad_()
+                print(drdx)
+                print(batch["_positions"])
+                drdx2= torch.autograd.grad(
+                        drdx,
+                        batch["_positions"],
+                        grad_outputs=torch.ones_like(drdx),
+                        create_graph=True,
+                        retain_graph=True,
+                    )[0]
+                print(drdx2)
         else:
             with torch.no_grad():
                 pred = []

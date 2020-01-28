@@ -166,7 +166,7 @@ class Job:
                 raise ValueError("The property {} is not available".format(property))
             elif not finite_difference:
                 predictions = self.calculator.run(
-                    property="forces", posinp=self.posinp, derivative=True
+                    property="forces", posinp=self.posinp, derivative=2
                 )
             else:
                 self._create_additional_structures()
