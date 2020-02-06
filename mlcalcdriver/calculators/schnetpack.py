@@ -101,11 +101,11 @@ class SchnetPackCalculator(Calculator):
                 batch = {k: v.to(device) for k, v in batch.items()}
                 batch["_positions"].requires_grad_()
                 results = self.model(batch)
-                print(results[init_property])
-                print(torch.ones_like(results[init_property]))
+                #print(results[init_property])
+                #print(torch.ones_like(results[init_property]))
                 drdx = (
                     -1.0
-                    * torch.autograd.grad(
+                     *  torch.autograd.grad(
                         results[init_property],
                         batch["_positions"],
                         grad_outputs=torch.ones_like(results[init_property]),
@@ -115,18 +115,28 @@ class SchnetPackCalculator(Calculator):
                 )
                 pred.append({deriv_name: drdx})
             if derivative == 2:
-                print(drdx)
-                drdx.requires_grad_()
+                hessian = np.zeros([6, 6])
                 print(drdx)
                 print(batch["_positions"])
-                drdx2= torch.autograd.grad(
-                        drdx,
-                        batch["_positions"],
-                        grad_outputs=torch.ones_like(drdx),
-                        create_graph=True,
-                        retain_graph=True,
-                    )[0]
-                print(drdx2)
+                k=0
+                for i in range(drdx.shape[2]):
+                    for j in range(drdx.shape[1]):
+                        print(drdx[0,j,i])
+                        drdx2= torch.autograd.grad(
+                                drdx[0, j, i],
+                                batch["_positions"],
+                                grad_outputs=torch.ones_like(drdx[0,j,i]),
+                                create_graph=True,
+                                retain_graph=True,
+                                #allow_unused=True,
+                            )[0]
+                        print(drdx2)
+                        print(k)
+                        hessian[k] = drdx2.detach().numpy().flatten()
+                        k += 1
+                print(hessian)
+                hessian = (hessian + hessian.T)/2
+                print(np.around(hessian, decimals=2))
         else:
             with torch.no_grad():
                 pred = []
