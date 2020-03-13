@@ -247,6 +247,7 @@ class Phonon:
         Computes the dynamical matrix
         """
         hessian = self._compute_hessian(job)
+        print(np.around(hessian, decimals=2))
         masses = self._compute_masses()
         return hessian / masses
 
@@ -271,6 +272,7 @@ class Phonon:
                 + forces[4 * i + 3].flatten()
                 + 8 * (forces[4 * i + 1].flatten() - forces[4 * i + 2].flatten())
             ) / (12 * self.translation_amplitudes * ANG_TO_B)
+        print(hessian)
         return -(hessian + hessian.T) / 2.0
 
     def _solve_dyn_mat(self):
