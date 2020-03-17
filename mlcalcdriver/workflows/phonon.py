@@ -25,7 +25,7 @@ class Phonon:
     translated by a small amount around the equilibrium positions.
     """
 
-    def __init__(self, posinp, calculator, relax=True, translation_amplitudes=None):
+    def __init__(self, posinp, calculator, relax=True, finite_difference=False, translation_amplitudes=None):
         r"""
         The initial position fo the atoms are taken from the `init_state`
         Posinp instance. If they are not part of a relaxed geometry, the
@@ -52,16 +52,19 @@ class Phonon:
         relax : bool
             Wether the initial positions need to be relaxed or not.
             Default is `True`.
+        finite_difference: bool
+            If True, the hessian matrix is calculated using finite
+            displacements of atoms. Default is False. Mostly there for
+            legacy reasons.
         translation_amplitudes: list of length 3
             Amplitudes of the translations to be applied to each atom
             along each of the three space coordinates (in angstroms).
-        order : int
-            Order of the numerical differentiation used to compute the
-            dynamical matrix. Can be either 1, 2 or 3.
+            Only relevant if finite_difference is True.
         """
         self.posinp = posinp
         self.calculator = calculator
         self.relax = relax
+        self.finite_difference=finite_difference
         self.translation_amplitudes = translation_amplitudes
 
         if self.relax:
@@ -152,6 +155,21 @@ class Phonon:
         self._relax = relax
 
     @property
+    def finite_difference(self):
+        r"""
+        Returns
+        -------
+        finite_difference : bool
+            If `True`, the hessian matrix is calculated using small finite
+            movements on the atoms. Default is `False`.
+        """
+        return self._finite_difference
+
+    @finite_difference.setter
+    def finite_difference(self, finite_difference):
+        self._finite_difference = bool(finite_difference)
+
+    @property
     def energies(self):
         r"""
         Returns
@@ -212,15 +230,20 @@ class Phonon:
             geopt.run(device=device, batch_size=batch_size)
             self._ground_state = deepcopy(geopt.final_posinp)
 
-        job = Job(posinp=self._create_displacements(), calculator=self.calculator)
-        job.run(property="forces", device=device, batch_size=batch_size)
+        if self.finite_difference:
+            job = Job(posinp=self._create_displacements(), calculator=self.calculator)
+            job.run(property="forces", device=device, batch_size=batch_size)
+        else:
+            job = Job(posinp=self.posinp, calculator=self.calculator)
+            job.run(property="hessian", device=device, batch_size=batch_size)
         self._post_proc(job)
 
     def _create_displacements(self):
         r"""
         Set the displacements each atom must undergo from the amplitudes
         of displacement in each direction. The numerical derivatives are obtained
-        with the five-point stencil method.
+        with the five-point stencil method. Only used if the phonons are
+        calculated using finite_displacements.
         """
         structs = []
         for i in range(len(self._ground_state)):
@@ -247,7 +270,6 @@ class Phonon:
         Computes the dynamical matrix
         """
         hessian = self._compute_hessian(job)
-        print(np.around(hessian, decimals=2))
         masses = self._compute_masses()
         return hessian / masses
 
@@ -263,16 +285,18 @@ class Phonon:
         r"""
         Computes the hessian matrix from the forces
         """
-        n_at = len(self.posinp)
-        hessian = np.zeros((3 * n_at, 3 * n_at))
-        forces = np.array(job.results["forces"]) * EV_TO_HA * B_TO_ANG
-        for i in range(3 * n_at):
-            hessian[i, :] = (
-                -forces[4 * i].flatten()
-                + forces[4 * i + 3].flatten()
-                + 8 * (forces[4 * i + 1].flatten() - forces[4 * i + 2].flatten())
-            ) / (12 * self.translation_amplitudes * ANG_TO_B)
-        print(hessian)
+        if "hessian" in job.results.keys():
+            return job.results["hessian"] * EV_TO_HA * B_TO_ANG ** 2
+        else:
+            n_at = len(self.posinp)
+            hessian = np.zeros((3 * n_at, 3 * n_at))
+            forces = np.array(job.results["forces"]) * EV_TO_HA * B_TO_ANG
+            for i in range(3 * n_at):
+                hessian[i, :] = (
+                    -forces[4 * i].flatten()
+                    + forces[4 * i + 3].flatten()
+                    + 8 * (forces[4 * i + 1].flatten() - forces[4 * i + 2].flatten())
+                ) / (12 * self.translation_amplitudes * ANG_TO_B)
         return -(hessian + hessian.T) / 2.0
 
     def _solve_dyn_mat(self):

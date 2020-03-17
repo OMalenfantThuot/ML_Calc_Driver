@@ -68,9 +68,12 @@ class SchnetPackCalculator(Calculator):
                     )
                 )
         elif property == "energy" and "energy_U0" in self.available_properties:
-            init_property, out_name, derivative = "energy_U0", "energy", 0
+            init_property, derivative = "energy_U0", 0
         else:
-            init_property, out_name, derivative = property, property, 0
+            init_property, derivative = property, 0
+
+        if len(posinp) > 1 and derivative:
+            batch_size = 1
 
         data = [posinp_to_ase_atoms(pos) for pos in posinp]
         pbc = True if any(pos.pbc.any() for pos in data) else False
@@ -124,9 +127,14 @@ class SchnetPackCalculator(Calculator):
                     deriv2 = -1.0 * deriv2
                 pred.append({out_name: deriv2})
         predictions = {}
-        predictions[property] = np.concatenate(
-            [batch[out_name].cpu().detach().numpy() for batch in pred]
-        )
+        if derivative:
+            predictions[property] = np.concatenate(
+                [batch[out_name].cpu().detach().numpy() for batch in pred]
+            )
+        else:
+            predictions[property] = np.concatenate(
+                [batch[init_property].cpu().detach().numpy() for batch in pred]
+            )
         return predictions
 
     def _get_available_properties(self):

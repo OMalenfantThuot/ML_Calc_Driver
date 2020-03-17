@@ -15,8 +15,8 @@ class TestPhonon:
     calcN2 = SchnetPackCalculator(os.path.join(model_folder, "myN2_model"))
 
     def test_ph_N2(self):
-        ph1 = Phonon(posinp=self.posN2, calculator=self.calcN2)
-        ph1.run()
+        ph1 = Phonon(posinp=self.posN2, calculator=self.calcN2, finite_difference=True)
+        ph1.run(batch_size=1)
         assert np.isclose(ph1.energies.max(), 2339.53, atol=0.01)
         assert all(np.abs(np.delete(ph1.energies, np.argmax(ph1.energies))) < 30)
 
@@ -24,12 +24,13 @@ class TestPhonon:
             posinp=ph1._ground_state,
             calculator=ph1.calculator,
             relax=False,
+            finite_difference=True,
             translation_amplitudes=0.03,
         )
         ph2.run()
         assert np.allclose(ph1.energies, ph2.energies)
 
-        ph3 = Phonon(posinp=self.posN2, calculator=self.calcN2, relax=False)
+        ph3 = Phonon(posinp=self.posN2, calculator=self.calcN2, finite_difference=True, relax=False)
         ph3.run()
         assert not np.allclose(ph3.energies, ph1.energies, atol=100)
 

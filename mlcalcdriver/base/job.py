@@ -158,18 +158,12 @@ class Job:
             if not torch.cuda.is_available():
                 warnings.warn("CUDA was asked for, but is not available.", UserWarning)
 
-        #if property not in self.calculator.available_properties:
-        #    if not (
-        #        property == "forces"
-        #        and "energy" in self.calculator.available_properties
-        #    ):
-        #        raise ValueError("The property {} is not available".format(property))
         if not finite_difference:
-                predictions = self.calculator.run(property=property, posinp=self.posinp)
+                predictions = self.calculator.run(property=property, posinp=self.posinp, batch_size=batch_size)
         else:
             self._create_additional_structures()
             raw_predictions = self.calculator.run(
-                property="energy", posinp=self.posinp
+                property="energy", posinp=self.posinp, batch_size=batch_size
             )
             pred_idx = 0
             predictions = {}
@@ -187,8 +181,7 @@ class Job:
                 )
                 pred_idx += 12 * len(self._init_posinp[struct_idx])
             self.posinp = deepcopy(self._init_posinp)
-        #else:
-        #    predictions = self.calculator.run(property=property, posinp=self.posinp)
+        
         for pred in predictions.keys():
             # Future proofing, will probably need some work
             if pred in ["energy", "gap"]:
@@ -199,6 +192,11 @@ class Job:
                     predictions[pred] *= HA_TO_EV
                 if self.calculator.units["positions"] == "atomic":
                     predictions[pred] *= ANG_TO_B
+            elif pred == "hessian":
+                if self.calculator.units["energy"] == "hartree":
+                    predictions[pred] *= HA_TO_EV
+                if self.calculator.units["positions"] == "atomic":
+                    predictions[pred] *= ANG_TO_B ** 2
             elif pred in ["dipole_moment", "mu"]:
                 if self.calculator.units["dipole_moment"] == "Debye":
                     pass
