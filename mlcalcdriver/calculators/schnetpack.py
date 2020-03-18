@@ -9,8 +9,10 @@ import torch
 from schnetpack import AtomsLoader
 from mlcalcdriver.globals import eVA
 from mlcalcdriver.calculators import Calculator
+from mlcalcdriver.calculators.utils import torch_derivative, get_derivative_names
 from mlcalcdriver.interfaces import posinp_to_ase_atoms, SchnetPackData
 from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProvider
+from mlcalcdriver.globals import EV_TO_HA, B_TO_ANG
 
 
 class SchnetPackCalculator(Calculator):
@@ -43,39 +45,18 @@ class SchnetPackCalculator(Calculator):
         self._get_representation_type()
 
     def run(
-        self, property, derivative=False, posinp=None, device="cpu", batch_size=128,
+        self, property, posinp=None, device="cpu", batch_size=128,
     ):
         r"""
         Main method to use when making a calculation with
         the calculator.
         """
-        if property not in self.available_properties:
-            if derivative:
-                if property == "forces":
-                    if "energy" in self.available_properties:
-                        init_property, deriv_name, out_name = (
-                            "energy",
-                            "forces",
-                            "forces",
-                        )
-                    else:
-                        raise ValueError(
-                            "This model can't be used for forces predictions."
-                        )
-                else:
-                    raise NotImplementedError(
-                        "Derivatives of other quantities than the energy are not implemented yet."
-                    )
-            else:
-                raise ValueError(
-                    "The property {} is not in the available properties of the model : {}.".format(
-                        property, self.available_properties
-                    )
-                )
-        elif property == "energy" and "energy_U0" in self.available_properties:
-            init_property, out_name = "energy_U0", "energy"
-        else:
-            init_property, out_name = property, property
+        init_property, out_name, derivative, wrt = get_derivative_names(
+            property, self.available_properties
+        )
+
+        if len(posinp) > 1 and derivative:
+            batch_size = 1
 
         data = [posinp_to_ase_atoms(pos) for pos in posinp]
         pbc = True if any(pos.pbc.any() for pos in data) else False
@@ -92,40 +73,52 @@ class SchnetPackCalculator(Calculator):
         data_loader = AtomsLoader(data, batch_size=batch_size)
 
         pred = []
-        if self.model.output_modules[0].derivative is not None:
-            for batch in data_loader:
-                batch = {k: v.to(device) for k, v in batch.items()}
-                pred.append(self.model(batch))
-        elif derivative:
-            for batch in data_loader:
-                batch = {k: v.to(device) for k, v in batch.items()}
-                batch["_positions"].requires_grad_()
-                results = self.model(batch)
-                drdx = (
-                    -1.0
-                    * torch.autograd.grad(
-                        results[init_property],
-                        batch["_positions"],
-                        grad_outputs=torch.ones_like(results[init_property]),
-                        create_graph=True,
-                        retain_graph=True,
-                    )[0]
-                )
-                pred.append({deriv_name: drdx})
-        else:
-            with torch.no_grad():
-                pred = []
+        if derivative == 0:
+            if self.model.output_modules[0].derivative is not None:
                 for batch in data_loader:
                     batch = {k: v.to(device) for k, v in batch.items()}
                     pred.append(self.model(batch))
-
+            else:
+                with torch.no_grad():
+                    for batch in data_loader:
+                        batch = {k: v.to(device) for k, v in batch.items()}
+                        pred.append(self.model(batch))
+        if abs(derivative) == 1:
+            for batch in data_loader:
+                batch = {k: v.to(device) for k, v in batch.items()}
+                batch[wrt[0]].requires_grad_()
+                results = self.model(batch)
+                deriv1 = torch.unsqueeze(
+                    torch_derivative(results[init_property], batch[wrt[0]]), 0
+                )
+                if derivative < 0:
+                    deriv1 = -1.0 * deriv1
+                pred.append({out_name: deriv1})
+        if abs(derivative) == 2:
+            for batch in data_loader:
+                batch = {k: v.to(device) for k, v in batch.items()}
+                for inp in set(wrt):
+                    batch[inp].requires_grad_()
+                results = self.model(batch)
+                deriv2 = torch.unsqueeze(
+                    torch_derivative(
+                        torch_derivative(
+                            results[init_property], batch[wrt[0]], create_graph=True,
+                        ),
+                        batch[wrt[0]],
+                    ),
+                    0,
+                )
+                if derivative < 0:
+                    deriv2 = -1.0 * deriv2
+                pred.append({out_name: deriv2})
         predictions = {}
         if derivative:
-            predictions[out_name] = np.concatenate(
-                [batch[deriv_name].cpu().detach().numpy() for batch in pred]
+            predictions[property] = np.concatenate(
+                [batch[out_name].cpu().detach().numpy() for batch in pred]
             )
         else:
-            predictions[out_name] = np.concatenate(
+            predictions[property] = np.concatenate(
                 [batch[init_property].cpu().detach().numpy() for batch in pred]
             )
         return predictions
@@ -149,6 +142,7 @@ class SchnetPackCalculator(Calculator):
 
     def _get_representation_type(self):
         r"""
+        Private method to determine representation type (schnet or wcasf).
         """
         if "representation.cutoff.cutoff" in self.model.state_dict().keys():
             self.model_type = "wacsf"
