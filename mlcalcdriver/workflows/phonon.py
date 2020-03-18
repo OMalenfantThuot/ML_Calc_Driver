@@ -25,7 +25,14 @@ class Phonon:
     translated by a small amount around the equilibrium positions.
     """
 
-    def __init__(self, posinp, calculator, relax=True, finite_difference=False, translation_amplitudes=None):
+    def __init__(
+        self,
+        posinp,
+        calculator,
+        relax=True,
+        finite_difference=False,
+        translation_amplitudes=None,
+    ):
         r"""
         The initial position fo the atoms are taken from the `init_state`
         Posinp instance. If they are not part of a relaxed geometry, the
@@ -64,7 +71,7 @@ class Phonon:
         self.posinp = posinp
         self.calculator = calculator
         self.relax = relax
-        self.finite_difference=finite_difference
+        self.finite_difference = finite_difference
         self.translation_amplitudes = translation_amplitudes
 
         if self.relax:
@@ -287,7 +294,11 @@ class Phonon:
         """
         n_at = len(self.posinp)
         if "hessian" in job.results.keys():
-            h = job.results["hessian"].reshape(3*n_at,3*n_at) * EV_TO_HA * B_TO_ANG ** 2
+            h = (
+                job.results["hessian"].reshape(3 * n_at, 3 * n_at)
+                * EV_TO_HA
+                * B_TO_ANG ** 2
+            )
             return (h + h.T) / 2.0
         else:
             hessian = np.zeros((3 * n_at, 3 * n_at))

@@ -51,7 +51,9 @@ class SchnetPackCalculator(Calculator):
         Main method to use when making a calculation with
         the calculator.
         """
-        init_property, out_name, derivative, wrt = get_derivative_names(property, self.available_properties)
+        init_property, out_name, derivative, wrt = get_derivative_names(
+            property, self.available_properties
+        )
 
         if len(posinp) > 1 and derivative:
             batch_size = 1

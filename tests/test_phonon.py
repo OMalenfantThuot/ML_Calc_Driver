@@ -30,7 +30,12 @@ class TestPhononFinite:
         ph2.run()
         assert np.allclose(ph1.energies, ph2.energies)
 
-        ph3 = Phonon(posinp=self.posN2, calculator=self.calcN2, finite_difference=True, relax=False)
+        ph3 = Phonon(
+            posinp=self.posN2,
+            calculator=self.calcN2,
+            finite_difference=True,
+            relax=False,
+        )
         ph3.run()
         assert not np.allclose(ph3.energies, ph1.energies, atol=100)
 
@@ -53,10 +58,10 @@ class TestPhononAutoGrad:
         ph1 = Phonon(posinp=self.posH2O, calculator=self.calc_ener)
         ph1.run()
         ph1.energies.sort()
-        assert(np.allclose(ph1.energies[6:9], [1726,3856,3942], atol=1))
+        assert np.allclose(ph1.energies[6:9], [1726, 3856, 3942], atol=1)
 
     def test_ph_h2o_autograd_1st_derivative(self):
         ph1 = Phonon(posinp=self.posH2O, calculator=self.calc_for)
         ph1.run()
         ph1.energies.sort()
-        assert(np.allclose(ph1.energies[6:9], [1589, 3703, 3812], atol=1))
+        assert np.allclose(ph1.energies[6:9], [1589, 3703, 3812], atol=1)

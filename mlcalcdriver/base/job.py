@@ -159,7 +159,9 @@ class Job:
                 warnings.warn("CUDA was asked for, but is not available.", UserWarning)
 
         if not finite_difference:
-                predictions = self.calculator.run(property=property, posinp=self.posinp, batch_size=batch_size)
+            predictions = self.calculator.run(
+                property=property, posinp=self.posinp, batch_size=batch_size
+            )
         else:
             self._create_additional_structures()
             raw_predictions = self.calculator.run(
@@ -181,7 +183,7 @@ class Job:
                 )
                 pred_idx += 12 * len(self._init_posinp[struct_idx])
             self.posinp = deepcopy(self._init_posinp)
-        
+
         for pred in predictions.keys():
             # Future proofing, will probably need some work
             if pred in ["energy", "gap"]:
