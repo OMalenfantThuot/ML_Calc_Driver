@@ -234,7 +234,7 @@ class Phonon:
             job = Job(posinp=self._create_displacements(), calculator=self.calculator)
             job.run(property="forces", device=device, batch_size=batch_size)
         else:
-            job = Job(posinp=self.posinp, calculator=self.calculator)
+            job = Job(posinp=self._ground_state, calculator=self.calculator)
             job.run(property="hessian", device=device, batch_size=batch_size)
         self._post_proc(job)
 
@@ -285,10 +285,11 @@ class Phonon:
         r"""
         Computes the hessian matrix from the forces
         """
+        n_at = len(self.posinp)
         if "hessian" in job.results.keys():
-            return job.results["hessian"] * EV_TO_HA * B_TO_ANG ** 2
+            h = job.results["hessian"].reshape(3*n_at,3*n_at) * EV_TO_HA * B_TO_ANG ** 2
+            return (h + h.T) / 2.0
         else:
-            n_at = len(self.posinp)
             hessian = np.zeros((3 * n_at, 3 * n_at))
             forces = np.array(job.results["forces"]) * EV_TO_HA * B_TO_ANG
             for i in range(3 * n_at):

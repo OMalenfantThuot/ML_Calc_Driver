@@ -9,7 +9,7 @@ import torch
 from schnetpack import AtomsLoader
 from mlcalcdriver.globals import eVA
 from mlcalcdriver.calculators import Calculator
-from mlcalcdriver.calculators.utils import torch_derivative
+from mlcalcdriver.calculators.utils import torch_derivative, get_derivative_names
 from mlcalcdriver.interfaces import posinp_to_ase_atoms, SchnetPackData
 from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProvider
 from mlcalcdriver.globals import EV_TO_HA, B_TO_ANG
@@ -51,26 +51,7 @@ class SchnetPackCalculator(Calculator):
         Main method to use when making a calculation with
         the calculator.
         """
-        if property not in self.available_properties:
-            if property == "forces" and "energy" in self.available_properties:
-                init_property, out_name, derivative = "energy", "forces", -1
-                wrt = ["_positions"]
-            elif property == "hessian" and "energy" in self.available_properties:
-                init_property, out_name, derivative = "energy", "hessian", -2
-                wrt = ["_positions", "_positions"]
-            elif property == "hessian" and forces in self.available_properties:
-                init_property, out_name, derivative = "forces", "hessian", 1
-                wrt = ["_positions"]
-            else:
-                raise ValueError(
-                    "The property {} is not in the available properties of the model : {}.".format(
-                        property, self.available_properties
-                    )
-                )
-        elif property == "energy" and "energy_U0" in self.available_properties:
-            init_property, derivative = "energy_U0", 0
-        else:
-            init_property, derivative = property, 0
+        init_property, out_name, derivative, wrt = get_derivative_names(property, self.available_properties)
 
         if len(posinp) > 1 and derivative:
             batch_size = 1
@@ -117,11 +98,14 @@ class SchnetPackCalculator(Calculator):
                 for inp in set(wrt):
                     batch[inp].requires_grad_()
                 results = self.model(batch)
-                deriv2 = torch_derivative(
+                deriv2 = torch.unsqueeze(
                     torch_derivative(
-                        results[init_property], batch[wrt[0]], create_graph=True,
+                        torch_derivative(
+                            results[init_property], batch[wrt[0]], create_graph=True,
+                        ),
+                        batch[wrt[0]],
                     ),
-                    batch[wrt[0]],
+                    0,
                 )
                 if derivative < 0:
                     deriv2 = -1.0 * deriv2

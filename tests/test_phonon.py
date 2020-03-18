@@ -9,7 +9,7 @@ pos_folder = "tests/posinp_files/"
 model_folder = "tests/models/"
 
 
-class TestPhonon:
+class TestPhononFinite:
 
     posN2 = Posinp.from_file(os.path.join(pos_folder, "N2_unrelaxed.xyz"))
     calcN2 = SchnetPackCalculator(os.path.join(model_folder, "myN2_model"))
@@ -42,4 +42,21 @@ class TestPhonon:
         with pytest.raises(TypeError):
             ph = Phonon(posinp=self.posN2, calculator=None)
 
-    # TODO verifiy normal modes
+
+class TestPhononAutoGrad:
+
+    posH2O = Posinp.from_file(os.path.join(pos_folder, "H2Orelaxed.xyz"))
+    calc_ener = SchnetPackCalculator(os.path.join(model_folder, "H2O_model"))
+    calc_for = SchnetPackCalculator(os.path.join(model_folder, "H2O_forces_model"))
+
+    def test_ph_h2o_autograd_2nd_derivative(self):
+        ph1 = Phonon(posinp=self.posH2O, calculator=self.calc_ener)
+        ph1.run()
+        ph1.energies.sort()
+        assert(np.allclose(ph1.energies[6:9], [1726,3856,3942], atol=1))
+
+    def test_ph_h2o_autograd_1st_derivative(self):
+        ph1 = Phonon(posinp=self.posH2O, calculator=self.calc_for)
+        ph1.run()
+        ph1.energies.sort()
+        assert(np.allclose(ph1.energies[6:9], [1589, 3703, 3812], atol=1))
