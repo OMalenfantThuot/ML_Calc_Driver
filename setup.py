@@ -3,11 +3,11 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy>=1.16"]
+requirements = ["numpy>=1.18", "torch>=1.4.0", "schnetpack==0.3"]
 
 setup(
     name="mlcalcdriver",
-    version="0.3.1",
+    version="1.0.0",
     author="Olivier Malenfant-Thuot",
     author_email="malenfantthuotolivier@gmail.com",
     description="A package to drive atomic calculations using machine learned models.",
