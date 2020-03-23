@@ -652,7 +652,7 @@ class Posinp(Sequence):
             Index of the middle atom
         k: int
             Index of the third atom
-        
+
         Returns
         -------
         angle: float
