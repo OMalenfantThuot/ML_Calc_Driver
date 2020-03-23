@@ -640,6 +640,29 @@ class Posinp(Sequence):
             raise NotImplementedError
         self.units = new_units
 
+    def angle(self, i, j, k):
+        r"""
+        Returns the angle between three atoms
+
+        Parameters
+        ----------
+        i: int
+            Index of the first atom
+        j: int
+            Index of the middle atom
+        k: int
+            Index of the third atom
+        
+        Returns
+        -------
+        angle: float
+            Angle between the three atoms, in radians
+        """
+        ij = self.positions[i] - self.positions[j]
+        jk = self.positions[k] - self.positions[j]
+        angle = np.arccos(np.dot(ij, jk) / (np.linalg.norm(ij) * np.linalg.norm(jk)))
+        return angle
+
 
 class Atom(object):
     r"""
