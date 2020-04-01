@@ -660,7 +660,11 @@ class Posinp(Sequence):
         """
         ij = self.positions[i] - self.positions[j]
         jk = self.positions[k] - self.positions[j]
-        angle = np.arccos(np.dot(ij, jk) / (np.linalg.norm(ij) * np.linalg.norm(jk)))
+        angle = np.arccos(
+            np.clip(
+                np.dot(ij, jk) / (np.linalg.norm(ij) * np.linalg.norm(jk)), -1.0, 1.0
+            )
+        )
         return angle
 
 
