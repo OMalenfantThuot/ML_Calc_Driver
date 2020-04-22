@@ -2,8 +2,10 @@ dist: xenial
 language: python
 python: 3.7.4
 install:
-  - cd ../; git clone git@github.com:atomistic-machine-learning/schnetpack.git; cd schnetpack/
-  - pip install .; cd ../ML_Calc_Driver/
+  - git clone git@github.com:atomistic-machine-learning/schnetpack.git
+  - cd schnetpack/
+  - pip install .
+  - cd ../
   - pip install -r requirements_dev.txt
   - pip install -e .
 script:
