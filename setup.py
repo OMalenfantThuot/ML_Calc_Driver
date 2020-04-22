@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy>=1.18", "torch>=1.4.0", "schnetpack==0.3"]
+requirements = ["numpy>=1.18", "torch>=1.4.0", "schnetpack>=0.3"]
 
 setup(
     name="mlcalcdriver",
