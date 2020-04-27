@@ -16,6 +16,8 @@ This package has been tested with python 3.7, but should work with older python 
 Credit to [mmoriniere](https://gitlab.com/mmoriniere) for the [MyBigDFT package](https://gitlab.com/mmoriniere/MyBigDFT)
 which served as a foundation for this work. Some classes have been directly adapted from MyBigDFT.
 
+**Dependencies scanned by [PyUp.io](https://pyup.io/)**
+
 ## Documentation
 
 The documentation is available [here](https://omalenfantthuot.github.io/ML_Calc_Driver/).
