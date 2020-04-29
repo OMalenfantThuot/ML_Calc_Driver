@@ -199,8 +199,26 @@ C    7.327412521    0.000000000   3.461304757"""
         assert self.periodic_pos.units == "angstroem"
         self.periodic_pos.convert_units("angstroem")
         assert np.isclose(self.periodic_pos.positions, pos1).all()
+        red = Posinp.from_file(tests_fol + "reduced.xyz")
+        red.convert_units("angstroem")
+        assert np.isclose(
+            red.positions,
+            np.array(
+                [
+                    [0.4233418, 1.32294312, 0.95251905],
+                    [3.81007619, 0.26458862, 0.47625952],
+                ]
+            ),
+        ).all()
 
     def test_periodic_displacement(self):
         pos1 = Posinp.from_file(tests_fol + "perio1.xyz")
         pos2 = Posinp.from_file(tests_fol + "perio2.xyz")
         assert pos1 == pos2
+
+    def test_angles(self):
+        h2o = Posinp.from_file(tests_fol + "H2Orelaxed.xyz")
+        a = h2o.angle(1, 0, 2) * 180 / np.pi
+        assert np.isclose(a, 104.1219, atol=10 ** -4)
+        a1, a2 = h2o.angle(0, 1, 2), h2o.angle(2, 1, 0)
+        assert a1 == a2
