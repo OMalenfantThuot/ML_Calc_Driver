@@ -30,7 +30,14 @@ class Posinp(Sequence):
       coordinates (for :math:`x`, :math:`y` and :math:`z`).
     """
 
-    def __init__(self, atoms, units="angstroem", boundary_conditions="free", cell=None, angles=None):
+    def __init__(
+        self,
+        atoms,
+        units="angstroem",
+        boundary_conditions="free",
+        cell=None,
+        angles=None,
+    ):
         r"""
         Parameters
         ----------
@@ -67,6 +74,7 @@ class Posinp(Sequence):
         self.boundary_conditions = boundary_conditions
         self.cell = cell
         self.angles = angles
+        self.orthorhombic = True if (self.angles == 90.0).all() else False
         self._check_initial_values(self.cell, self.units, self.boundary_conditions)
 
     @staticmethod
@@ -91,7 +99,7 @@ class Posinp(Sequence):
                         boundary_conditions
                     )
                 )
-        if boundary_conditions == "periodic" and "inf" in cell:
+        if boundary_conditions == "periodic" and 0.0 in cell:
             raise ValueError(
                 "Cannot use periodic boundary conditions with a cell meant "
                 "for a surface calculation."
@@ -371,13 +379,12 @@ class Posinp(Sequence):
     @angles.setter
     def angles(self, angles):
         if angles is None:
-            self._angles = np.array([90., 90., 90.])
+            self._angles = np.array([90.0, 90.0, 90.0])
         else:
             if len(angles) != 3:
                 raise ValueError("Posinp instance needs 3 angles.")
             else:
                 self._angles = np.array(angles)
-
 
     @property
     def positions(self):
@@ -495,7 +502,7 @@ class Posinp(Sequence):
         """
         return (
             "Posinp({0.atoms}, '{0.units}', '{0.boundary_conditions}', "
-            "cell={0.cell})".format(self)
+            "cell={0.cell}, angles={0.angles})".format(self)
         )
 
     def write(self, filename):
