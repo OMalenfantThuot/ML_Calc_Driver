@@ -30,7 +30,7 @@ class Posinp(Sequence):
       coordinates (for :math:`x`, :math:`y` and :math:`z`).
     """
 
-    def __init__(self, atoms, units="angstroem", boundary_conditions="free", cell=None):
+    def __init__(self, atoms, units="angstroem", boundary_conditions="free", cell=None, angles=None):
         r"""
         Parameters
         ----------
@@ -66,6 +66,7 @@ class Posinp(Sequence):
         self.units = units
         self.boundary_conditions = boundary_conditions
         self.cell = cell
+        self.angles = angles
         self._check_initial_values(self.cell, self.units, self.boundary_conditions)
 
     @staticmethod
@@ -341,7 +342,7 @@ class Posinp(Sequence):
         r"""
         Returns
         -------
-        list of three `float` or `None`
+        numpy.array of three `float` or `None`
             Cell size if the simulation includes periodic boundary conditions.
         """
         return self._cell
@@ -353,7 +354,30 @@ class Posinp(Sequence):
                 abs(float(size)) if size not in [".inf", "inf"] else 0.0
                 for size in cell
             ]
-        self._cell = cell
+            self._cell = np.array(cell)
+        else:
+            self._cell = None
+
+    @property
+    def angles(self):
+        r"""
+        Returns
+        -------
+        numpy.array of three `float` or `None`
+            Angles (degrees) between lattice vectors in order (xy, xz, yz)
+        """
+        return self._angles
+
+    @angles.setter
+    def angles(self, angles):
+        if angles is None:
+            self._angles = np.array([90., 90., 90.])
+        else:
+            if len(angles) != 3:
+                raise ValueError("Posinp instance needs 3 angles.")
+            else:
+                self._angles = np.array(angles)
+
 
     @property
     def positions(self):
@@ -419,7 +443,11 @@ class Posinp(Sequence):
                 cell[1] = 0.0
             if other.boundary_conditions == "surface":
                 other_cell[1] = 0.0
-            same_cell = cell == other_cell
+            if isinstance(cell, np.ndarray) or isinstance(other_cell, np.ndarray):
+                same_cell = (cell == other_cell).all()
+            else:
+                same_cell = cell == other_cell
+            same_angles = (self.angles == other.angles).all()
             # Check the other basic attributes
             same_BC = self.boundary_conditions == other.boundary_conditions
             same_base = (
@@ -427,6 +455,7 @@ class Posinp(Sequence):
                 and len(self) == len(other)
                 and self.units == other.units
                 and same_cell
+                and same_angles
             )
             # Finally check the atoms only if the base is similar, as it
             # might be time-consuming for large systems
@@ -621,12 +650,12 @@ class Posinp(Sequence):
         elif self.units == "atomic" and new_units == "angstroem":
             for atom in self:
                 atom.position = atom.position * B_TO_ANG
-            if self.cell:
+            if self.cell is not None:
                 self.cell = list(np.array(self.cell) * B_TO_ANG)
         elif self.units == "angstroem" and new_units == "atomic":
             for atom in self:
                 atom.position = atom.position * ANG_TO_B
-            if self.cell:
+            if self.cell is not None:
                 self.cell = list(np.array(self.cell) * ANG_TO_B)
         elif self.units == "reduced" and new_units == "atomic":
             for atom in self:
@@ -634,7 +663,7 @@ class Posinp(Sequence):
         elif self.units == "reduced" and new_units == "angstroem":
             for atom in self:
                 atom.position = atom.position * np.array(self.cell) * B_TO_ANG
-            if self.cell:
+            if self.cell is not None:
                 self.cell = list(np.array(self.cell) * B_TO_ANG)
         else:
             raise NotImplementedError

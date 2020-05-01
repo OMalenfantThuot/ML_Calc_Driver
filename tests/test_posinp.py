@@ -27,18 +27,22 @@ C    4.662898877    1.000000000   3.461304757
 C    7.327412521    0.000000000   3.461304757"""
     str_pos = Posinp.from_string(string)
 
-    @pytest.mark.parametrize(
-        "value, expected",
-        [
-            (len(pos), 4),
-            (pos.units, "reduced"),
-            (pos.boundary_conditions, "surface"),
-            (pos.cell, [8.07007483423, 0.0, 4.65925987792]),
-            (pos[0], Atom("C", [0.08333333333, 0.5, 0.25])),
-        ],
-    )
-    def test_from_file(self, value, expected):
-        assert value == expected
+    value = [len(pos), pos.units, pos.boundary_conditions, pos.cell, pos[0], pos.angles]
+    expected = [
+        4,
+        "reduced",
+        "surface",
+        np.array([8.07007483423, 0.0, 4.65925987792]),
+        Atom("C", [0.08333333333, 0.5, 0.25]),
+        np.array([90.0, 90.0, 90.0]),
+    ]
+
+    def test_from_file(self):
+        for v, e in zip(self.value, self.expected):
+            if isinstance(v, np.ndarray):
+                assert (v == e).all()
+            else:
+                assert v == e
 
     def test_from_string(self):
         assert self.str_pos == self.free_pos
