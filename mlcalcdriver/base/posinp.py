@@ -187,6 +187,11 @@ class Posinp(Sequence):
             cell = [line2[1], 0.0, line2[3]]
         else:
             cell = None
+        # Angles if present
+        if lines[0][0] == "angles":
+            angles = [float(a) for a in lines.pop(0)[1:]]
+        else:
+            angles = None
         # Remove the lines about the forces, if there are some
         first_elements = [line[0] for line in lines]
         if "forces" in first_elements:
@@ -208,7 +213,7 @@ class Posinp(Sequence):
                     position, np.array(cell, dtype=float), boundary_conditions
                 )
             atoms.append(Atom(atom_type, position))
-        return cls(atoms, units, boundary_conditions, cell=cell)
+        return cls(atoms, units, boundary_conditions, cell=cell, angles=angles)
 
     @classmethod
     def from_dict(cls, posinp):
@@ -272,6 +277,7 @@ class Posinp(Sequence):
             atoms.append(Atom.from_dict(atom))
         units = posinp.get("units", "atomic")  # Units of the coordinates
         cell = posinp.get("cell")  # Simulation cell size
+        angles = posinp.get("angles")
         # Infer the boundary conditions from the value of cell
         if cell is None:
             boundary_conditions = "free"
@@ -280,7 +286,7 @@ class Posinp(Sequence):
                 boundary_conditions = "surface"
             else:
                 boundary_conditions = "periodic"
-        return cls(atoms, units, boundary_conditions, cell=cell)
+        return cls(atoms, units, boundary_conditions, cell=cell, angles=angles)
 
     @property
     def atoms(self):
@@ -490,6 +496,7 @@ class Posinp(Sequence):
             pos_str += "   {}   {}   {}\n".format(*self.cell)
         else:
             pos_str += "\n"
+        pos_str += "angles {}  {}  {}\n".format(*self.angles)
         # Add all the other lines, representing the atoms
         pos_str += "".join([str(atom) for atom in self])
         return pos_str
@@ -540,7 +547,7 @@ class Posinp(Sequence):
         """
         pos_1 = self[i_at_1].position
         pos_2 = self[i_at_2].position
-        return np.sqrt(sum([(pos_1[i] - pos_2[i]) ** 2 for i in range(3)]))
+        return np.linalg.norm(pos_1 - pos_2)
 
     def translate_atom(self, i_at, vector):
         r"""
@@ -658,20 +665,20 @@ class Posinp(Sequence):
             for atom in self:
                 atom.position = atom.position * B_TO_ANG
             if self.cell is not None:
-                self.cell = list(np.array(self.cell) * B_TO_ANG)
+                self.cell = self.cell * B_TO_ANG
         elif self.units == "angstroem" and new_units == "atomic":
             for atom in self:
                 atom.position = atom.position * ANG_TO_B
             if self.cell is not None:
-                self.cell = list(np.array(self.cell) * ANG_TO_B)
+                self.cell = self.cell * ANG_TO_B
         elif self.units == "reduced" and new_units == "atomic":
             for atom in self:
-                atom.position = atom.position * np.array(self.cell)
+                atom.position = atom.position * self.cell
         elif self.units == "reduced" and new_units == "angstroem":
             for atom in self:
-                atom.position = atom.position * np.array(self.cell) * B_TO_ANG
+                atom.position = atom.position * self.cell * B_TO_ANG
             if self.cell is not None:
-                self.cell = list(np.array(self.cell) * B_TO_ANG)
+                self.cell = self.cell * B_TO_ANG
         else:
             raise NotImplementedError
         self.units = new_units

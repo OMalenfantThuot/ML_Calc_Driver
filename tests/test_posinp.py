@@ -52,7 +52,7 @@ C    7.327412521    0.000000000   3.461304757"""
         new_pos = Posinp(atoms, units="angstroem", boundary_conditions="free")
         msg = (
             "Posinp([Atom('C', [0.0, 0.0, 0.0]), Atom('N', [0.0, 0.0, "
-            "1.0])], 'angstroem', 'free', cell=None)"
+            "1.0])], 'angstroem', 'free', cell=None, angles=[90. 90. 90.])"
         )
         assert repr(new_pos) == msg
 
