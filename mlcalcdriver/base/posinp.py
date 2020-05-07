@@ -4,8 +4,10 @@ atomic systems used as input for a calculation.
 """
 
 from copy import deepcopy
+from collections import Counter
 from collections.abc import Sequence
 import numpy as np
+from ase.cell import Cell
 from mlcalcdriver.globals import ATOMS_MASS, B_TO_ANG, ANG_TO_B
 
 
@@ -74,7 +76,7 @@ class Posinp(Sequence):
         self.boundary_conditions = boundary_conditions
         self.cell = cell
         self.angles = angles
-        self.orthorhombic = True if (self.angles == 90.0).all() else False
+        self.orthorhombic = self.cell.orthorhombic
         self._check_initial_values(self.cell, self.units, self.boundary_conditions)
 
     @staticmethod
@@ -86,25 +88,18 @@ class Posinp(Sequence):
             If some initial values are invalid, contradictory or
             missing.
         """
-        if cell is not None:
-            if len(cell) != 3:
-                raise ValueError(
-                    "The cell size must be of length 3 (one value per "
-                    "space coordinate)"
-                )
-        else:
-            if boundary_conditions != "free":
-                raise ValueError(
-                    "You must give a cell size to use '{}' boundary conditions".format(
-                        boundary_conditions
-                    )
-                )
-        if boundary_conditions == "periodic" and 0.0 in cell:
+        lengths_counter = Counter(list(cell.lengths()))
+        if boundary_conditions == "periodic" and lengths_counter[0] != 0:
             raise ValueError(
-                "Cannot use periodic boundary conditions with a cell meant "
-                "for a surface calculation."
+                "All 3 lattice vectors should have a non zero length in periodic boundary conditions."
             )
-        elif boundary_conditions == "free" and units == "reduced":
+        elif boundary_conditions == "surface" and lengths_counter[0] != 1:
+            raise ValueError(
+                "One dimension of the cell should be zero for a surface calculation."
+            )
+        elif boundary_conditions == "free" and lengths_counter[0] != 3:
+            raise ValueError("All 3 lattice vectors should be 0 for free calculations.")
+        if boundary_conditions == "free" and units == "reduced":
             raise ValueError("Cannot use reduced units with free boundary conditions")
 
     @classmethod
@@ -189,9 +184,10 @@ class Posinp(Sequence):
             cell = None
         # Angles if present
         if lines[0][0] == "angles":
-            angles = [float(a) for a in lines.pop(0)[1:]]
+            angles = np.array([float(a) for a in lines.pop(0)[1:]])
         else:
-            angles = None
+            angles = np.array([90.0, 90.0, 90.0])
+        orthorhombic = True if (angles == 90.0).all() else False
         # Remove the lines about the forces, if there are some
         first_elements = [line[0] for line in lines]
         if "forces" in first_elements:
@@ -208,10 +204,6 @@ class Posinp(Sequence):
         for line in lines:
             atom_type = line[0]
             position = np.array(line[1:4], dtype=float)
-            if boundary_conditions != "free":
-                position = periodic_positions(
-                    position, np.array(cell, dtype=float), boundary_conditions
-                )
             atoms.append(Atom(atom_type, position))
         return cls(atoms, units, boundary_conditions, cell=cell, angles=angles)
 
@@ -245,15 +237,6 @@ class Posinp(Sequence):
         >>> pos = Posinp.from_dict(pos_dict)
         >>> pos.boundary_conditions
         'surface'
-
-        The value of the "cell" key allows to derive the boundary
-        conditions. Replacing 'inf' by a number gives a posinp with
-        periodic boundary conditions:
-
-        >>> pos_dict["cell"] = [8.07007483423, 10.0, 4.65925987792]
-        >>> pos = Posinp.from_dict(pos_dict)
-        >>> pos.boundary_conditions
-        'periodic'
 
         If there is no "cell" key, then the boundary conditions are set
         to "free". Here, given that the units are reduced, this raises
@@ -362,15 +345,22 @@ class Posinp(Sequence):
         return self._cell
 
     @cell.setter
+    # def cell(self, cell):
+    #    if cell is not None:
+    #        cell = [
+    #            abs(float(size)) if size not in [".inf", "inf"] else 0.0
+    #            for size in cell
+    #        ]
+    #        self._cell = np.array(cell)
+    #    else:
+    #        self._cell = None
     def cell(self, cell):
-        if cell is not None:
+        if cell is not None and not isinstance(cell, Cell):
             cell = [
                 abs(float(size)) if size not in [".inf", "inf"] else 0.0
                 for size in cell
             ]
-            self._cell = np.array(cell)
-        else:
-            self._cell = None
+        self._cell = Cell.new(cell)
 
     @property
     def angles(self):
@@ -378,7 +368,7 @@ class Posinp(Sequence):
         Returns
         -------
         numpy.array of three `float` or `None`
-            Angles (degrees) between lattice vectors in order (xy, xz, yz)
+            Angles (degrees) between lattice vectors in order (yz, xz, xy)
         """
         return self._angles
 
@@ -452,15 +442,16 @@ class Posinp(Sequence):
             # that the unimportant cell size are not compared
             cell = deepcopy(self.cell)
             other_cell = deepcopy(other.cell)
-            if self.boundary_conditions == "surface":
-                cell[1] = 0.0
-            if other.boundary_conditions == "surface":
-                other_cell[1] = 0.0
-            if isinstance(cell, np.ndarray) or isinstance(other_cell, np.ndarray):
-                same_cell = (cell == other_cell).all()
-            else:
-                same_cell = cell == other_cell
-            same_angles = (self.angles == other.angles).all()
+            # if self.boundary_conditions == "surface":
+            #    cell[1] = 0.0
+            # if other.boundary_conditions == "surface":
+            ##    other_cell[1] = 0.0
+            #if isinstance(cell, np.ndarray) or isinstance(other_cell, np.ndarray):
+            #    same_cell = (cell == other_cell).all()
+            #else:
+            #    same_cell = cell == other_cell
+            #same_angles = (self.angles == other.angles).all()
+            same_cell = (cell==other_cell).all()
             # Check the other basic attributes
             same_BC = self.boundary_conditions == other.boundary_conditions
             same_base = (
@@ -468,7 +459,6 @@ class Posinp(Sequence):
                 and len(self) == len(other)
                 and self.units == other.units
                 and same_cell
-                and same_angles
             )
             # Finally check the atoms only if the base is similar, as it
             # might be time-consuming for large systems
@@ -493,10 +483,11 @@ class Posinp(Sequence):
         pos_str = "{}   {}\n".format(len(self), self.units)
         pos_str += self.boundary_conditions
         if self.cell is not None:
-            pos_str += "   {}   {}   {}\n".format(*self.cell)
+            pos_str += "   {}   {}   {}\n".format(*self.cell.lengths())
         else:
             pos_str += "\n"
-        pos_str += "angles {}  {}  {}\n".format(*self.angles)
+        if not self.orthorhombic:
+            pos_str += "angles {}  {}  {}\n".format(*self.cell.angles())
         # Add all the other lines, representing the atoms
         pos_str += "".join([str(atom) for atom in self])
         return pos_str
@@ -664,21 +655,18 @@ class Posinp(Sequence):
         elif self.units == "atomic" and new_units == "angstroem":
             for atom in self:
                 atom.position = atom.position * B_TO_ANG
-            if self.cell is not None:
-                self.cell = self.cell * B_TO_ANG
+            self.cell = Cell.new(self.cell * B_TO_ANG)
         elif self.units == "angstroem" and new_units == "atomic":
             for atom in self:
                 atom.position = atom.position * ANG_TO_B
-            if self.cell is not None:
-                self.cell = self.cell * ANG_TO_B
+            self.cell = Cell.new(self.cell * ANG_TO_B)
         elif self.units == "reduced" and new_units == "atomic":
             for atom in self:
-                atom.position = atom.position * self.cell
+                atom.position = np.sum(atom.position * self.cell, axis=0)
         elif self.units == "reduced" and new_units == "angstroem":
             for atom in self:
-                atom.position = atom.position * self.cell * B_TO_ANG
-            if self.cell is not None:
-                self.cell = self.cell * B_TO_ANG
+                atom.position = np.sum(atom.position * self.cell * B_TO_ANG, axis=0)
+            self.cell = Cell.new(self.cell * B_TO_ANG)
         else:
             raise NotImplementedError
         self.units = new_units
@@ -871,13 +859,3 @@ class Atom(object):
             )
         except AttributeError:
             return False
-
-
-def periodic_positions(position, cell, boundary_conditions):
-    if boundary_conditions == "free":
-        return position
-    else:
-        below, above = np.where(position < 0.0)[0], np.where(position > cell)[0]
-        position[below] = position[below] + cell[below]
-        position[above] = position[above] - cell[above]
-        return position

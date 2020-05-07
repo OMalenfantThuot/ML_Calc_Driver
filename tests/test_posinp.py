@@ -1,6 +1,7 @@
 import os
 import pytest
 import numpy as np
+from ase.cell import Cell
 from mlcalcdriver import Posinp
 from mlcalcdriver.base import Atom
 
@@ -32,15 +33,15 @@ C    7.327412521    0.000000000   3.461304757"""
         4,
         "reduced",
         "surface",
-        np.array([8.07007483423, 0.0, 4.65925987792]),
+        Cell.new(np.array([8.07007483423, 0.0, 4.65925987792])),
         Atom("C", [0.08333333333, 0.5, 0.25]),
         np.array([90.0, 90.0, 90.0]),
     ]
 
     def test_from_file(self):
         for v, e in zip(self.value, self.expected):
-            if isinstance(v, np.ndarray):
-                assert (v == e).all()
+            if isinstance(v, np.ndarray) or isinstance(v, Cell):
+                assert np.allclose(v, e)
             else:
                 assert v == e
 
@@ -52,7 +53,7 @@ C    7.327412521    0.000000000   3.461304757"""
         new_pos = Posinp(atoms, units="angstroem", boundary_conditions="free")
         msg = (
             "Posinp([Atom('C', [0.0, 0.0, 0.0]), Atom('N', [0.0, 0.0, "
-            "1.0])], 'angstroem', 'free', cell=None, angles=[90. 90. 90.])"
+            "1.0])], 'angstroem', 'free', cell=Cell([0.0, 0.0, 0.0]), angles=[90. 90. 90.])"
         )
         assert repr(new_pos) == msg
 
@@ -63,7 +64,7 @@ C    7.327412521    0.000000000   3.461304757"""
         os.remove(fname)
 
     def test_free_boundary_conditions_has_no_cell(self):
-        assert self.free_pos.cell is None
+        assert (self.free_pos.cell == Cell.new()).all()
 
     def test_translate_atom(self):
         new_pos = self.pos.translate_atom(0, [0.5, 0, 0])
@@ -124,25 +125,25 @@ C    7.327412521    0.000000000   3.461304757"""
             "surface",
             cell=[40, ".inf", 40],
         )
-        pos_wo_inf = Posinp(
-            [
-                Atom(
-                    "N",
-                    [2.97630782434901e-23, 6.87220595204354e-23, 0.0107161998748779],
-                ),
-                Atom(
-                    "N",
-                    [-1.10434491945017e-23, -4.87342174483075e-23, 1.10427379608154],
-                ),
-            ],
-            "angstroem",
-            "surface",
-            cell=[40, 40, 40],
-        )
-        assert pos_with_inf == pos_wo_inf
+        with pytest.raises(ValueError):
+            pos_wo_inf = Posinp(
+                [
+                    Atom(
+                        "N",
+                        [2.97630782434901e-23, 6.87220595204354e-23, 0.0107161998748779],
+                    ),
+                    Atom(
+                        "N",
+                        [-1.10434491945017e-23, -4.87342174483075e-23, 1.10427379608154],
+                    ),
+                ],
+                "angstroem",
+                "surface",
+                cell=[40, 40, 40],
+            )
         # They are obviously different if the cell size along the other
         # directions are not the same
-        pos2_wo_inf = Posinp(
+        pos2_with_inf = Posinp(
             [
                 Atom(
                     "N",
@@ -157,9 +158,9 @@ C    7.327412521    0.000000000   3.461304757"""
             "surface",
             cell=[20, "inf", 40],
         )
-        assert pos_with_inf != pos2_wo_inf
+        assert pos_with_inf != pos2_with_inf
         # They still have the same BC
-        assert pos2_wo_inf.boundary_conditions == pos_with_inf.boundary_conditions
+        assert pos2_with_inf.boundary_conditions == pos_with_inf.boundary_conditions
 
     def test_to_centroid(self):
         atoms = [Atom("N", [0, 0, 0]), Atom("N", [0, 0, 1.1])]
@@ -205,6 +206,7 @@ C    7.327412521    0.000000000   3.461304757"""
         assert np.isclose(self.periodic_pos.positions, pos1).all()
         red = Posinp.from_file(tests_fol + "reduced.xyz")
         red.convert_units("angstroem")
+        print(red.positions)
         assert np.isclose(
             red.positions,
             np.array(
@@ -214,11 +216,6 @@ C    7.327412521    0.000000000   3.461304757"""
                 ]
             ),
         ).all()
-
-    def test_periodic_displacement(self):
-        pos1 = Posinp.from_file(tests_fol + "perio1.xyz")
-        pos2 = Posinp.from_file(tests_fol + "perio2.xyz")
-        assert pos1 == pos2
 
     def test_angles(self):
         h2o = Posinp.from_file(tests_fol + "H2Orelaxed.xyz")
