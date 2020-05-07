@@ -74,8 +74,7 @@ class Posinp(Sequence):
         self.atoms = atoms
         self.units = units
         self.boundary_conditions = boundary_conditions
-        self.cell = cell
-        self.angles = angles
+        self.cell = (cell, angles)
         self.orthorhombic = self.cell.orthorhombic
         self._check_initial_values(self.cell, self.units, self.boundary_conditions)
 
@@ -339,28 +338,45 @@ class Posinp(Sequence):
         r"""
         Returns
         -------
-        numpy.array of three `float` or `None`
-            Cell size if the simulation includes periodic boundary conditions.
+        ase.cell.Cell
+            Object containing informations on the simulation cell.
+            Zeros are used in the non-periodic directions.
         """
         return self._cell
 
     @cell.setter
-    # def cell(self, cell):
-    #    if cell is not None:
-    #        cell = [
-    #            abs(float(size)) if size not in [".inf", "inf"] else 0.0
-    #            for size in cell
-    #        ]
-    #        self._cell = np.array(cell)
-    #    else:
-    #        self._cell = None
     def cell(self, cell):
-        if cell is not None and not isinstance(cell, Cell):
-            cell = [
-                abs(float(size)) if size not in [".inf", "inf"] else 0.0
-                for size in cell
-            ]
-        self._cell = Cell.new(cell)
+        if len(cell) == 2:
+            cell, angles = cell
+        else:
+            angles = None
+        if isinstance(cell, Cell):
+            self._cell = cell
+        elif cell is None:
+            self._cell = Cell.new()
+        elif isinstance(cell, list) or isinstance(cell, np.ndarray):
+            if isinstance(cell, list):
+                cell = np.array(
+                    [
+                        abs(float(size)) if size not in [".inf", "inf"] else 0.0
+                        for size in cell
+                    ]
+                )
+            if cell.size == 3 and angles is not None:
+                if len(angles) == 3:
+                    cell = np.concatenate([cell, angles])
+                else:
+                    raise ValueError("Need three angles to define a cell.")
+            if cell.size in [3, 6, 9]:
+                self._cell = Cell.new(cell)
+            else:
+                raise ValueError(
+                    "Cell definition is not valid. See ase.cell.Cell documentation."
+                )
+        else:
+            raise ValueError(
+                "Cell definition is not valid. See ase.cell.Cell documentation."
+            )
 
     @property
     def angles(self):
@@ -370,17 +386,18 @@ class Posinp(Sequence):
         numpy.array of three `float` or `None`
             Angles (degrees) between lattice vectors in order (yz, xz, xy)
         """
-        return self._angles
+        return self.cell.angles()
 
-    @angles.setter
-    def angles(self, angles):
-        if angles is None:
-            self._angles = np.array([90.0, 90.0, 90.0])
-        else:
-            if len(angles) != 3:
-                raise ValueError("Posinp instance needs 3 angles.")
-            else:
-                self._angles = np.array(angles)
+    # @angles.setter
+    # def angles(self, angles):
+    #    #if angles is None:
+    #    #    self._angles = np.array([90.0, 90.0, 90.0])
+    #    #else:
+    #    #    if len(angles) != 3:
+    #    #        raise ValueError("Posinp instance needs 3 angles.")
+    #    #    else:
+    #    #        self._angles = np.array(angles)
+    #    self._angles = angles
 
     @property
     def positions(self):
@@ -446,12 +463,12 @@ class Posinp(Sequence):
             #    cell[1] = 0.0
             # if other.boundary_conditions == "surface":
             ##    other_cell[1] = 0.0
-            #if isinstance(cell, np.ndarray) or isinstance(other_cell, np.ndarray):
+            # if isinstance(cell, np.ndarray) or isinstance(other_cell, np.ndarray):
             #    same_cell = (cell == other_cell).all()
-            #else:
+            # else:
             #    same_cell = cell == other_cell
-            #same_angles = (self.angles == other.angles).all()
-            same_cell = (cell==other_cell).all()
+            # same_angles = (self.angles == other.angles).all()
+            same_cell = (cell == other_cell).all()
             # Check the other basic attributes
             same_BC = self.boundary_conditions == other.boundary_conditions
             same_base = (
