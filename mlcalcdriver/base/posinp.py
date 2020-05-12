@@ -264,8 +264,17 @@ class Posinp(Sequence):
         if cell is None:
             boundary_conditions = "free"
         else:
-            if str(cell[1]) in [".inf", "inf"] or cell[1] == 0.0:
+            if not isinstance(cell, Cell):
+                cell = [
+                    abs(float(size)) if size not in [".inf", "inf"] else 0.0
+                    for size in cell
+                ]
+                cell = Cell.new(cell)
+            lengths_counter = Counter(list(cell.lengths()))
+            if lengths_counter[0] == 1:
                 boundary_conditions = "surface"
+            elif lengths_counter[0] == 3:
+                boundary_conditions = "free"
             else:
                 boundary_conditions = "periodic"
         return cls(atoms, units, boundary_conditions, cell=cell, angles=angles)
@@ -387,17 +396,6 @@ class Posinp(Sequence):
             Angles (degrees) between lattice vectors in order (yz, xz, xy)
         """
         return self.cell.angles()
-
-    # @angles.setter
-    # def angles(self, angles):
-    #    #if angles is None:
-    #    #    self._angles = np.array([90.0, 90.0, 90.0])
-    #    #else:
-    #    #    if len(angles) != 3:
-    #    #        raise ValueError("Posinp instance needs 3 angles.")
-    #    #    else:
-    #    #        self._angles = np.array(angles)
-    #    self._angles = angles
 
     @property
     def positions(self):

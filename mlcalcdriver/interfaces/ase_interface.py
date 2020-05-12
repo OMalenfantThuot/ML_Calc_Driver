@@ -13,13 +13,7 @@ def posinp_to_ase_atoms(posinp):
         symbols += atom.type
         positions.append(atom.position)
         masses.append(atom.mass)
-    if posinp.boundary_conditions == "free":
-        pbc = False
-    elif posinp.boundary_conditions == "surface":
-        pbc = (True, False, True)
-        posinp.cell[1] = 0
-    elif posinp.boundary_conditions == "periodic":
-        pbc = True
+    pbc = [False if dim == 0.0 else True for dim in posinp.cell.lengths()]
     atoms = ase.Atoms(
         symbols=symbols, positions=positions, masses=masses, cell=posinp.cell, pbc=pbc
     )
@@ -36,15 +30,6 @@ def ase_atoms_to_posinp(atoms):
     for at in atoms:
         positions.append({at.symbol: at.position})
     cell = atoms.get_cell()
-    if cell.orthorhombic:
-        if (cell == 0.0).all():
-            new_cell = None
-        elif cell[1, 1] in [0.0, np.inf]:
-            new_cell = [cell[0, 0], str(np.inf), cell[2, 2]]
-        else:
-            new_cell = [dim[i] for i, dim in enumerate(cell)]
-    else:
-        raise NotImplementedError("Non orthorhombic cells are not supported yet.")
     pos_dict["positions"] = positions
-    pos_dict["cell"] = new_cell
+    pos_dict["cell"] = cell
     return Posinp.from_dict(pos_dict)
