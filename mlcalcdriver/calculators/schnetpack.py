@@ -36,11 +36,11 @@ class SchnetPackCalculator(Calculator):
             Can be either `"cpu"` to use cpu or `"cuda"` to use "gpu"
         """
         try:
+            self.model = load_model(model_dir=model_dir, device=device)
+        except Exception:
             self.model = load_model(
                 model_dir=os.environ["MODELDIR"] + model_dir, device=device
             )
-        except Exception:
-            self.model = load_model(model_dir=model_dir, device=device)
         super(SchnetPackCalculator, self).__init__(units=units)
         self._get_representation_type()
 
