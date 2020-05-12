@@ -90,7 +90,10 @@ class Posinp(Sequence):
         lengths_counter = Counter(list(cell.lengths()))
         if boundary_conditions == "periodic" and lengths_counter[0] != 0:
             raise ValueError(
-                "All 3 lattice vectors should have a non zero length in periodic boundary conditions."
+                """
+                All 3 lattice vectors should have a non zero
+                length in periodic boundary conditions.
+                """
             )
         elif boundary_conditions == "surface" and lengths_counter[0] != 1:
             raise ValueError(
@@ -457,15 +460,6 @@ class Posinp(Sequence):
             # that the unimportant cell size are not compared
             cell = deepcopy(self.cell)
             other_cell = deepcopy(other.cell)
-            # if self.boundary_conditions == "surface":
-            #    cell[1] = 0.0
-            # if other.boundary_conditions == "surface":
-            ##    other_cell[1] = 0.0
-            # if isinstance(cell, np.ndarray) or isinstance(other_cell, np.ndarray):
-            #    same_cell = (cell == other_cell).all()
-            # else:
-            #    same_cell = cell == other_cell
-            # same_angles = (self.angles == other.angles).all()
             same_cell = (cell == other_cell).all()
             # Check the other basic attributes
             same_BC = self.boundary_conditions == other.boundary_conditions
