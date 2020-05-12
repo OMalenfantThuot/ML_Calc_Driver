@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mlcalcdriver.workflows.geopt &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>mlcalcdriver.workflows.geopt &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -156,9 +156,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver</span> <span class="k">import</span> <span class="n">Posinp</span><span class="p">,</span> <span class="n">Job</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="k">import</span> <span class="n">Calculator</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver</span> <span class="kn">import</span> <span class="n">Posinp</span><span class="p">,</span> <span class="n">Job</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="kn">import</span> <span class="n">Calculator</span>
 
 
 <div class="viewcode-block" id="Geopt"><a class="viewcode-back" href="../../../geopt.html#mlcalcdriver.workflows.geopt.Geopt">[docs]</a><span class="k">class</span> <span class="nc">Geopt</span><span class="p">:</span>
@@ -168,7 +168,7 @@
 <span class="sd">    result obtained depends on the trained machine learning model used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">posinp</span><span class="p">,</span> <span class="n">calculator</span><span class="p">,</span> <span class="n">forcemax</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">500</span>
     <span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -363,7 +363,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

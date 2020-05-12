@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mlcalcdriver.base.job &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>mlcalcdriver.base.job &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -156,10 +156,10 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="k">import</span> <span class="n">Calculator</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.base</span> <span class="k">import</span> <span class="n">Posinp</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">HA_TO_EV</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">ANG_TO_B</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="kn">import</span> <span class="n">Calculator</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.base</span> <span class="kn">import</span> <span class="n">Posinp</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="kn">import</span> <span class="n">HA_TO_EV</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">ANG_TO_B</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 
@@ -170,7 +170,7 @@
 <span class="sd">    configuration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -284,7 +284,7 @@
 <span class="sd">                &quot;&quot;&quot;</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="Job.run"><a class="viewcode-back" href="../../../job.html#mlcalcdriver.base.job.Job.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+<div class="viewcode-block" id="Job.run"><a class="viewcode-back" href="../../../job.html#mlcalcdriver.base.job.Job.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">finite_difference</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Main method to call to obtain results for a Job</span>
 
@@ -309,38 +309,35 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;CUDA was asked for, but is not available.&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">property</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">available_properties</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-                <span class="nb">property</span> <span class="o">==</span> <span class="s2">&quot;forces&quot;</span>
-                <span class="ow">and</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">available_properties</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The property </span><span class="si">{}</span><span class="s2"> is not available&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">property</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_create_additional_structures</span><span class="p">()</span>
-                <span class="n">raw_predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                    <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span>
-                <span class="p">)</span>
-                <span class="n">pred_idx</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">predictions</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">struct_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_struct</span><span class="p">):</span>
-                    <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw_predictions</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span><span class="n">pred_idx</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-                    <span class="n">pred_idx</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_forces</span><span class="p">(</span>
-                            <span class="n">raw_predictions</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span>
-                                <span class="n">pred_idx</span> <span class="p">:</span> <span class="n">pred_idx</span>
-                                <span class="o">+</span> <span class="mi">12</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_posinp</span><span class="p">[</span><span class="n">struct_idx</span><span class="p">])</span>
-                            <span class="p">]</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="n">pred_idx</span> <span class="o">+=</span> <span class="mi">12</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_posinp</span><span class="p">[</span><span class="n">struct_idx</span><span class="p">])</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">posinp</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_posinp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">finite_difference</span><span class="p">:</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="nb">property</span><span class="o">=</span><span class="nb">property</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="nb">property</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_additional_structures</span><span class="p">()</span>
+            <span class="n">raw_predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span>
+            <span class="p">)</span>
+            <span class="n">pred_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">struct_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_struct</span><span class="p">):</span>
+                <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw_predictions</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span><span class="n">pred_idx</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">pred_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_forces</span><span class="p">(</span>
+                        <span class="n">raw_predictions</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span>
+                            <span class="n">pred_idx</span> <span class="p">:</span> <span class="n">pred_idx</span>
+                            <span class="o">+</span> <span class="mi">12</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_posinp</span><span class="p">[</span><span class="n">struct_idx</span><span class="p">])</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">pred_idx</span> <span class="o">+=</span> <span class="mi">12</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_posinp</span><span class="p">[</span><span class="n">struct_idx</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">posinp</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_posinp</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="c1"># Future proofing, will probably need some work</span>
-            <span class="k">if</span> <span class="n">pred</span> <span class="o">==</span> <span class="s2">&quot;energy&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pred</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;gap&quot;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hartree&quot;</span><span class="p">:</span>
                     <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="o">*=</span> <span class="n">HA_TO_EV</span>
             <span class="k">elif</span> <span class="n">pred</span> <span class="o">==</span> <span class="s2">&quot;forces&quot;</span><span class="p">:</span>
@@ -348,6 +345,20 @@
                     <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="o">*=</span> <span class="n">HA_TO_EV</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
                     <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="o">*=</span> <span class="n">ANG_TO_B</span>
+            <span class="k">elif</span> <span class="n">pred</span> <span class="o">==</span> <span class="s2">&quot;hessian&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hartree&quot;</span><span class="p">:</span>
+                    <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="o">*=</span> <span class="n">HA_TO_EV</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
+                    <span class="n">predictions</span><span class="p">[</span><span class="n">pred</span><span class="p">]</span> <span class="o">*=</span> <span class="n">ANG_TO_B</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="n">pred</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;dipole_moment&quot;</span><span class="p">,</span> <span class="s2">&quot;mu&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;dipole_moment&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Debye&quot;</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                        <span class="s2">&quot;The unit </span><span class="si">{}</span><span class="s2"> of dipole moment is not implemented yet.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="s2">&quot;dipole_moment&quot;</span><span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
                     <span class="s2">&quot;The units for this predicted quantity have not been implemented yet.&quot;</span>
@@ -427,7 +438,7 @@
 <span class="sd">    Otherwise, the list contains one value for each structure in the Job.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -466,7 +477,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

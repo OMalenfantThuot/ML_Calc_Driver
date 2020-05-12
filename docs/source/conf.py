@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'ML_Calc_Driver'
-copyright = '2019, Olivier Malenfant-Thuot'
+copyright = '2020, Olivier Malenfant-Thuot'
 author = 'Olivier Malenfant-Thuot'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.0'
+release = '1.1.0'
 
 
 # -- General configuration ---------------------------------------------------

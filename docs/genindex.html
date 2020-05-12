@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>Index &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -22,11 +22,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -196,12 +196,16 @@
 </li>
       <li><a href="globals.html#mlcalcdriver.globals.ANG_TO_B">ANG_TO_B (in module mlcalcdriver.globals)</a>
 </li>
-      <li><a href="ase_interface.html#mlcalcdriver.interfaces.ase_atoms_to_posinp">ase_atoms_to_posinp() (in module mlcalcdriver.interfaces)</a>
+      <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.angle">angle() (mlcalcdriver.base.posinp.Posinp method)</a>
 </li>
-      <li><a href="posinp.html#mlcalcdriver.base.posinp.Atom">Atom (class in mlcalcdriver.base.posinp)</a>
+      <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.angles">angles() (mlcalcdriver.base.posinp.Posinp property)</a>
+</li>
+      <li><a href="ase_interface.html#mlcalcdriver.interfaces.ase_atoms_to_posinp">ase_atoms_to_posinp() (in module mlcalcdriver.interfaces)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="posinp.html#mlcalcdriver.base.posinp.Atom">Atom (class in mlcalcdriver.base.posinp)</a>
+</li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.atoms">atoms() (mlcalcdriver.base.posinp.Posinp property)</a>
 </li>
       <li><a href="globals.html#mlcalcdriver.globals.ATOMS_MASS">ATOMS_MASS (in module mlcalcdriver.globals)</a>
@@ -280,16 +284,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.final_posinp">final_posinp() (mlcalcdriver.workflows.geopt.Geopt property)</a>
 </li>
+      <li><a href="phonon.html#mlcalcdriver.workflows.phonon.Phonon.finite_difference">finite_difference() (mlcalcdriver.workflows.phonon.Phonon property)</a>
+</li>
       <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.forcemax">forcemax() (mlcalcdriver.workflows.geopt.Geopt property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Atom.from_dict">from_dict() (mlcalcdriver.base.posinp.Atom class method)</a>
 
       <ul>
         <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.from_dict">(mlcalcdriver.base.posinp.Posinp class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.from_file">from_file() (mlcalcdriver.base.posinp.Posinp class method)</a>
 </li>
       <li><a href="posinp.html#mlcalcdriver.base.posinp.Posinp.from_string">from_string() (mlcalcdriver.base.posinp.Posinp class method)</a>
@@ -342,30 +348,112 @@
 </li>
       <li><a href="geopt.html#mlcalcdriver.workflows.geopt.Geopt.max_iter">max_iter() (mlcalcdriver.workflows.geopt.Geopt property)</a>
 </li>
-      <li><a href="base.html#module-mlcalcdriver.base">mlcalcdriver.base (module)</a>
+      <li>
+    mlcalcdriver.base
+
+      <ul>
+        <li><a href="base.html#module-mlcalcdriver.base">module</a>
 </li>
-      <li><a href="job.html#module-mlcalcdriver.base.job">mlcalcdriver.base.job (module)</a>
+      </ul></li>
+      <li>
+    mlcalcdriver.base.job
+
+      <ul>
+        <li><a href="job.html#module-mlcalcdriver.base.job">module</a>
 </li>
-      <li><a href="posinp.html#module-mlcalcdriver.base.posinp">mlcalcdriver.base.posinp (module)</a>
+      </ul></li>
+      <li>
+    mlcalcdriver.base.posinp
+
+      <ul>
+        <li><a href="posinp.html#module-mlcalcdriver.base.posinp">module</a>
 </li>
-      <li><a href="calculators.html#module-mlcalcdriver.calculators">mlcalcdriver.calculators (module)</a>
+      </ul></li>
+      <li>
+    mlcalcdriver.calculators
+
+      <ul>
+        <li><a href="calculators.html#module-mlcalcdriver.calculators">module</a>
 </li>
+      </ul></li>
+      <li>
+    mlcalcdriver.calculators.calculator
+
+      <ul>
+        <li><a href="calculator.html#module-mlcalcdriver.calculators.calculator">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlcalcdriver.calculators.schnetpack
+
+      <ul>
+        <li><a href="schnetcalc.html#module-mlcalcdriver.calculators.schnetpack">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlcalcdriver.globals
+
+      <ul>
+        <li><a href="globals.html#module-mlcalcdriver.globals">module</a>
+</li>
+      </ul></li>
+      <li>
+    mlcalcdriver.interfaces
+
+      <ul>
+        <li><a href="interfaces.html#module-mlcalcdriver.interfaces">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="calculator.html#module-mlcalcdriver.calculators.calculator">mlcalcdriver.calculators.calculator (module)</a>
+      <li>
+    mlcalcdriver.workflows
+
+      <ul>
+        <li><a href="workflows.html#module-mlcalcdriver.workflows">module</a>
 </li>
-      <li><a href="schnetcalc.html#module-mlcalcdriver.calculators.schnetpack">mlcalcdriver.calculators.schnetpack (module)</a>
+      </ul></li>
+      <li>
+    mlcalcdriver.workflows.geopt
+
+      <ul>
+        <li><a href="geopt.html#module-mlcalcdriver.workflows.geopt">module</a>
 </li>
-      <li><a href="globals.html#module-mlcalcdriver.globals">mlcalcdriver.globals (module)</a>
+      </ul></li>
+      <li>
+    mlcalcdriver.workflows.phonon
+
+      <ul>
+        <li><a href="phonon.html#module-mlcalcdriver.workflows.phonon">module</a>
 </li>
-      <li><a href="interfaces.html#module-mlcalcdriver.interfaces">mlcalcdriver.interfaces (module)</a>
+      </ul></li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="base.html#module-mlcalcdriver.base">mlcalcdriver.base</a>
 </li>
-      <li><a href="workflows.html#module-mlcalcdriver.workflows">mlcalcdriver.workflows (module)</a>
+        <li><a href="job.html#module-mlcalcdriver.base.job">mlcalcdriver.base.job</a>
 </li>
-      <li><a href="geopt.html#module-mlcalcdriver.workflows.geopt">mlcalcdriver.workflows.geopt (module)</a>
+        <li><a href="posinp.html#module-mlcalcdriver.base.posinp">mlcalcdriver.base.posinp</a>
 </li>
-      <li><a href="phonon.html#module-mlcalcdriver.workflows.phonon">mlcalcdriver.workflows.phonon (module)</a>
+        <li><a href="calculators.html#module-mlcalcdriver.calculators">mlcalcdriver.calculators</a>
 </li>
+        <li><a href="calculator.html#module-mlcalcdriver.calculators.calculator">mlcalcdriver.calculators.calculator</a>
+</li>
+        <li><a href="schnetcalc.html#module-mlcalcdriver.calculators.schnetpack">mlcalcdriver.calculators.schnetpack</a>
+</li>
+        <li><a href="globals.html#module-mlcalcdriver.globals">mlcalcdriver.globals</a>
+</li>
+        <li><a href="interfaces.html#module-mlcalcdriver.interfaces">mlcalcdriver.interfaces</a>
+</li>
+        <li><a href="workflows.html#module-mlcalcdriver.workflows">mlcalcdriver.workflows</a>
+</li>
+        <li><a href="geopt.html#module-mlcalcdriver.workflows.geopt">mlcalcdriver.workflows.geopt</a>
+</li>
+        <li><a href="phonon.html#module-mlcalcdriver.workflows.phonon">mlcalcdriver.workflows.phonon</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -501,7 +589,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

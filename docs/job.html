@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Job Object &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>Job Object &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -162,9 +162,9 @@
 <span id="job-object"></span><h1>Job Object<a class="headerlink" href="#module-mlcalcdriver.base.job" title="Permalink to this headline">¶</a></h1>
 <p>The <a class="reference internal" href="#mlcalcdriver.base.job.Job" title="mlcalcdriver.base.job.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a> class is the base object defining similar machine learning
 predictions for a single or many atomic configurations.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mlcalcdriver.base.job.Job">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.job.</code><code class="sig-name descname">Job</code><span class="sig-paren">(</span><em class="sig-param">name=''</em>, <em class="sig-param">posinp=None</em>, <em class="sig-param">calculator=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#Job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.Job" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.job.</code><code class="sig-name descname">Job</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">posinp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">calculator</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#Job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.Job" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class defines a machine learning prediction. It must
 contain a mlcalcdriver.Posinp instance to define the atomic
@@ -181,7 +181,7 @@ properties in the run() method.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.base.job.Job.posinp">
 <em class="property">property </em><code class="sig-name descname">posinp</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.posinp" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -194,7 +194,7 @@ properties in the run() method.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.base.job.Job.name">
 <em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.name" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -208,7 +208,7 @@ of files and directories.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.base.job.Job.num_struct">
 <em class="property">property </em><code class="sig-name descname">num_struct</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.num_struct" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -221,7 +221,7 @@ of files and directories.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.base.job.Job.results">
 <em class="property">property </em><code class="sig-name descname">results</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.results" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -234,7 +234,7 @@ of files and directories.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.base.job.Job.calculator">
 <em class="property">property </em><code class="sig-name descname">calculator</code><a class="headerlink" href="#mlcalcdriver.base.job.Job.calculator" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -247,9 +247,9 @@ of files and directories.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.base.job.Job.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">property</em>, <em class="sig-param">device='cpu'</em>, <em class="sig-param">batch_size=128</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#Job.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.Job.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">property</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">128</span></em>, <em class="sig-param"><span class="n">finite_difference</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#Job.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.Job.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main method to call to obtain results for a Job</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -271,16 +271,16 @@ Default is 128.</p></li>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="mlcalcdriver.base.job.JobResults">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.job.</code><code class="sig-name descname">JobResults</code><span class="sig-paren">(</span><em class="sig-param">properties</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#JobResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.JobResults" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.base.job.</code><code class="sig-name descname">JobResults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/base/job.html#JobResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.base.job.JobResults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>Dictionnary containing results from a Job after the run() method
 is completed. A JobResults instance is created for each Job, and
 the results of the latter should be accessed through the former,
 by using the <cite>Job.results</cite> property.</p>
 <p>Predicted values can be accessed as in a standard dictionnary</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">energy</span> <span class="o">=</span> <span class="n">Job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">energy</span> <span class="o">=</span> <span class="n">Job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span>
 <span class="go">&lt;class &#39;list&#39;&gt;</span>
 </pre></div>
@@ -317,7 +317,7 @@ model.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

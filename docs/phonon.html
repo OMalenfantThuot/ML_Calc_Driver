@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Phonon Calculations &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>Phonon Calculations &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -163,9 +163,9 @@
 <p>The <a class="reference internal" href="#mlcalcdriver.workflows.phonon.Phonon" title="mlcalcdriver.workflows.phonon.Phonon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Phonon</span></code></a> class allows to compute the normal modes
 and vibration energies of a system using a machine
 learning trained model.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mlcalcdriver.workflows.phonon.Phonon">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.workflows.phonon.</code><code class="sig-name descname">Phonon</code><span class="sig-paren">(</span><em class="sig-param">posinp</em>, <em class="sig-param">calculator</em>, <em class="sig-param">relax=True</em>, <em class="sig-param">translation_amplitudes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/phonon.html#Phonon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.workflows.phonon.</code><code class="sig-name descname">Phonon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">posinp</span></em>, <em class="sig-param"><span class="n">calculator</span></em>, <em class="sig-param"><span class="n">relax</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">finite_difference</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">translation_amplitudes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/phonon.html#Phonon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class allows to run all the calculations enabling the
 computation of the phonon energies of a given system, using
@@ -194,14 +194,16 @@ to obtain them.</p>
 the created Jobs to evaluate properties.</p></li>
 <li><p><strong>relax</strong> (<em>bool</em>) – Wether the initial positions need to be relaxed or not.
 Default is <cite>True</cite>.</p></li>
+<li><p><strong>finite_difference</strong> (<em>bool</em>) – If True, the hessian matrix is calculated using finite
+displacements of atoms. Default is False. Mostly there for
+legacy reasons.</p></li>
 <li><p><strong>translation_amplitudes</strong> (<em>list of length 3</em>) – Amplitudes of the translations to be applied to each atom
-along each of the three space coordinates (in angstroms).</p></li>
-<li><p><strong>order</strong> (<em>int</em>) – Order of the numerical differentiation used to compute the
-dynamical matrix. Can be either 1, 2 or 3.</p></li>
+along each of the three space coordinates (in angstroms).
+Only relevant if finite_difference is True.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.phonon.Phonon.posinp">
 <em class="property">property </em><code class="sig-name descname">posinp</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.posinp" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -215,7 +217,7 @@ will be calculated.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.phonon.Phonon.calculator">
 <em class="property">property </em><code class="sig-name descname">calculator</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.calculator" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -229,7 +231,7 @@ perform the phonons calculations.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.phonon.Phonon.translation_amplitudes">
 <em class="property">property </em><code class="sig-name descname">translation_amplitudes</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.translation_amplitudes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -243,7 +245,7 @@ the phonon properties. Default is 0.03 Angstroms.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.phonon.Phonon.relax">
 <em class="property">property </em><code class="sig-name descname">relax</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.relax" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -258,7 +260,21 @@ especially if more than one model is used.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
+<dt id="mlcalcdriver.workflows.phonon.Phonon.finite_difference">
+<em class="property">property </em><code class="sig-name descname">finite_difference</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.finite_difference" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>finite_difference</strong> – If <cite>True</cite>, the hessian matrix is calculated using small finite
+movements on the atoms. Default is <cite>False</cite>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.phonon.Phonon.energies">
 <em class="property">property </em><code class="sig-name descname">energies</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.energies" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -271,7 +287,7 @@ especially if more than one model is used.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.phonon.Phonon.dyn_mat">
 <em class="property">property </em><code class="sig-name descname">dyn_mat</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.dyn_mat" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -284,7 +300,7 @@ especially if more than one model is used.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.phonon.Phonon.normal_modes">
 <em class="property">property </em><code class="sig-name descname">normal_modes</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.normal_modes" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -298,9 +314,9 @@ dynamical matrix.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.phonon.Phonon.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">device='cpu'</em>, <em class="sig-param">batch_size=128</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/phonon.html#Phonon.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">128</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/phonon.html#Phonon.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.run" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -338,7 +354,7 @@ Only useful if the relaxation is unstable.</p></li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

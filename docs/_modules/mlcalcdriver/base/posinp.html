@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mlcalcdriver.base.posinp &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>mlcalcdriver.base.posinp &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -154,10 +154,12 @@
 <span class="sd">atomic systems used as input for a calculation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="k">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">ATOMS_MASS</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">ANG_TO_B</span>
+<span class="kn">from</span> <span class="nn">ase.cell</span> <span class="kn">import</span> <span class="n">Cell</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="kn">import</span> <span class="n">ATOMS_MASS</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">ANG_TO_B</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Posinp&quot;</span><span class="p">,</span> <span class="s2">&quot;Atom&quot;</span><span class="p">]</span>
@@ -181,7 +183,14 @@
 <span class="sd">      coordinates (for :math:`x`, :math:`y` and :math:`z`).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;angstroem&quot;</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="o">=</span><span class="s2">&quot;free&quot;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atoms</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;angstroem&quot;</span><span class="p">,</span>
+        <span class="n">boundary_conditions</span><span class="o">=</span><span class="s2">&quot;free&quot;</span><span class="p">,</span>
+        <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">angles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -216,7 +225,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="n">atoms</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">boundary_conditions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">angles</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orthorhombic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">orthorhombic</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -228,25 +238,21 @@
 <span class="sd">            If some initial values are invalid, contradictory or</span>
 <span class="sd">            missing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;The cell size must be of length 3 (one value per &quot;</span>
-                    <span class="s2">&quot;space coordinate)&quot;</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">!=</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;You must give a cell size to use &#39;</span><span class="si">{}</span><span class="s2">&#39; boundary conditions&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                        <span class="n">boundary_conditions</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-        <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;periodic&quot;</span> <span class="ow">and</span> <span class="s2">&quot;inf&quot;</span> <span class="ow">in</span> <span class="n">cell</span><span class="p">:</span>
+        <span class="n">lengths_counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">lengths</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;periodic&quot;</span> <span class="ow">and</span> <span class="n">lengths_counter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Cannot use periodic boundary conditions with a cell meant &quot;</span>
-                <span class="s2">&quot;for a surface calculation.&quot;</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                All 3 lattice vectors should have a non zero</span>
+<span class="sd">                length in periodic boundary conditions.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;free&quot;</span> <span class="ow">and</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;surface&quot;</span> <span class="ow">and</span> <span class="n">lengths_counter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;One dimension of the cell should be zero for a surface calculation.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;free&quot;</span> <span class="ow">and</span> <span class="n">lengths_counter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All 3 lattice vectors should be 0 for free calculations.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;free&quot;</span> <span class="ow">and</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot use reduced units with free boundary conditions&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Posinp.from_file"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.from_file">[docs]</a>    <span class="nd">@classmethod</span>
@@ -323,10 +329,18 @@
         <span class="c1"># Decode the second line</span>
         <span class="n">line2</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="n">line2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">!=</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span> <span class="k">if</span> <span class="n">dim</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="n">dim</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">line2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;periodic&quot;</span><span class="p">:</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">line2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;surface&quot;</span><span class="p">:</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">line2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">line2</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Angles if present</span>
+        <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;angles&quot;</span><span class="p">:</span>
+            <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">angles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">90.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">])</span>
+        <span class="n">orthorhombic</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="p">(</span><span class="n">angles</span> <span class="o">==</span> <span class="mf">90.0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span>
         <span class="c1"># Remove the lines about the forces, if there are some</span>
         <span class="n">first_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;forces&quot;</span> <span class="ow">in</span> <span class="n">first_elements</span><span class="p">:</span>
@@ -343,12 +357,8 @@
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="n">atom_type</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">!=</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
-                <span class="n">position</span> <span class="o">=</span> <span class="n">periodic_positions</span><span class="p">(</span>
-                    <span class="n">position</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">boundary_conditions</span>
-                <span class="p">)</span>
             <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Atom</span><span class="p">(</span><span class="n">atom_type</span><span class="p">,</span> <span class="n">position</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">angles</span><span class="o">=</span><span class="n">angles</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Posinp.from_dict"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">posinp</span><span class="p">):</span>
@@ -381,15 +391,6 @@
 <span class="sd">        &gt;&gt;&gt; pos.boundary_conditions</span>
 <span class="sd">        &#39;surface&#39;</span>
 
-<span class="sd">        The value of the &quot;cell&quot; key allows to derive the boundary</span>
-<span class="sd">        conditions. Replacing &#39;inf&#39; by a number gives a posinp with</span>
-<span class="sd">        periodic boundary conditions:</span>
-
-<span class="sd">        &gt;&gt;&gt; pos_dict[&quot;cell&quot;] = [8.07007483423, 10.0, 4.65925987792]</span>
-<span class="sd">        &gt;&gt;&gt; pos = Posinp.from_dict(pos_dict)</span>
-<span class="sd">        &gt;&gt;&gt; pos.boundary_conditions</span>
-<span class="sd">        &#39;periodic&#39;</span>
-
 <span class="sd">        If there is no &quot;cell&quot; key, then the boundary conditions are set</span>
 <span class="sd">        to &quot;free&quot;. Here, given that the units are reduced, this raises</span>
 <span class="sd">        a ValueError:</span>
@@ -412,15 +413,25 @@
             <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Atom</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">atom</span><span class="p">))</span>
         <span class="n">units</span> <span class="o">=</span> <span class="n">posinp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="s2">&quot;atomic&quot;</span><span class="p">)</span>  <span class="c1"># Units of the coordinates</span>
         <span class="n">cell</span> <span class="o">=</span> <span class="n">posinp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cell&quot;</span><span class="p">)</span>  <span class="c1"># Simulation cell size</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="n">posinp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;angles&quot;</span><span class="p">)</span>
         <span class="c1"># Infer the boundary conditions from the value of cell</span>
         <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;free&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">Cell</span><span class="p">):</span>
+                <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mf">0.0</span>
+                    <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">cell</span>
+                <span class="p">]</span>
+                <span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">lengths_counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">lengths</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="n">lengths_counter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;surface&quot;</span>
+            <span class="k">elif</span> <span class="n">lengths_counter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;free&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">boundary_conditions</span> <span class="o">=</span> <span class="s2">&quot;periodic&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">,</span> <span class="n">angles</span><span class="o">=</span><span class="n">angles</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -490,19 +501,55 @@
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        list of three `float` or `None`</span>
-<span class="sd">            Cell size if the simulation includes periodic boundary conditions.</span>
+<span class="sd">        ase.cell.Cell</span>
+<span class="sd">            Object containing informations on the simulation cell.</span>
+<span class="sd">            Zeros are used in the non-periodic directions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span>
 
     <span class="nd">@cell</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mf">0.0</span>
-                <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">cell</span>
-            <span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span> <span class="o">=</span> <span class="n">cell</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">cell</span><span class="p">,</span> <span class="n">angles</span> <span class="o">=</span> <span class="n">cell</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">angles</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">Cell</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span> <span class="o">=</span> <span class="n">cell</span>
+        <span class="k">elif</span> <span class="n">cell</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="k">if</span> <span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.inf&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mf">0.0</span>
+                        <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">cell</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">angles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">cell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">cell</span><span class="p">,</span> <span class="n">angles</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Need three angles to define a cell.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">size</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Cell definition is not valid. See ase.cell.Cell documentation.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Cell definition is not valid. See ase.cell.Cell documentation.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.array of three `float` or `None`</span>
+<span class="sd">            Angles (degrees) between lattice vectors in order (yz, xz, xy)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angles</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -524,7 +571,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">mass</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The items of a Posinp instance actually are the atoms (so as to</span>
 <span class="sd">        behave like an immutable list of atoms).</span>
@@ -541,10 +588,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -564,11 +611,7 @@
             <span class="c1"># that the unimportant cell size are not compared</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
             <span class="n">other_cell</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;surface&quot;</span><span class="p">:</span>
-                <span class="n">cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;surface&quot;</span><span class="p">:</span>
-                <span class="n">other_cell</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="n">same_cell</span> <span class="o">=</span> <span class="n">cell</span> <span class="o">==</span> <span class="n">other_cell</span>
+            <span class="n">same_cell</span> <span class="o">=</span> <span class="p">(</span><span class="n">cell</span> <span class="o">==</span> <span class="n">other_cell</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="c1"># Check the other basic attributes</span>
             <span class="n">same_BC</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">boundary_conditions</span>
             <span class="n">same_base</span> <span class="o">=</span> <span class="p">(</span>
@@ -587,7 +630,7 @@
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the Posinp to a string in the xyz format.</span>
 
@@ -600,14 +643,16 @@
         <span class="n">pos_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">   </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
         <span class="n">pos_str</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_conditions</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">pos_str</span> <span class="o">+=</span> <span class="s2">&quot;   </span><span class="si">{}</span><span class="s2">   </span><span class="si">{}</span><span class="s2">   </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">pos_str</span> <span class="o">+=</span> <span class="s2">&quot;   </span><span class="si">{}</span><span class="s2">   </span><span class="si">{}</span><span class="s2">   </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">lengths</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">pos_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">orthorhombic</span><span class="p">:</span>
+            <span class="n">pos_str</span> <span class="o">+=</span> <span class="s2">&quot;angles </span><span class="si">{}</span><span class="s2">  </span><span class="si">{}</span><span class="s2">  </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">angles</span><span class="p">())</span>
         <span class="c1"># Add all the other lines, representing the atoms</span>
         <span class="n">pos_str</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">pos_str</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -615,7 +660,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;Posinp(</span><span class="si">{0.atoms}</span><span class="s2">, &#39;</span><span class="si">{0.units}</span><span class="s2">&#39;, &#39;</span><span class="si">{0.boundary_conditions}</span><span class="s2">&#39;, &quot;</span>
-            <span class="s2">&quot;cell=</span><span class="si">{0.cell}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="s2">&quot;cell=</span><span class="si">{0.cell}</span><span class="s2">, angles=</span><span class="si">{0.angles}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Posinp.write"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -653,7 +698,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pos_1</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i_at_1</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
         <span class="n">pos_2</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i_at_2</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">([(</span><span class="n">pos_1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos_2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]))</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">pos_1</span> <span class="o">-</span> <span class="n">pos_2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Posinp.translate_atom"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.translate_atom">[docs]</a>    <span class="k">def</span> <span class="nf">translate_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_at</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -770,24 +815,48 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">B_TO_ANG</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">ANG_TO_B</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">ANG_TO_B</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">*</span> <span class="n">ANG_TO_B</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">B_TO_ANG</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">)</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">new_units</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">new_units</span></div>
+
+<div class="viewcode-block" id="Posinp.angle"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Posinp.angle">[docs]</a>    <span class="k">def</span> <span class="nf">angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the angle between three atoms</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i: int</span>
+<span class="sd">            Index of the first atom</span>
+<span class="sd">        j: int</span>
+<span class="sd">            Index of the middle atom</span>
+<span class="sd">        k: int</span>
+<span class="sd">            Index of the third atom</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        angle: float</span>
+<span class="sd">            Angle between the three atoms, in radians</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ij</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">jk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ij</span><span class="p">,</span> <span class="n">jk</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ij</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">jk</span><span class="p">)),</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">angle</span></div></div>
 
 
 <div class="viewcode-block" id="Atom"><a class="viewcode-back" href="../../../posinp.html#mlcalcdriver.base.posinp.Atom">[docs]</a><span class="k">class</span> <span class="nc">Atom</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -795,7 +864,7 @@
 <span class="sd">    Class allowing to represent an atom by its type and position.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_type</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_type</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -901,7 +970,7 @@
         <span class="n">new_atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_atom</span></div>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -911,7 +980,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{t}</span><span class="s2">  </span><span class="si">{: .15}</span><span class="s2">  </span><span class="si">{: .15}</span><span class="s2">  </span><span class="si">{: .15}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -920,7 +989,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;Atom(&#39;</span><span class="si">{}</span><span class="s2">&#39;, </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Two atoms are the same if they are located on the same position</span>
 <span class="sd">        and have the same type.</span>
@@ -950,16 +1019,6 @@
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
-
-
-<span class="k">def</span> <span class="nf">periodic_positions</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">boundary_conditions</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">boundary_conditions</span> <span class="o">==</span> <span class="s2">&quot;free&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">position</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">below</span><span class="p">,</span> <span class="n">above</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">position</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">position</span> <span class="o">&gt;</span> <span class="n">cell</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">position</span><span class="p">[</span><span class="n">below</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="n">below</span><span class="p">]</span> <span class="o">+</span> <span class="n">cell</span><span class="p">[</span><span class="n">below</span><span class="p">]</span>
-        <span class="n">position</span><span class="p">[</span><span class="n">above</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="n">above</span><span class="p">]</span> <span class="o">-</span> <span class="n">cell</span><span class="p">[</span><span class="n">above</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">position</span>
 </pre></div>
 
            </div>
@@ -972,7 +1031,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>
