@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mlcalcdriver.interfaces.schnetpack_interface &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>mlcalcdriver.interfaces.schnetpack_interface &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -151,8 +151,8 @@
   <h1>Source code for mlcalcdriver.interfaces.schnetpack_interface</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="k">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">schnetpack.data.atoms</span> <span class="k">import</span> <span class="n">_convert_atoms</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">schnetpack.data.atoms</span> <span class="kn">import</span> <span class="n">_convert_atoms</span>
 
 
 <div class="viewcode-block" id="SchnetPackData"><a class="viewcode-back" href="../../../schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData">[docs]</a><span class="k">class</span> <span class="nc">SchnetPackData</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
@@ -161,7 +161,7 @@
 <span class="sd">    as a PyTorch Dataset understood by SchnetPack.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">environment_provider</span><span class="p">,</span> <span class="n">collect_triples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">center_positions</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
@@ -169,13 +169,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">collect_triples</span> <span class="o">=</span> <span class="n">collect_triples</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">center_positions</span> <span class="o">=</span> <span class="n">center_positions</span>
 
-<div class="viewcode-block" id="SchnetPackData.__len__"><a class="viewcode-back" href="../../../schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData.__len__">[docs]</a>    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SchnetPackData.__len__"><a class="viewcode-back" href="../../../schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData.__len__">[docs]</a>    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Needed to create a PyTorch dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SchnetPackData.__getitem__"><a class="viewcode-back" href="../../../schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData.__getitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<div class="viewcode-block" id="SchnetPackData.__getitem__"><a class="viewcode-back" href="../../../schnet_interface.html#mlcalcdriver.interfaces.SchnetPackData.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Needed to create a PyTorch Dataset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -217,7 +217,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

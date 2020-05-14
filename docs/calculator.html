@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Basic Calculator Class &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>Basic Calculator Class &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -163,9 +163,9 @@
 <p>The <a class="reference internal" href="#mlcalcdriver.calculators.calculator.Calculator" title="mlcalcdriver.calculators.calculator.Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Calculator</span></code></a> is the general class for a machine learning
 calculator. A specific class derived from this one must be implemented
 for each new type of model.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mlcalcdriver.calculators.calculator.Calculator">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.calculators.calculator.</code><code class="sig-name descname">Calculator</code><span class="sig-paren">(</span><em class="sig-param">available_properties=None</em>, <em class="sig-param">units=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/calculator.html#Calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.calculators.calculator.</code><code class="sig-name descname">Calculator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">available_properties</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/calculator.html#Calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class to be implemented individually for each type
 of models.</p>
@@ -175,19 +175,19 @@ of models.</p>
 the _get_available_properties method will be used.</p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.calculators.calculator.Calculator.run">
 <code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/calculator.html#Calculator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>To be implemented for each type of model.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.calculators.calculator.Calculator._get_available_properties">
 <code class="sig-name descname">_get_available_properties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/calculator.html#Calculator._get_available_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator._get_available_properties" title="Permalink to this definition">¶</a></dt>
 <dd><p>To be implemented for each type of model</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.calculators.calculator.Calculator._get_units">
 <code class="sig-name descname">_get_units</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/calculator.html#Calculator._get_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator._get_units" title="Permalink to this definition">¶</a></dt>
 <dd><p>May be implemented for models for which it is possible.
@@ -195,7 +195,7 @@ If not implemented, the units must be specified when creating
 the <a class="reference internal" href="#mlcalcdriver.calculators.calculator.Calculator" title="mlcalcdriver.calculators.calculator.Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Calculator</span></code></a> instance.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.calculators.calculator.Calculator.available_properties">
 <em class="property">property </em><code class="sig-name descname">available_properties</code><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator.available_properties" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -208,7 +208,7 @@ the <a class="reference internal" href="#mlcalcdriver.calculators.calculator.Cal
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.calculators.calculator.Calculator.units">
 <em class="property">property </em><code class="sig-name descname">units</code><a class="headerlink" href="#mlcalcdriver.calculators.calculator.Calculator.units" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -246,7 +246,7 @@ keys() are <cite>positions</cite> and <cite>energy</cite>.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

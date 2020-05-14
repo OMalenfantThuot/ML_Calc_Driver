@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mlcalcdriver.workflows.phonon &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>mlcalcdriver.workflows.phonon &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -156,11 +156,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver</span> <span class="k">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">Posinp</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="k">import</span> <span class="n">Calculator</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.workflows</span> <span class="k">import</span> <span class="n">Geopt</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="k">import</span> <span class="n">ANG_TO_B</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">EV_TO_HA</span><span class="p">,</span> <span class="n">HA_TO_CMM1</span><span class="p">,</span> <span class="n">AMU_TO_EMU</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver</span> <span class="kn">import</span> <span class="n">Job</span><span class="p">,</span> <span class="n">Posinp</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="kn">import</span> <span class="n">Calculator</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.workflows</span> <span class="kn">import</span> <span class="n">Geopt</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">mlcalcdriver.globals</span> <span class="kn">import</span> <span class="n">ANG_TO_B</span><span class="p">,</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">EV_TO_HA</span><span class="p">,</span> <span class="n">HA_TO_CMM1</span><span class="p">,</span> <span class="n">AMU_TO_EMU</span>
 
 
 <div class="viewcode-block" id="Phonon"><a class="viewcode-back" href="../../../phonon.html#mlcalcdriver.workflows.phonon.Phonon">[docs]</a><span class="k">class</span> <span class="nc">Phonon</span><span class="p">:</span>
@@ -176,7 +176,14 @@
 <span class="sd">    translated by a small amount around the equilibrium positions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">posinp</span><span class="p">,</span> <span class="n">calculator</span><span class="p">,</span> <span class="n">relax</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">translation_amplitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">posinp</span><span class="p">,</span>
+        <span class="n">calculator</span><span class="p">,</span>
+        <span class="n">relax</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">finite_difference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">translation_amplitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The initial position fo the atoms are taken from the `init_state`</span>
 <span class="sd">        Posinp instance. If they are not part of a relaxed geometry, the</span>
@@ -203,16 +210,19 @@
 <span class="sd">        relax : bool</span>
 <span class="sd">            Wether the initial positions need to be relaxed or not.</span>
 <span class="sd">            Default is `True`.</span>
+<span class="sd">        finite_difference: bool</span>
+<span class="sd">            If True, the hessian matrix is calculated using finite</span>
+<span class="sd">            displacements of atoms. Default is False. Mostly there for</span>
+<span class="sd">            legacy reasons.</span>
 <span class="sd">        translation_amplitudes: list of length 3</span>
 <span class="sd">            Amplitudes of the translations to be applied to each atom</span>
 <span class="sd">            along each of the three space coordinates (in angstroms).</span>
-<span class="sd">        order : int</span>
-<span class="sd">            Order of the numerical differentiation used to compute the</span>
-<span class="sd">            dynamical matrix. Can be either 1, 2 or 3.</span>
+<span class="sd">            Only relevant if finite_difference is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">posinp</span> <span class="o">=</span> <span class="n">posinp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calculator</span> <span class="o">=</span> <span class="n">calculator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relax</span> <span class="o">=</span> <span class="n">relax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finite_difference</span> <span class="o">=</span> <span class="n">finite_difference</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">translation_amplitudes</span> <span class="o">=</span> <span class="n">translation_amplitudes</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">relax</span><span class="p">:</span>
@@ -303,6 +313,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_relax</span> <span class="o">=</span> <span class="n">relax</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">finite_difference</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        finite_difference : bool</span>
+<span class="sd">            If `True`, the hessian matrix is calculated using small finite</span>
+<span class="sd">            movements on the atoms. Default is `False`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finite_difference</span>
+
+    <span class="nd">@finite_difference</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">finite_difference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finite_difference</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_finite_difference</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">finite_difference</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">energies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns</span>
@@ -363,15 +388,20 @@
             <span class="n">geopt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">geopt</span><span class="o">.</span><span class="n">final_posinp</span><span class="p">)</span>
 
-        <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_displacements</span><span class="p">(),</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="p">)</span>
-        <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finite_difference</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_displacements</span><span class="p">(),</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="p">)</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculator</span><span class="p">)</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">property</span><span class="o">=</span><span class="s2">&quot;hessian&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_proc</span><span class="p">(</span><span class="n">job</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_create_displacements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the displacements each atom must undergo from the amplitudes</span>
 <span class="sd">        of displacement in each direction. The numerical derivatives are obtained</span>
-<span class="sd">        with the five-point stencil method.</span>
+<span class="sd">        with the five-point stencil method. Only used if the phonons are</span>
+<span class="sd">        calculated using finite_displacements.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">structs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ground_state</span><span class="p">)):</span>
@@ -414,14 +444,22 @@
 <span class="sd">        Computes the hessian matrix from the forces</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n_at</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">posinp</span><span class="p">)</span>
-        <span class="n">hessian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">))</span>
-        <span class="n">forces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">EV_TO_HA</span> <span class="o">*</span> <span class="n">B_TO_ANG</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">):</span>
-            <span class="n">hessian</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="o">-</span><span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-                <span class="o">+</span> <span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-                <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="p">(</span><span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">-</span> <span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
-            <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">12</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">translation_amplitudes</span> <span class="o">*</span> <span class="n">ANG_TO_B</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;hessian&quot;</span> <span class="ow">in</span> <span class="n">job</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;hessian&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">)</span>
+                <span class="o">*</span> <span class="n">EV_TO_HA</span>
+                <span class="o">*</span> <span class="n">B_TO_ANG</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">h</span> <span class="o">+</span> <span class="n">h</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hessian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">))</span>
+            <span class="n">forces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;forces&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">EV_TO_HA</span> <span class="o">*</span> <span class="n">B_TO_ANG</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">n_at</span><span class="p">):</span>
+                <span class="n">hessian</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="o">-</span><span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                    <span class="o">+</span> <span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                    <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="p">(</span><span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">-</span> <span class="n">forces</span><span class="p">[</span><span class="mi">4</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+                <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">12</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">translation_amplitudes</span> <span class="o">*</span> <span class="n">ANG_TO_B</span><span class="p">)</span>
         <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">hessian</span> <span class="o">+</span> <span class="n">hessian</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
 
     <span class="k">def</span> <span class="nf">_solve_dyn_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -444,7 +482,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

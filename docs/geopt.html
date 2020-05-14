@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Geometry Optimization &mdash; ML_Calc_Driver 0.2.0 documentation</title>
+  <title>Geometry Optimization &mdash; ML_Calc_Driver 1.1.0 documentation</title>
   
 
   
@@ -21,11 +21,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -163,9 +163,9 @@
 <p>The <a class="reference internal" href="#mlcalcdriver.workflows.geopt.Geopt" title="mlcalcdriver.workflows.geopt.Geopt"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geopt</span></code></a> class allows to perform a geometry optimization to
 relax the forces on a given structure, using a machine
 learning model.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="mlcalcdriver.workflows.geopt.Geopt">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.workflows.geopt.</code><code class="sig-name descname">Geopt</code><span class="sig-paren">(</span><em class="sig-param">posinp</em>, <em class="sig-param">calculator</em>, <em class="sig-param">forcemax=0.01</em>, <em class="sig-param">step_size=0.002</em>, <em class="sig-param">max_iter=500</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/geopt.html#Geopt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.workflows.geopt.</code><code class="sig-name descname">Geopt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">posinp</span></em>, <em class="sig-param"><span class="n">calculator</span></em>, <em class="sig-param"><span class="n">forcemax</span><span class="o">=</span><span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">step_size</span><span class="o">=</span><span class="default_value">0.002</span></em>, <em class="sig-param"><span class="n">max_iter</span><span class="o">=</span><span class="default_value">500</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/geopt.html#Geopt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class allows to relax the input geometry of a given system in
 order to find the structure that minimizes the forces. The final
@@ -184,7 +184,7 @@ is <cite>0.003</cite> Angstrom&lt;sup&gt;2&lt;/sup&gt;/eV.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.geopt.Geopt.posinp">
 <em class="property">property </em><code class="sig-name descname">posinp</code><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt.posinp" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -197,7 +197,7 @@ is <cite>0.003</cite> Angstrom&lt;sup&gt;2&lt;/sup&gt;/eV.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.geopt.Geopt.calculator">
 <em class="property">property </em><code class="sig-name descname">calculator</code><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt.calculator" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -211,7 +211,7 @@ perform the geometry optimisation.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.geopt.Geopt.final_posinp">
 <em class="property">property </em><code class="sig-name descname">final_posinp</code><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt.final_posinp" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -225,7 +225,7 @@ the the optimization has not been completed</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.geopt.Geopt.forcemax">
 <em class="property">property </em><code class="sig-name descname">forcemax</code><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt.forcemax" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -238,7 +238,7 @@ the the optimization has not been completed</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.geopt.Geopt.step_size">
 <em class="property">property </em><code class="sig-name descname">step_size</code><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt.step_size" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -251,7 +251,7 @@ the the optimization has not been completed</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.geopt.Geopt.max_iter">
 <em class="property">property </em><code class="sig-name descname">max_iter</code><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt.max_iter" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -264,9 +264,9 @@ the the optimization has not been completed</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="mlcalcdriver.workflows.geopt.Geopt.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">device='cpu'</em>, <em class="sig-param">batch_size=128</em>, <em class="sig-param">recenter=False</em>, <em class="sig-param">verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/geopt.html#Geopt.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">128</span></em>, <em class="sig-param"><span class="n">recenter</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/geopt.html#Geopt.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.geopt.Geopt.run" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -308,7 +308,7 @@ an output.</p></li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Olivier Malenfant-Thuot
+        &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>

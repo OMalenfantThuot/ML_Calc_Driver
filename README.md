@@ -41,7 +41,6 @@ git clone git@github.com:OMalenfantThuot/ML_Calc_Driver.git
 cd ML_Calc_Driver
 pip install .
 ```
-
 To modify the sources, instead of `pip install .`, use
 
 ```
