@@ -178,12 +178,10 @@ class Posinp(Sequence):
         # Decode the second line
         line2 = lines.pop(0)
         boundary_conditions = line2[0].lower()
-        if boundary_conditions == "periodic":
-            cell = line2[1:4]
-        elif boundary_conditions == "surface":
-            cell = [line2[1], 0.0, line2[3]]
-        else:
+        if boundary_conditions == "free":
             cell = None
+        else:
+            cell = line2[1:4]
         # Angles if present
         if lines[0][0] == "angles":
             angles = np.array([float(a) for a in lines.pop(0)[1:]])
