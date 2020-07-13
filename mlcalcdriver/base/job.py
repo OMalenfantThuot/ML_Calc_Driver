@@ -133,7 +133,7 @@ class Job:
                 """
             )
 
-    def run(self, property, device="cpu", batch_size=128, finite_difference=False):
+    def run(self, property, batch_size=128, finite_difference=False):
         r"""
         Main method to call to obtain results for a Job
 
@@ -144,20 +144,10 @@ class Job:
             available_properties of the Calculator except the
             forces which can be derived from an energy
             Calculator.
-        device : str
-            Device on which to run the calculation.
-            Either `"cpu"` or `"cuda"` to run on cpu or gpu.
-            Default is `"cpu"` and should not be changed, except
-            for very large systems.
         batch_size : int
             Size of the mini-batches used in predictions.
             Default is 128.
         """
-        device = str(device)
-        if device.startswith("cuda"):
-            if not torch.cuda.is_available():
-                warnings.warn("CUDA was asked for, but is not available.", UserWarning)
-
         if not finite_difference:
             predictions = self.calculator.run(
                 property=property, posinp=self.posinp, batch_size=batch_size
