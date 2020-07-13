@@ -24,10 +24,6 @@ class TestSchnetPack:
         self.job.run("energy")
         assert np.array(-2979.6067) == self.job.results["energy"][0]
 
-    def test_cuda_unavailable(self):
-        with pytest.warns(UserWarning):
-            self.job.run("energy", device="cuda")
-
     def test_forces_from_deriv(self):
         assert self.job.calculator.available_properties == ["energy"]
         self.job.run("forces")

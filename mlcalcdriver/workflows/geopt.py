@@ -140,13 +140,10 @@ class Geopt:
     def max_iter(self, max_iter):
         self._max_iter = int(max_iter)
 
-    def run(self, device="cpu", batch_size=128, recenter=False, verbose=0):
+    def run(self, batch_size=128, recenter=False, verbose=0):
         r"""
         Parameters
         ----------
-        device : str
-            Either 'cpu' or 'cuda' to run on cpu or gpu. Default is 'cpu'
-            and should be faster in most cases.
         batch_size : int
             Size of the mini-batches used in predictions. Default is 128.
         recenter : bool
@@ -166,7 +163,7 @@ class Geopt:
         for i in range(1, self.max_iter + 1):
             # Forces calculation
             job = Job(posinp=temp_posinp, calculator=self.calculator)
-            job.run("forces", device=device, batch_size=batch_size)
+            job.run("forces", batch_size=batch_size)
             # Moving the atoms
             for j in range(len(job.posinp[0])):
                 temp_posinp = temp_posinp.translate_atom(
