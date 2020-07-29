@@ -219,13 +219,10 @@ class Phonon:
     def normal_modes(self, normal_modes):
         self._normal_modes = normal_modes
 
-    def run(self, device="cpu", batch_size=128, **kwargs):
+    def run(self, batch_size=128, **kwargs):
         r"""
         Parameters
         ----------
-        device : str
-            Either "cpu" or "cuda" to run on cpu or gpu. Default is 'cpu'
-            and should be faster in most cases.
         batch_size : int
             Batch size used when passing the structures to the model
         **kwargs :
@@ -234,15 +231,15 @@ class Phonon:
         """
         if self.relax:
             geopt = Geopt(posinp=self.posinp, calculator=self.calculator, **kwargs)
-            geopt.run(device=device, batch_size=batch_size)
+            geopt.run(batch_size=batch_size)
             self._ground_state = deepcopy(geopt.final_posinp)
 
         if self.finite_difference:
             job = Job(posinp=self._create_displacements(), calculator=self.calculator)
-            job.run(property="forces", device=device, batch_size=batch_size)
+            job.run(property="forces", batch_size=batch_size)
         else:
             job = Job(posinp=self._ground_state, calculator=self.calculator)
-            job.run(property="hessian", device=device, batch_size=batch_size)
+            job.run(property="hessian", batch_size=batch_size)
         self._post_proc(job)
 
     def _create_displacements(self):

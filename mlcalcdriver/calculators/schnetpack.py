@@ -35,11 +35,12 @@ class SchnetPackCalculator(Calculator):
         device : str
             Can be either `"cpu"` to use cpu or `"cuda"` to use "gpu"
         """
+        self.device = device
         try:
-            self.model = load_model(model_dir=model_dir, device=device)
+            self.model = load_model(model_dir=model_dir, device=self.device)
         except Exception:
             self.model = load_model(
-                model_dir=os.environ["MODELDIR"] + model_dir, device=device
+                model_dir=os.environ["MODELDIR"] + model_dir, device=self.device
             )
 
         # Bugfix to make older models work with PyTorch 1.6
@@ -51,8 +52,16 @@ class SchnetPackCalculator(Calculator):
         super(SchnetPackCalculator, self).__init__(units=units)
         self._get_representation_type()
 
+    @property
+    def device(self):
+        return self._device
+
+    @device.setter
+    def device(self, device):
+        self._device = str(device).lower()
+
     def run(
-        self, property, posinp=None, device="cpu", batch_size=128,
+        self, property, posinp=None, batch_size=128,
     ):
         r"""
         Main method to use when making a calculation with
@@ -83,16 +92,16 @@ class SchnetPackCalculator(Calculator):
         if derivative == 0:
             if self.model.output_modules[0].derivative is not None:
                 for batch in data_loader:
-                    batch = {k: v.to(device) for k, v in batch.items()}
+                    batch = {k: v.to(self.device) for k, v in batch.items()}
                     pred.append(self.model(batch))
             else:
                 with torch.no_grad():
                     for batch in data_loader:
-                        batch = {k: v.to(device) for k, v in batch.items()}
+                        batch = {k: v.to(self.device) for k, v in batch.items()}
                         pred.append(self.model(batch))
         if abs(derivative) == 1:
             for batch in data_loader:
-                batch = {k: v.to(device) for k, v in batch.items()}
+                batch = {k: v.to(self.device) for k, v in batch.items()}
                 batch[wrt[0]].requires_grad_()
                 results = self.model(batch)
                 deriv1 = torch.unsqueeze(
@@ -103,7 +112,7 @@ class SchnetPackCalculator(Calculator):
                 pred.append({out_name: deriv1})
         if abs(derivative) == 2:
             for batch in data_loader:
-                batch = {k: v.to(device) for k, v in batch.items()}
+                batch = {k: v.to(self.device) for k, v in batch.items()}
                 for inp in set(wrt):
                     batch[inp].requires_grad_()
                 results = self.model(batch)
