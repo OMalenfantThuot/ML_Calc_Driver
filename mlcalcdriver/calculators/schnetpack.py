@@ -42,6 +42,13 @@ class SchnetPackCalculator(Calculator):
             self.model = load_model(
                 model_dir=os.environ["MODELDIR"] + model_dir, device=self.device
             )
+
+        # Bugfix to make older models work with PyTorch 1.6
+        # Hopefully temporary
+        for mod in self.model.modules():
+            if not hasattr(mod, "_non_persistent_buffers_set"):
+                mod._non_persistent_buffers_set = set()
+
         super(SchnetPackCalculator, self).__init__(units=units)
         self._get_representation_type()
 
