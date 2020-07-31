@@ -12,6 +12,7 @@ from mlcalcdriver.calculators import Calculator
 from mlcalcdriver.calculators.utils import torch_derivative, get_derivative_names
 from mlcalcdriver.interfaces import posinp_to_ase_atoms, SchnetPackData
 from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProvider
+from schnetpack.utils import load_model
 from mlcalcdriver.globals import EV_TO_HA, B_TO_ANG
 
 
@@ -20,7 +21,13 @@ class SchnetPackCalculator(Calculator):
     Calculator based on a SchnetPack model
     """
 
-    def __init__(self, model_dir, available_properties=None, device="cpu", units=eVA):
+    def __init__(
+        self,
+        model_dir,
+        available_properties=None,
+        device="cpu",
+        units=eVA,
+    ):
         r"""
         Parameters
         ----------
@@ -34,13 +41,17 @@ class SchnetPackCalculator(Calculator):
             automatically determined from the model. Default is `None`.
         device : str
             Can be either `"cpu"` to use cpu or `"cuda"` to use "gpu"
+        units : dict
+            Dictionnary containing the units in which the calculator
+            makes predictions. Default is mlcalcdriver.globals.eVA for
+            a SchnetPackCalculator.
         """
         self.device = device
         try:
-            self.model = load_model(model_dir=model_dir, device=self.device)
+            self.model = load_model(model_dir, map_location=self.device)
         except Exception:
             self.model = load_model(
-                model_dir=os.environ["MODELDIR"] + model_dir, device=self.device
+                os.environ["MODELDIR"] + model_dir, map_location=self.device
             )
 
         # Bugfix to make older models work with PyTorch 1.6
@@ -64,8 +75,22 @@ class SchnetPackCalculator(Calculator):
         self, property, posinp=None, batch_size=128,
     ):
         r"""
-        Main method to use when making a calculation with
+        Central method to use when making a calculation with
         the calculator.
+
+        Parameters
+        ----------
+        property : str
+            Property to be predicted by the calculator
+        posinp : Posinp
+            Atomic configuration to pass to the model
+        batch_size : int
+            Batch sizes. Default is 128.
+
+        Returns
+        -------
+        predictions : :class:`numpy.ndarray`
+            Corresponding prediction by the model.
         """
         init_property, out_name, derivative, wrt = get_derivative_names(
             property, self.available_properties
@@ -187,15 +212,3 @@ class SchnetPackCalculator(Calculator):
                 )
         else:
             raise NotImplementedError("Model type is not recognized.")
-
-
-def load_model(model_dir, device):
-    try:
-        model_dir = str(model_dir)
-    except Exception as e:
-        raise e
-    try:
-        model = torch.load(model_dir, map_location=device)
-    except Exception as e:
-        raise e
-    return model

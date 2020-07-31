@@ -5,11 +5,12 @@ numpy==1.19.1
 torch==1.6.0
 torchvision==0.7.0
 twine==3.2.0
-pytest==6.0.0
+pytest==6.0.1
 pytest-cov==2.10.0
 pytest-sugar==0.9.4
 coveralls==2.1.1
 ase==3.19.2
-schnetpack==0.3
+git+https://github.com/atomistic-machine-learning/schnetpack.git
 sphinx==3.1.2
 sphinx-rtd-theme==0.5.0
+git+https://github.com/crossnox/m2r@dev#egg=m2r
