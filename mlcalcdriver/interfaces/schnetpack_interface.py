@@ -10,13 +10,10 @@ class SchnetPackData(Dataset):
     as a PyTorch Dataset understood by SchnetPack.
     """
 
-    def __init__(
-        self, data, environment_provider, collect_triples=False, center_positions=False
-    ):
+    def __init__(self, data, environment_provider, collect_triples=False):
         self.data = data
         self.environment_provider = environment_provider
         self.collect_triples = collect_triples
-        self.center_positions = center_positions
 
     def __len__(self):
         r"""
@@ -51,6 +48,5 @@ class SchnetPackData(Dataset):
             at,
             environment_provider=self.environment_provider,
             collect_triples=self.collect_triples,
-            center_positions=self.center_positions,
         )
         return at, properties

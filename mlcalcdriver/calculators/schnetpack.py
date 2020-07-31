@@ -12,6 +12,7 @@ from mlcalcdriver.calculators import Calculator
 from mlcalcdriver.calculators.utils import torch_derivative, get_derivative_names
 from mlcalcdriver.interfaces import posinp_to_ase_atoms, SchnetPackData
 from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProvider
+from schnetpack.utils import load_model
 from mlcalcdriver.globals import EV_TO_HA, B_TO_ANG
 
 
@@ -20,11 +21,18 @@ class SchnetPackCalculator(Calculator):
     Calculator based on a SchnetPack model
     """
 
-    def __init__(self, model_dir, available_properties=None, device="cpu", units=eVA):
+    def __init__(
+        self,
+        model_dir,
+        args_dir=None,
+        available_properties=None,
+        device="cpu",
+        units=eVA,
+    ):
         r"""
         Parameters
         ----------
-        model_dir : str
+        model_path : str
             Path to the stored model on which the calculator
             will be based. If $MODELDIR is defined, the path can
             be relative to it. If not, the path must be absolute
@@ -37,10 +45,10 @@ class SchnetPackCalculator(Calculator):
         """
         self.device = device
         try:
-            self.model = load_model(model_dir=model_dir, device=self.device)
-        except Exception:
+            self.model = load_model(model_dir, map_location=self.device)
+        except Exception as e:
             self.model = load_model(
-                model_dir=os.environ["MODELDIR"] + model_dir, device=self.device
+                os.environ["MODELDIR"] + model_dir, map_location=self.device
             )
 
         # Bugfix to make older models work with PyTorch 1.6
@@ -48,6 +56,7 @@ class SchnetPackCalculator(Calculator):
         for mod in self.model.modules():
             if not hasattr(mod, "_non_persistent_buffers_set"):
                 mod._non_persistent_buffers_set = set()
+        self.model.requires_stress = False
 
         super(SchnetPackCalculator, self).__init__(units=units)
         self._get_representation_type()
@@ -187,15 +196,3 @@ class SchnetPackCalculator(Calculator):
                 )
         else:
             raise NotImplementedError("Model type is not recognized.")
-
-
-def load_model(model_dir, device):
-    try:
-        model_dir = str(model_dir)
-    except Exception as e:
-        raise e
-    try:
-        model = torch.load(model_dir, map_location=device)
-    except Exception as e:
-        raise e
-    return model

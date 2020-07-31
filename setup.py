@@ -6,7 +6,7 @@ with open("README.md", "r") as readme_file:
 requirements = [
     "numpy>=1.18",
     "torch>=1.4.0",
-    "schnetpack==0.3",
+    "schnetpack>=0.3",
     "m2r @ git+https://github.com/crossnox/m2r@dev#egg=m2r",
 ]
 
