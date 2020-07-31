@@ -7,12 +7,11 @@ requirements = [
     "numpy>=1.18",
     "torch>=1.4.0",
     "schnetpack>=0.3",
-    "m2r @ git+https://github.com/crossnox/m2r@dev#egg=m2r",
 ]
 
 setup(
     name="mlcalcdriver",
-    version="1.1.0",
+    version="1.2.0",
     author="Olivier Malenfant-Thuot",
     author_email="malenfantthuotolivier@gmail.com",
     description="A package to drive atomic calculations using machine learned models.",

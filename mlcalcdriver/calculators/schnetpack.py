@@ -24,7 +24,6 @@ class SchnetPackCalculator(Calculator):
     def __init__(
         self,
         model_dir,
-        args_dir=None,
         available_properties=None,
         device="cpu",
         units=eVA,
@@ -32,7 +31,7 @@ class SchnetPackCalculator(Calculator):
         r"""
         Parameters
         ----------
-        model_path : str
+        model_dir : str
             Path to the stored model on which the calculator
             will be based. If $MODELDIR is defined, the path can
             be relative to it. If not, the path must be absolute
@@ -42,11 +41,15 @@ class SchnetPackCalculator(Calculator):
             automatically determined from the model. Default is `None`.
         device : str
             Can be either `"cpu"` to use cpu or `"cuda"` to use "gpu"
+        units : dict
+            Dictionnary containing the units in which the calculator
+            makes predictions. Default is mlcalcdriver.globals.eVA for
+            a SchnetPackCalculator.
         """
         self.device = device
         try:
             self.model = load_model(model_dir, map_location=self.device)
-        except Exception as e:
+        except Exception:
             self.model = load_model(
                 os.environ["MODELDIR"] + model_dir, map_location=self.device
             )
@@ -56,7 +59,6 @@ class SchnetPackCalculator(Calculator):
         for mod in self.model.modules():
             if not hasattr(mod, "_non_persistent_buffers_set"):
                 mod._non_persistent_buffers_set = set()
-        self.model.requires_stress = False
 
         super(SchnetPackCalculator, self).__init__(units=units)
         self._get_representation_type()
@@ -73,8 +75,22 @@ class SchnetPackCalculator(Calculator):
         self, property, posinp=None, batch_size=128,
     ):
         r"""
-        Main method to use when making a calculation with
+        Central method to use when making a calculation with
         the calculator.
+
+        Parameters
+        ----------
+        property : str
+            Property to be predicted by the calculator
+        posinp : Posinp
+            Atomic configuration to pass to the model
+        batch_size : int
+            Batch sizes. Default is 128.
+
+        Returns
+        -------
+        predictions : :class:`numpy.ndarray`
+            Corresponding prediction by the model.
         """
         init_property, out_name, derivative, wrt = get_derivative_names(
             property, self.available_properties

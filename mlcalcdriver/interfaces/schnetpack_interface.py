@@ -33,12 +33,14 @@ class SchnetPackData(Dataset):
         r"""
         Returns property dictionary at given index.
 
-        Args:
-            idx (int): data index
+        Parameters
+        ----------
+        idx : int
 
-        Returns:
-            at : ase.Atoms object
-            properties (dict) : inputs formatted for SchnetPack
+        Returns
+        -------
+        at : :class:`ase.Atoms`
+        properties : dict
         """
         idx = int(idx)
         at = self.data[idx]

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -25,15 +30,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Interfaces Module" href="interfaces.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> ML_Calc_Driver
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> ML_Calc_Driver
           
 
           
@@ -74,6 +75,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -97,6 +99,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -135,7 +138,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="calculators.html">Calculators Module</a> &raquo;</li>
         
@@ -177,14 +180,32 @@ or relative to the working directory.</p></li>
 <li><p><strong>available_properties</strong> (<em>str</em><em> or </em><em>list of str</em>) – Properties that the model can predict. If <cite>None</cite>, they
 automatically determined from the model. Default is <cite>None</cite>.</p></li>
 <li><p><strong>device</strong> (<em>str</em>) – Can be either <cite>“cpu”</cite> to use cpu or <cite>“cuda”</cite> to use “gpu”</p></li>
+<li><p><strong>units</strong> (<em>dict</em>) – Dictionnary containing the units in which the calculator
+makes predictions. Default is mlcalcdriver.globals.eVA for
+a SchnetPackCalculator.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt id="mlcalcdriver.calculators.schnetpack.SchnetPackCalculator.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">property</span></em>, <em class="sig-param"><span class="n">posinp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'cpu'</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">128</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/schnetpack.html#SchnetPackCalculator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main method to use when making a calculation with
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">property</span></em>, <em class="sig-param"><span class="n">posinp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">128</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/schnetpack.html#SchnetPackCalculator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Central method to use when making a calculation with
 the calculator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property</strong> (<em>str</em>) – Property to be predicted by the calculator</p></li>
+<li><p><strong>posinp</strong> (<a class="reference internal" href="posinp.html#mlcalcdriver.base.posinp.Posinp" title="mlcalcdriver.base.posinp.Posinp"><em>Posinp</em></a>) – Atomic configuration to pass to the model</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Batch sizes. Default is 128.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>predictions</strong> – Corresponding prediction by the model.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -211,11 +232,19 @@ the calculator.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Olivier Malenfant-Thuot
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -226,7 +255,6 @@ the calculator.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
