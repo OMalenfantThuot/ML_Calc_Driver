@@ -1,5 +1,5 @@
 pip==20.2.2
-wheel==0.34.2
+wheel==0.35.1
 black==19.10b0
 numpy==1.19.1
 torch==1.6.0
