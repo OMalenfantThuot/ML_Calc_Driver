@@ -9,6 +9,7 @@ from collections.abc import Sequence
 import numpy as np
 from ase.cell import Cell
 from mlcalcdriver.globals import ATOMS_MASS, B_TO_ANG, ANG_TO_B
+from mlcalcdriver.interfaces import ase_atoms_to_pos_dict
 
 
 __all__ = ["Posinp", "Atom"]
@@ -279,6 +280,17 @@ class Posinp(Sequence):
             else:
                 boundary_conditions = "periodic"
         return cls(atoms, units, boundary_conditions, cell=cell, angles=angles)
+
+    @classmethod
+    def from_ase(cls, atoms):
+        r"""
+        Parameters
+        ----------
+        atoms : ase.Atoms
+            ase.Atoms instance from which the information is
+            taken to create the Posinp.
+        """
+        return cls.from_dict(ase_atoms_to_pos_dict(atoms))
 
     @property
     def atoms(self):
