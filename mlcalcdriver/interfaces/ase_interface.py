@@ -1,6 +1,5 @@
 import ase
 import numpy as np
-from mlcalcdriver.base import Posinp
 
 
 def posinp_to_ase_atoms(posinp):
@@ -20,7 +19,7 @@ def posinp_to_ase_atoms(posinp):
     return atoms
 
 
-def ase_atoms_to_posinp(atoms):
+def ase_atoms_to_pos_dict(atoms):
     r"""
     Converts an :class:`ase.Atoms` instance to a
     :class:`Posinp` instance.
@@ -32,4 +31,4 @@ def ase_atoms_to_posinp(atoms):
     cell = atoms.get_cell()
     pos_dict["positions"] = positions
     pos_dict["cell"] = cell
-    return Posinp.from_dict(pos_dict)
+    return pos_dict
