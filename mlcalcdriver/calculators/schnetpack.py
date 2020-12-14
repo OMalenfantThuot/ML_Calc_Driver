@@ -54,6 +54,7 @@ class SchnetPackCalculator(Calculator):
                 os.environ["MODELDIR"] + model_dir, map_location=self.device
             )
         super(SchnetPackCalculator, self).__init__(units=units)
+        self.model.eval()
         self._get_representation_type()
 
     @property
