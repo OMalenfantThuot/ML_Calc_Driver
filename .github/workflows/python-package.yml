@@ -15,9 +15,6 @@ on:
     tags-ignore:
       - '**'
 
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   build:
 
@@ -44,5 +41,8 @@ jobs:
       run: |
         pytest --cov=mlcalcdriver -v
     - name: Coverage
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_SERVICE_NAME: github
       run: |
         coveralls
