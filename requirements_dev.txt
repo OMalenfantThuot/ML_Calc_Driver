@@ -1,7 +1,7 @@
 pip==21.0.1
 wheel==0.36.2
 black==20.8b1
-flake8==3.8.4
+flake8==3.9.0
 numpy==1.20.1
 torch==1.7.1
 torchvision==0.8.2
