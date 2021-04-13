@@ -106,7 +106,6 @@ class SchnetPackCalculator(Calculator):
             collect_triples=self.model_type == "wacsf",
         )
         data_loader = AtomsLoader(data, batch_size=batch_size)
-        print(data_loader)
 
         pred = []
         if derivative == 0:
