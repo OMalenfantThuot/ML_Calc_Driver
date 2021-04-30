@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from torch.utils.data import Dataset
-from schnetpack.data.atoms import _convert_atoms
+from schnetpack.data.atoms import _convert_atoms, torchify_dict
 
 
 class SchnetPackData(Dataset):
@@ -26,8 +26,8 @@ class SchnetPackData(Dataset):
         Needed to create a PyTorch Dataset
         """
         _, properties = self.get_properties(idx)
-        properties["_idx"] = torch.LongTensor(np.array([idx], dtype=np.int))
-        return properties
+        properties["_idx"] = np.array([idx], dtype=np.int)
+        return torchify_dict(properties)
 
     def get_properties(self, idx):
         r"""
