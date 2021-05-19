@@ -313,6 +313,6 @@ class Phonon:
         Obtains the eigenvalues and eigenvectors from
         the dynamical matrix
         """
-        eigs, vecs = np.linalg.eig(self.dyn_mat)
+        eigs, vecs = np.linalg.eigh(self.dyn_mat)
         eigs = np.sign(eigs) * np.sqrt(np.where(eigs < 0, -eigs, eigs))
         return eigs, vecs
