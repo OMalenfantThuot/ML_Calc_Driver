@@ -6,5 +6,6 @@ must be used as a base for it. The `run()` and
 `_get_available_properties()` methods must be defined, similarly
 to the :class:`SchnetPackCalculator` class.
 """
-from .calculator import *
+from .calculator import Calculator
 from .schnetpack import SchnetPackCalculator
+from .ensemble import Ensemble, EnsembleCalculator
