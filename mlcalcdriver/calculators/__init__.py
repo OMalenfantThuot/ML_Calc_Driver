@@ -8,3 +8,4 @@ to the :class:`SchnetPackCalculator` class.
 """
 from .calculator import *
 from .schnetpack import SchnetPackCalculator
+from .schnetpack_lowmem import LowMemSPCalculator
