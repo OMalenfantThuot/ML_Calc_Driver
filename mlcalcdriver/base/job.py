@@ -176,10 +176,10 @@ class Job:
 
         for pred in predictions.keys():
             # Future proofing, will probably need some work
-            if pred in ["energy", "gap"]:
+            if pred in ["energy", "energy_std", "gap"]:
                 if self.calculator.units["energy"] == "hartree":
                     predictions[pred] *= HA_TO_EV
-            elif pred == "forces":
+            elif pred in ["forces", "forces_std"]:
                 if self.calculator.units["energy"] == "hartree":
                     predictions[pred] *= HA_TO_EV
                 if self.calculator.units["positions"] == "atomic":

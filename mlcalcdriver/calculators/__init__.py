@@ -8,4 +8,4 @@ to the :class:`SchnetPackCalculator` class.
 """
 from .calculator import Calculator
 from .schnetpack import SchnetPackCalculator
-from .ensemble import Ensemble, EnsembleCalculator
+from .ensemble import Ensemble, EnsembleCalculator, AseEnsembleCalculator

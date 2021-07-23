@@ -3,6 +3,7 @@ import numpy as np
 import mlcalcdriver.base as base
 from mlcalcdriver.globals import eVA
 import mlcalcdriver.calculators as mlc
+from ase.calculators.calculator import Calculator, all_changes
 
 
 class Ensemble:
@@ -47,7 +48,8 @@ class Ensemble:
             results.append(job.results[property][np.newaxis, ...])
 
         result = np.mean(np.concatenate(results, axis=0), axis=0)
-        return {property: result}
+        result_std = np.std(np.concatenate(results, axis=0), axis=0)
+        return {property: result, property + "_std": result_std}
 
 
 class EnsembleCalculator(mlc.Calculator):
@@ -65,7 +67,7 @@ class EnsembleCalculator(mlc.Calculator):
     def ensemble(self, ensemble):
         self._ensemble = ensemble
 
-    def run(self, property, posinp=None):
+    def run(self, property, posinp=None, batch_size=None):
         return self.ensemble.run(property, posinp=posinp)
 
     def _get_available_properties(self):
@@ -75,3 +77,34 @@ class EnsembleCalculator(mlc.Calculator):
             if all(prop in el for el in all_props):
                 avail_prop.append(prop)
         return avail_prop
+
+
+class AseEnsembleCalculator(Calculator):
+    def __init__(self, modelpaths, available_properties=None, device="cpu", **kwargs):
+        Calculator.__init__(self, **kwargs)
+        self.ensemblecalc = EnsembleCalculator(
+            modelpaths=modelpaths,
+            device=device,
+            available_properties=available_properties,
+        )
+        self.implemented_properties = (
+            self.ensemblecalc._get_available_properties()
+        )
+        if (
+            "energy" in self.implemented_properties
+            and "forces" not in self.implemented_properties
+        ):
+            self.implemented_properties.append("forces")
+
+    def calculate(self, atoms=None, properties=["energy"], system_changes=all_changes):
+        if self.calculation_required(atoms, properties):
+            Calculator.calculate(self, atoms)
+            posinp = base.Posinp.from_ase(atoms)
+
+        job = base.Job(posinp=posinp, calculator=self.ensemblecalc)
+        for prop in properties:
+            job.run(prop)
+        results = {}
+        for prop, result in zip(job.results.keys(), job.results.values()):
+            results[prop] = np.squeeze(result)
+        self.results = results
