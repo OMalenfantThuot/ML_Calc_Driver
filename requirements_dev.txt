@@ -13,5 +13,5 @@ coveralls==3.1.0
 ase==3.22.0
 git+https://github.com/atomistic-machine-learning/schnetpack.git
 sphinx==4.0.2
-sphinx-rtd-theme==0.5.2
+sphinx-rtd-theme==1.0.0
 git+https://github.com/crossnox/m2r@dev#egg=m2r
