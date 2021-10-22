@@ -3,7 +3,7 @@ wheel==0.37.0
 black==21.9b0
 flake8==3.9.2
 numpy==1.21.2
-torch==1.9.1
+torch==1.10.0
 torchvision==0.10.1
 twine==3.4.2
 pytest==6.2.5
