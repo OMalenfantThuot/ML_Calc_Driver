@@ -10,7 +10,7 @@ pytest==6.2.5
 pytest-cov==2.12.1
 pytest-sugar==0.9.4
 coveralls==3.2.0
-ase==3.22.0
+ase==3.22.1
 git+https://github.com/atomistic-machine-learning/schnetpack.git
 sphinx==4.2.0
 sphinx-rtd-theme==0.5.2
