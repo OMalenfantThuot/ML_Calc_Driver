@@ -7,12 +7,13 @@ import numpy as np
 
 class AseSpkCalculator(Calculator):
 
-    def __init__(self, model_dir, available_properties=None, device="cpu", **kwargs):
+    def __init__(self, model_dir, available_properties=None, device="cpu", md=False, **kwargs):
         Calculator.__init__(self, **kwargs)
         self.schnetpackcalculator = SchnetPackCalculator(
             model_dir=model_dir,
             available_properties=available_properties,
             device=device,
+            md=md,
         )
         self.implemented_properties = self.schnetpackcalculator._get_available_properties()
         if "energy" in self.implemented_properties and "forces" not in self.implemented_properties:
