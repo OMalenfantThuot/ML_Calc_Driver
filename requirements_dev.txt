@@ -1,6 +1,6 @@
 pip==21.3
 wheel==0.37.0
-black==21.11b1
+black==21.12b0
 flake8==4.0.1
 numpy==1.21.4
 torch==1.9.1
