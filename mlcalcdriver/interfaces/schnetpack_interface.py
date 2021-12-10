@@ -26,7 +26,7 @@ class SchnetPackData(Dataset):
         Needed to create a PyTorch Dataset
         """
         _, properties = self.get_properties(idx)
-        properties["_idx"] = np.array([idx], dtype=np.int)
+        properties["_idx"] = np.array([idx], dtype=int)
         return torchify_dict(properties)
 
     def get_properties(self, idx):

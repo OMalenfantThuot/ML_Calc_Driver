@@ -41,6 +41,10 @@ class SchnetPackCalculator(Calculator):
             Dictionnary containing the units in which the calculator
             makes predictions. Default is mlcalcdriver.globals.eVA for
             a SchnetPackCalculator.
+        md : bool
+            Whether the calculator is used with ASE to do molecular dynamics.
+            Default is False and should be changed through the
+            :class:`AseSpkCalculator` object.
         """
         self.device = device
         self.md = md

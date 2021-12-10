@@ -7,6 +7,10 @@ from ase.calculators.calculator import Calculator, all_changes
 
 
 class Ensemble:
+    r"""
+    Not a Calculator. This holds the models needed in the actual calculators.
+    Only implemented for SchnetPack models, at the moment. Could be easily expanded.
+    """
     def __init__(self, modelpaths, device="cpu", units=eVA):
         self.modelpaths = modelpaths
         self.models = self._load_models(device, units)
@@ -53,8 +57,19 @@ class Ensemble:
 
 
 class EnsembleCalculator(mlc.Calculator):
+    r"""
+    Calculator using many similarly trained models to approximate
+    a convfidence interval on predictions. Can be used with any :class:`Ensemble`.
+    """
     def __init__(self, modelpaths, device="cpu", available_properties=None, units=eVA):
         self.ensemble = Ensemble(modelpaths, device=device, units=units)
+        r"""
+        Parameters
+        ----------
+        modelpaths : list, tuple or set of str
+            Paths to the models
+        The other parameters are the same as the base SchnetPackCalculators
+        """
         super(EnsembleCalculator, self).__init__(
             available_properties=available_properties, units=units
         )
@@ -80,6 +95,9 @@ class EnsembleCalculator(mlc.Calculator):
 
 
 class AseEnsembleCalculator(Calculator):
+    r"""
+    Same thing as :class:`EnsembleCalculator`, but interfaced to use in ASE.
+    """
     def __init__(self, modelpaths, available_properties=None, device="cpu", **kwargs):
         Calculator.__init__(self, **kwargs)
         self.ensemblecalc = EnsembleCalculator(
