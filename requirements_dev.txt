@@ -1,4 +1,4 @@
-pip==21.3
+pip==21.3.1
 wheel==0.37.0
 black==21.11b1
 flake8==4.0.1
@@ -11,6 +11,7 @@ pytest-sugar==0.9.4
 coveralls==3.3.1
 ase==3.22.0
 git+https://github.com/atomistic-machine-learning/schnetpack.git
+mistune==0.8.4
 sphinx==4.3.1
 sphinx-rtd-theme==1.0.0
-git+https://github.com/crossnox/m2r@dev#egg=m2r
+m2r2==0.3.2

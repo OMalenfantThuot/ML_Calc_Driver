@@ -22,7 +22,8 @@ def posinp_to_ase_atoms(posinp):
 def ase_atoms_to_pos_dict(atoms):
     r"""
     Converts an :class:`ase.Atoms` instance to a
-    :class:`Posinp` instance.
+    :class:`dict` that can be used to create
+    a :class:`Posinp` instance.
     """
     pos_dict = {"units": "angstroem"}
     positions = []

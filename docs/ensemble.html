@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ensemble Calculators &mdash; ML_Calc_Driver 1.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Interfaces Module" href="interfaces.html" />
+    <link rel="prev" title="AseSpkCalculator" href="asespkcalc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ML_Calc_Driver
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Code Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="calculators.html">Calculators Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="calculator.html">Basic Calculator Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schnetcalc.html">SchnetPackCalculator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="asespkcalc.html">AseSpkCalculator</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Ensemble Calculators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ML_Calc_Driver</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="calculators.html">Calculators Module</a> &raquo;</li>
+      <li>Ensemble Calculators</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ensemble.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mlcalcdriver.calculators.ensemble">
+<span id="ensemble-calculators"></span><h1>Ensemble Calculators<a class="headerlink" href="#module-mlcalcdriver.calculators.ensemble" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlcalcdriver.calculators.ensemble.Ensemble">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.calculators.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelpaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'dipole_moment':</span> <span class="pre">'Debye',</span> <span class="pre">'energy':</span> <span class="pre">'eV',</span> <span class="pre">'positions':</span> <span class="pre">'angstroem'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.Ensemble" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Not a Calculator. This holds the models needed in the actual calculators.
+Only implemented for SchnetPack models, at the moment. Could be easily expanded.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlcalcdriver.calculators.ensemble.EnsembleCalculator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.calculators.ensemble.</span></span><span class="sig-name descname"><span class="pre">EnsembleCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelpaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">available_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'dipole_moment':</span> <span class="pre">'Debye',</span> <span class="pre">'energy':</span> <span class="pre">'eV',</span> <span class="pre">'positions':</span> <span class="pre">'angstroem'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#EnsembleCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.EnsembleCalculator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="calculator.html#mlcalcdriver.calculators.calculator.Calculator" title="mlcalcdriver.calculators.calculator.Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlcalcdriver.calculators.calculator.Calculator</span></code></a></p>
+<p>Calculator using many similarly trained models to approximate
+a convfidence interval on predictions. Can be used with any <a class="reference internal" href="#mlcalcdriver.calculators.ensemble.Ensemble" title="mlcalcdriver.calculators.ensemble.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>available_properties</strong> (<em>str</em><em> or </em><em>list of str</em>) – Properties that can be predicted by the Calculator. If <cite>None</cite>,
+the _get_available_properties method will be used.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.calculators.ensemble.EnsembleCalculator.ensemble">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ensemble</span></span><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.EnsembleCalculator.ensemble" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>modelpaths</strong> (<em>list</em><em>, </em><em>tuple</em><em> or </em><em>set of str</em>) – Paths to the models</p></li>
+<li><p><strong>SchnetPackCalculators</strong> (<em>The other parameters are the same as the base</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlcalcdriver.calculators.ensemble.EnsembleCalculator.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posinp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#EnsembleCalculator.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.EnsembleCalculator.run" title="Permalink to this definition"></a></dt>
+<dd><p>To be implemented for each type of model.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlcalcdriver.calculators.ensemble.AseEnsembleCalculator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.calculators.ensemble.</span></span><span class="sig-name descname"><span class="pre">AseEnsembleCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelpaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">available_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#AseEnsembleCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.AseEnsembleCalculator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ase.calculators.calculator.Calculator</span></code></p>
+<p>Same thing as <a class="reference internal" href="#mlcalcdriver.calculators.ensemble.EnsembleCalculator" title="mlcalcdriver.calculators.ensemble.EnsembleCalculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnsembleCalculator</span></code></a>, but interfaced to use in ASE.</p>
+<p>Basic calculator implementation.</p>
+<dl class="simple">
+<dt>restart: str</dt><dd><p>Prefix for restart file.  May contain a directory. Default
+is None: don’t restart.</p>
+</dd>
+<dt>ignore_bad_restart_file: bool</dt><dd><p>Deprecated, please do not use.
+Passing more than one positional argument to Calculator()
+is deprecated and will stop working in the future.
+Ignore broken or missing restart file.  By default, it is an
+error if the restart file is missing or broken.</p>
+</dd>
+<dt>directory: str or PurePath</dt><dd><p>Working directory in which to read and write files and
+perform calculations.</p>
+</dd>
+<dt>label: str</dt><dd><p>Name used for all files.  Not supported by all calculators.
+May contain a directory, but please use the directory parameter
+for that instead.</p>
+</dd>
+<dt>atoms: Atoms object</dt><dd><p>Optional Atoms object to which the calculator will be
+attached.  When restarting, atoms will get its positions and
+unit-cell updated from file.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlcalcdriver.calculators.ensemble.AseEnsembleCalculator.calculate">
+<span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['energy']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_changes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['positions',</span> <span class="pre">'numbers',</span> <span class="pre">'cell',</span> <span class="pre">'pbc',</span> <span class="pre">'initial_charges',</span> <span class="pre">'initial_magmoms']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#AseEnsembleCalculator.calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.AseEnsembleCalculator.calculate" title="Permalink to this definition"></a></dt>
+<dd><p>Do the calculation.</p>
+<dl class="simple">
+<dt>properties: list of str</dt><dd><p>List of what needs to be calculated.  Can be any combination
+of ‘energy’, ‘forces’, ‘stress’, ‘dipole’, ‘charges’, ‘magmom’
+and ‘magmoms’.</p>
+</dd>
+<dt>system_changes: list of str</dt><dd><p>List of what has changed since last calculation.  Can be
+any combination of these six: ‘positions’, ‘numbers’, ‘cell’,
+‘pbc’, ‘initial_charges’ and ‘initial_magmoms’.</p>
+</dd>
+</dl>
+<p>Subclasses need to implement this, but can ignore properties
+and system_changes if they want.  Calculated properties should
+be inserted into results dictionary like shown in this dummy
+example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;energy&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="s1">&#39;forces&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">),</span> <span class="mi">3</span><span class="p">)),</span>
+                <span class="s1">&#39;stress&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span>
+                <span class="s1">&#39;dipole&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+                <span class="s1">&#39;charges&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)),</span>
+                <span class="s1">&#39;magmom&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="s1">&#39;magmoms&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">))}</span>
+</pre></div>
+</div>
+<p>The subclass implementation should first call this
+implementation to set the atoms attribute and create any missing
+directories.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="asespkcalc.html" class="btn btn-neutral float-left" title="AseSpkCalculator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="interfaces.html" class="btn btn-neutral float-right" title="Interfaces Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Olivier Malenfant-Thuot.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
