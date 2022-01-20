@@ -36,10 +36,11 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
-    "m2r",
+    "m2r2",
 ]
 
 autodoc_mock_imports = ["torch"]
+source_suffix = ['.rst', '.md']
 
 pygments_style = "sphinx"
 autodoc_member_order = "bysource"

@@ -22,11 +22,7 @@ class SchnetPackCalculator(Calculator):
     """
 
     def __init__(
-        self,
-        model_dir,
-        available_properties=None,
-        device="cpu",
-        units=eVA,
+        self, model_dir, available_properties=None, device="cpu", units=eVA, md=False,
     ):
         r"""
         Parameters
@@ -45,8 +41,13 @@ class SchnetPackCalculator(Calculator):
             Dictionnary containing the units in which the calculator
             makes predictions. Default is mlcalcdriver.globals.eVA for
             a SchnetPackCalculator.
+        md : bool
+            Whether the calculator is used with ASE to do molecular dynamics.
+            Default is False and should be changed through the
+            :class:`AseSpkCalculator` object.
         """
         self.device = device
+        self.md = md
         try:
             self.model = load_model(model_dir, map_location=self.device)
         except Exception:
@@ -64,6 +65,15 @@ class SchnetPackCalculator(Calculator):
     @device.setter
     def device(self, device):
         self._device = str(device).lower()
+
+    @property
+    def md(self):
+        return self._md
+
+    @md.setter
+    def md(self, md):
+        assert isinstance(md, bool)
+        self._md = md
 
     def run(
         self, property, posinp=None, batch_size=128,
@@ -148,14 +158,20 @@ class SchnetPackCalculator(Calculator):
                     deriv2 = -1.0 * deriv2
                 pred.append({out_name: deriv2})
         predictions = {}
-        if derivative:
-            predictions[property] = np.concatenate(
-                [batch[out_name].cpu().detach().numpy() for batch in pred]
-            )
+        if self.md:
+            for p in ["energy", "forces"]:
+                predictions[p] = np.concatenate(
+                    [batch[p].cpu().detach().numpy() for batch in pred]
+                )
         else:
-            predictions[property] = np.concatenate(
-                [batch[init_property].cpu().detach().numpy() for batch in pred]
-            )
+            if derivative:
+                predictions[property] = np.concatenate(
+                    [batch[out_name].cpu().detach().numpy() for batch in pred]
+                )
+            else:
+                predictions[property] = np.concatenate(
+                    [batch[init_property].cpu().detach().numpy() for batch in pred]
+                )
         return predictions
 
     def _get_available_properties(self):

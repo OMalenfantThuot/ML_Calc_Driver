@@ -1,69 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Phonon Calculations &mdash; ML_Calc_Driver 1.1.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Globals" href="globals.html" />
     <link rel="prev" title="Geometry Optimization" href="geopt.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> ML_Calc_Driver
-          
-
-          
+            <a href="index.html" class="icon icon-home"> ML_Calc_Driver
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -71,19 +36,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Code Documentation:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Code Documentation:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators Module</a></li>
@@ -96,79 +50,39 @@
 <li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">ML_Calc_Driver</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="workflows.html">Workflows Module</a> &raquo;</li>
-        
       <li>Phonon Calculations</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/phonon.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="module-mlcalcdriver.workflows.phonon">
-<span id="phonon-calculations"></span><h1>Phonon Calculations<a class="headerlink" href="#module-mlcalcdriver.workflows.phonon" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="module-mlcalcdriver.workflows.phonon">
+<span id="phonon-calculations"></span><h1>Phonon Calculations<a class="headerlink" href="#module-mlcalcdriver.workflows.phonon" title="Permalink to this headline"></a></h1>
 <p>The <a class="reference internal" href="#mlcalcdriver.workflows.phonon.Phonon" title="mlcalcdriver.workflows.phonon.Phonon"><code class="xref py py-class docutils literal notranslate"><span class="pre">Phonon</span></code></a> class allows to compute the normal modes
 and vibration energies of a system using a machine
 learning trained model.</p>
 <dl class="py class">
-<dt id="mlcalcdriver.workflows.phonon.Phonon">
-<em class="property">class </em><code class="sig-prename descclassname">mlcalcdriver.workflows.phonon.</code><code class="sig-name descname">Phonon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">posinp</span></em>, <em class="sig-param"><span class="n">calculator</span></em>, <em class="sig-param"><span class="n">relax</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">finite_difference</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">translation_amplitudes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/phonon.html#Phonon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.workflows.phonon.</span></span><span class="sig-name descname"><span class="pre">Phonon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">posinp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finite_difference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translation_amplitudes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/phonon.html#Phonon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class allows to run all the calculations enabling the
 computation of the phonon energies of a given system, using
@@ -206,9 +120,9 @@ Only relevant if finite_difference is True.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.posinp">
-<em class="property">property </em><code class="sig-name descname">posinp</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.posinp" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.posinp">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">posinp</span></span><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.posinp" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>posinp</strong> – Initial positions of the system for which phonon properties
@@ -220,9 +134,9 @@ will be calculated.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.calculator">
-<em class="property">property </em><code class="sig-name descname">calculator</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.calculator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.calculator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculator</span></span><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.calculator" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The Calculator object to use for the Jobs necessary to
@@ -234,9 +148,9 @@ perform the phonons calculations.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.translation_amplitudes">
-<em class="property">property </em><code class="sig-name descname">translation_amplitudes</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.translation_amplitudes" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.translation_amplitudes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translation_amplitudes</span></span><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.translation_amplitudes" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>translation_amplitudes</strong> – Displacements of atoms in all three dimensions to calculate
@@ -248,9 +162,9 @@ the phonon properties. Default is 0.03 Angstroms.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.relax">
-<em class="property">property </em><code class="sig-name descname">relax</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.relax" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.relax">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">relax</span></span><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.relax" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>relax</strong> – If <cite>True</cite>, which is default, the initial positions are relaxed
@@ -263,9 +177,9 @@ especially if more than one model is used.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.finite_difference">
-<em class="property">property </em><code class="sig-name descname">finite_difference</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.finite_difference" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.finite_difference">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">finite_difference</span></span><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.finite_difference" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>finite_difference</strong> – If <cite>True</cite>, the hessian matrix is calculated using small finite
@@ -277,9 +191,9 @@ movements on the atoms. Default is <cite>False</cite>.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.energies">
-<em class="property">property </em><code class="sig-name descname">energies</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.energies" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.energies">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">energies</span></span><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.energies" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Phonon energies of the system (units: cm^-1).</p>
@@ -290,9 +204,9 @@ movements on the atoms. Default is <cite>False</cite>.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.dyn_mat">
-<em class="property">property </em><code class="sig-name descname">dyn_mat</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.dyn_mat" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.dyn_mat">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dyn_mat</span></span><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.dyn_mat" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Dynamical matrix deduced from the calculations.</p>
@@ -303,9 +217,9 @@ movements on the atoms. Default is <cite>False</cite>.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.normal_modes">
-<em class="property">property </em><code class="sig-name descname">normal_modes</code><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.normal_modes" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.normal_modes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normal_modes</span></span><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.normal_modes" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Normal modes of the system found as eigenvectors of the
@@ -318,8 +232,8 @@ dynamical matrix.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mlcalcdriver.workflows.phonon.Phonon.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batch_size</span><span class="o">=</span><span class="default_value">128</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/phonon.html#Phonon.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="mlcalcdriver.workflows.phonon.Phonon.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/workflows/phonon.html#Phonon.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.workflows.phonon.Phonon.run" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -333,62 +247,37 @@ Only useful if the relaxation is unstable.</p></li>
 
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="globals.html" class="btn btn-neutral float-right" title="Globals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="geopt.html" class="btn btn-neutral float-left" title="Geometry Optimization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geopt.html" class="btn btn-neutral float-left" title="Geometry Optimization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="globals.html" class="btn btn-neutral float-right" title="Globals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, Olivier Malenfant-Thuot
-
-    </p>
+    <p>&#169; Copyright 2020, Olivier Malenfant-Thuot.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
