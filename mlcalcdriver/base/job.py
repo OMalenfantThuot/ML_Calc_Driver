@@ -6,8 +6,6 @@ predictions for a single or many atomic configurations.
 import numpy as np
 import torch
 from copy import deepcopy
-from mlcalcdriver.calculators import Calculator
-from mlcalcdriver.base import Posinp
 from mlcalcdriver.globals import HA_TO_EV, B_TO_ANG, ANG_TO_B
 import warnings
 
@@ -55,6 +53,8 @@ class Job:
             raise ValueError("A Job instance has no initial positions.")
         elif not isinstance(posinp, list):
             posinp = [posinp]
+        from mlcalcdriver.base.posinp import Posinp
+
         for pos in posinp:
             if not isinstance(pos, Posinp):
                 raise TypeError(
@@ -123,6 +123,8 @@ class Job:
 
     @calculator.setter
     def calculator(self, calculator):
+        from mlcalcdriver.calculators.calculator import Calculator
+
         if isinstance(calculator, Calculator):
             self._calculator = calculator
         else:
