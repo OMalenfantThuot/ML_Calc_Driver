@@ -25,7 +25,7 @@ def ase_atoms_to_pos_dict(atoms):
     :class:`dict` that can be used to create
     a :class:`Posinp` instance.
     """
-    pos_dict = {"units": "angstroem"}
+    pos_dict = {"units": "angstrom"}
     positions = []
     for at in atoms:
         positions.append({at.symbol: at.position})

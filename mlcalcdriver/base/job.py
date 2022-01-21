@@ -152,6 +152,7 @@ class Job:
             predictions = self.calculator.run(
                 property=property, posinp=self.posinp, batch_size=batch_size
             )
+            print(predictions)
         else:
             self._create_additional_structures()
             raw_predictions = self.calculator.run(
