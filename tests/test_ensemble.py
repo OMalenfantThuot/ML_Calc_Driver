@@ -40,5 +40,5 @@ class TestEnsemble:
         )
         job2 = Job(posinp=self.pos1, calculator=ens)
         job2.run("forces")
-        assert (job2.results["forces"] == ref_forces).all()
-        assert (job2.results["forces_std"] == ref_std).all()
+        assert np.isclose(job2.results["forces"], ref_forces, atol=1e-04).all()
+        assert np.isclose(job2.results["forces_std"], ref_std, atol=1e-04).all()
