@@ -50,10 +50,10 @@ C    7.327412521    0.000000000   3.461304757"""
 
     def test_repr(self):
         atoms = [Atom("C", [0, 0, 0]), Atom("N", [0, 0, 1])]
-        new_pos = Posinp(atoms, units="angstroem", boundary_conditions="free")
+        new_pos = Posinp(atoms, units="angstrom", boundary_conditions="free")
         msg = (
             "Posinp([Atom('C', [0.0, 0.0, 0.0]), Atom('N', [0.0, 0.0, "
-            "1.0])], 'angstroem', 'free', cell=Cell([0.0, 0.0, 0.0]), angles=[90. 90. 90.])"
+            "1.0])], 'angstrom', 'free', cell=Cell([0.0, 0.0, 0.0]), angles=[90. 90. 90.])"
         )
         assert repr(new_pos) == msg
 
@@ -93,7 +93,7 @@ C    7.327412521    0.000000000   3.461304757"""
     def test_positions(self):
         expected = [7.327412521, 0.0, 3.461304757]
         pos1 = Posinp(
-            [Atom("C", expected)], units="angstroem", boundary_conditions="free"
+            [Atom("C", expected)], units="angstrom", boundary_conditions="free"
         )
         pos2 = pos1.translate_atom(0, [-7.327412521, 0.0, -3.461304757])
         assert np.allclose(pos1.positions, expected)
@@ -102,8 +102,8 @@ C    7.327412521    0.000000000   3.461304757"""
     def test___eq__(self):
         atom1 = Atom("N", [0.0, 0.0, 0.0])
         atom2 = Atom("N", [0.0, 0.0, 1.1])
-        pos1 = Posinp([atom1, atom2], "angstroem", "free")
-        pos2 = Posinp([atom2, atom1], "angstroem", "free")
+        pos1 = Posinp([atom1, atom2], "angstrom", "free")
+        pos2 = Posinp([atom2, atom1], "angstrom", "free")
         assert pos1 == pos2  # The order of the atoms in the list do not count
         assert pos1 != 1  # No error if other object is not a posinp
 
@@ -121,7 +121,7 @@ C    7.327412521    0.000000000   3.461304757"""
                     [-1.10434491945017e-23, -4.87342174483075e-23, 1.10427379608154],
                 ),
             ],
-            "angstroem",
+            "angstrom",
             "surface",
             cell=[40, ".inf", 40],
         )
@@ -137,7 +137,7 @@ C    7.327412521    0.000000000   3.461304757"""
                         [-1.10434491945017e-23, -4.87342174483075e-23, 1.10427379608154],
                     ),
                 ],
-                "angstroem",
+                "angstrom",
                 "surface",
                 cell=[40, 40, 40],
             )
@@ -154,7 +154,7 @@ C    7.327412521    0.000000000   3.461304757"""
                     [-1.10434491945017e-23, -4.87342174483075e-23, 1.10427379608154],
                 ),
             ],
-            "angstroem",
+            "angstrom",
             "surface",
             cell=[20, "inf", 40],
         )
@@ -164,19 +164,19 @@ C    7.327412521    0.000000000   3.461304757"""
 
     def test_to_centroid(self):
         atoms = [Atom("N", [0, 0, 0]), Atom("N", [0, 0, 1.1])]
-        pos = Posinp(atoms, units="angstroem", boundary_conditions="free")
+        pos = Posinp(atoms, units="angstrom", boundary_conditions="free")
         expected_atoms = [Atom("N", [0, 0, -0.55]), Atom("N", [0, 0, 0.55])]
         expected_pos = Posinp(
-            expected_atoms, units="angstroem", boundary_conditions="free"
+            expected_atoms, units="angstrom", boundary_conditions="free"
         )
         assert pos.to_centroid() == expected_pos
 
     def test_to_barycenter(self):
         atoms = [Atom("N", [0, 0, 0]), Atom("N", [0, 0, 1.1])]
-        pos = Posinp(atoms, units="angstroem", boundary_conditions="free")
+        pos = Posinp(atoms, units="angstrom", boundary_conditions="free")
         expected_atoms = [Atom("N", [0, 0, -0.55]), Atom("N", [0, 0, 0.55])]
         expected_pos = Posinp(
-            expected_atoms, units="angstroem", boundary_conditions="free"
+            expected_atoms, units="angstrom", boundary_conditions="free"
         )
         assert pos.to_barycenter() == expected_pos
 
@@ -185,7 +185,7 @@ C    7.327412521    0.000000000   3.461304757"""
 
     def test_convert(self):
         pos1 = self.periodic_pos.positions
-        assert self.periodic_pos.units == "angstroem"
+        assert self.periodic_pos.units == "angstrom"
         self.periodic_pos.convert_units("atomic")
         assert np.isclose(
             self.periodic_pos.positions,
@@ -199,13 +199,13 @@ C    7.327412521    0.000000000   3.461304757"""
             ),
         ).all()
         assert self.periodic_pos.units == "atomic"
-        self.periodic_pos.convert_units("angstroem")
+        self.periodic_pos.convert_units("angstrom")
         assert np.isclose(self.periodic_pos.positions, pos1).all()
-        assert self.periodic_pos.units == "angstroem"
-        self.periodic_pos.convert_units("angstroem")
+        assert self.periodic_pos.units == "angstrom"
+        self.periodic_pos.convert_units("angstrom")
         assert np.isclose(self.periodic_pos.positions, pos1).all()
         red = Posinp.from_file(tests_fol + "reduced.xyz")
-        red.convert_units("angstroem")
+        red.convert_units("angstrom")
         print(red.positions)
         assert np.isclose(
             red.positions,

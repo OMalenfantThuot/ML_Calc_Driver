@@ -157,6 +157,7 @@ class SchnetPackCalculator(Calculator):
                 if derivative < 0:
                     deriv2 = -1.0 * deriv2
                 pred.append({out_name: deriv2})
+
         predictions = {}
         if self.md:
             for p in ["energy", "forces"]:

@@ -122,12 +122,12 @@ Conversion factor for electronic mass unit to atomic mass unit.
 
 B_TO_ANG = 0.529177249
 r"""
-Conversion factor for bohr to angstroem.
+Conversion factor for bohr to angstrom.
 """
 
 ANG_TO_B = 1.0 / B_TO_ANG
 r"""
-Conversion factor from angstroem to bohr.
+Conversion factor from angstrom to bohr.
 """
 
 HA_TO_CMM1 = 219474.6313705
@@ -157,4 +157,4 @@ Conversion factor for atomic units of dipole moment to Debye.
 
 # Units dictionary
 
-eVA = {"positions": "angstroem", "energy": "eV", "dipole_moment": "Debye"}
+eVA = {"positions": "angstrom", "energy": "eV", "dipole_moment": "Debye"}

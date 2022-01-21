@@ -36,7 +36,7 @@ class Posinp(Sequence):
     def __init__(
         self,
         atoms,
-        units="angstroem",
+        units="angstrom",
         boundary_conditions="free",
         cell=None,
         angles=None,
@@ -56,13 +56,13 @@ class Posinp(Sequence):
 
 
         >>> posinp = Posinp([Atom('N', [0, 0, 0]), Atom('N', [0, 0, 1.1])],
-        ...                 'angstroem', 'free')
+        ...                 'angstrom', 'free')
         >>> len(posinp)
         2
         >>> posinp.boundary_conditions
         'free'
         >>> posinp.units
-        'angstroem'
+        'angstrom'
         >>> for atom in posinp:
         ...     repr(atom)
         "Atom('N', [0.0, 0.0, 0.0])"
@@ -249,12 +249,6 @@ class Posinp(Sequence):
         ...
         ValueError: Cannot use reduced units with free boundary conditions
         """
-        # Lower the keys of the posinp if needed
-        if "positions" not in posinp:
-            ref_posinp = deepcopy(posinp)
-            for key in ref_posinp:
-                posinp[key.lower()] = ref_posinp[key]
-                del posinp[key]
         # Read data from the dictionary
         atoms = []  # atomic positions
         for atom in posinp["positions"]:
@@ -308,7 +302,7 @@ class Posinp(Sequence):
             if all([isinstance(at, Atom) for at in atoms]):
                 self._atoms = atoms
             else:
-                raise TypeError("All atoms should be mybigdft.Atoms instances")
+                raise TypeError("All atoms should be mlcalcdriver.base.Atom instances")
         else:
             raise TypeError("Atoms should be given in a list")
 
@@ -328,7 +322,7 @@ class Posinp(Sequence):
             units = units.lower()
             if units.endswith("d0"):
                 units = units[:-2]
-            if units in ["angstroem", "atomic", "reduced"]:
+            if units in ["angstrom", "atomic", "reduced"]:
                 self._units = units
             else:
                 raise ValueError("Units are not recognized.")
@@ -552,7 +546,7 @@ class Posinp(Sequence):
 
 
         >>> atoms = [Atom('N', [0, 0, 0]), Atom('N', [3, 4, 0])]
-        >>> pos = Posinp(atoms, units="angstroem", boundary_conditions="free")
+        >>> pos = Posinp(atoms, units="angstrom", boundary_conditions="free")
         >>> assert pos.distance(0, 1) == 5.0
         """
         pos_1 = self[i_at_1].position
@@ -584,10 +578,10 @@ class Posinp(Sequence):
 
 
         >>> posinp = Posinp([Atom('N', [0, 0, 0]), Atom('N', [0, 0, 1.1])],
-        ...                 'angstroem', 'free')
+        ...                 'angstrom', 'free')
         >>> new_posinp = posinp.translate_atom(1, [0.0, 0.0, 0.05])
         >>> print(new_posinp)
-        2   angstroem
+        2   angstrom
         free
         N   0.0   0.0   0.0
         N   0.0   0.0   1.15
@@ -665,24 +659,24 @@ class Posinp(Sequence):
         ----------
         new_units: str
             The new units in which the positions should be converted.
-            Can either be "angstroem" or "atomic".
+            Can either be "angstrom" or "atomic".
         """
-        if new_units not in ["angstroem", "atomic"]:
+        if new_units not in ["angstrom", "atomic"]:
             raise ValueError("New units are not recognized.")
         if self.units == new_units:
             pass
-        elif self.units == "atomic" and new_units == "angstroem":
+        elif self.units == "atomic" and new_units == "angstrom":
             for atom in self:
                 atom.position = atom.position * B_TO_ANG
             self.cell = Cell.new(self.cell * B_TO_ANG)
-        elif self.units == "angstroem" and new_units == "atomic":
+        elif self.units == "angstrom" and new_units == "atomic":
             for atom in self:
                 atom.position = atom.position * ANG_TO_B
             self.cell = Cell.new(self.cell * ANG_TO_B)
         elif self.units == "reduced" and new_units == "atomic":
             for atom in self:
                 atom.position = np.sum(atom.position * self.cell, axis=0)
-        elif self.units == "reduced" and new_units == "angstroem":
+        elif self.units == "reduced" and new_units == "angstrom":
             for atom in self:
                 atom.position = np.sum(atom.position * self.cell * B_TO_ANG, axis=0)
             self.cell = Cell.new(self.cell * B_TO_ANG)

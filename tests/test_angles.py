@@ -30,7 +30,7 @@ class TestGrapheneAngles:
         e2 = j2.results["energy"]
 
         pos_4at = deepcopy(self.pos_4at_red)
-        pos_4at.convert_units("angstroem")
+        pos_4at.convert_units("angstrom")
         j3 = Job(posinp=pos_4at, calculator=self.calc)
         j3.run("energy")
         e3 = j3.results["energy"]
