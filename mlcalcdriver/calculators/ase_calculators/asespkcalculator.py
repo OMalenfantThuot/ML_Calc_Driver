@@ -1,6 +1,5 @@
 from ase.calculators.calculator import Calculator, all_changes
 from mlcalcdriver.calculators import SchnetPackCalculator
-from mlcalcdriver.base import Posinp, Job
 from copy import deepcopy
 import numpy as np
 
@@ -11,7 +10,9 @@ class AseSpkCalculator(Calculator):
     class to use directly inside ASE funtions.
     """
 
-    def __init__(self, model_dir, available_properties=None, device="cpu", md=False, **kwargs):
+    def __init__(
+        self, model_dir, available_properties=None, device="cpu", md=False, **kwargs
+    ):
         r"""
         Parameters
         ----------
@@ -34,8 +35,13 @@ class AseSpkCalculator(Calculator):
             device=device,
             md=md,
         )
-        self.implemented_properties = self.schnetpackcalculator._get_available_properties()
-        if "energy" in self.implemented_properties and "forces" not in self.implemented_properties:
+        self.implemented_properties = (
+            self.schnetpackcalculator._get_available_properties()
+        )
+        if (
+            "energy" in self.implemented_properties
+            and "forces" not in self.implemented_properties
+        ):
             self.implemented_properties.append("forces")
 
     def calculate(self, atoms=None, properties=["energy"], system_changes=all_changes):
@@ -43,8 +49,12 @@ class AseSpkCalculator(Calculator):
         This method will be called by ASE functions.
         """
         if self.calculation_required(atoms, properties):
+            from mlcalcdriver.base.posinp import Posinp
+
             Calculator.calculate(self, atoms)
             posinp = Posinp.from_ase(atoms)
+
+            from mlcalcdriver.base.job import Job
 
             job = Job(posinp=posinp, calculator=self.schnetpackcalculator)
             for prop in properties:

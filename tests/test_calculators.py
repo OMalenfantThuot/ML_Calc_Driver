@@ -22,5 +22,5 @@ class TestCalc:
         with pytest.raises(KeyError):
             c = Calculator(available_properties="energy", units={"atomic": True})
         c = Calculator(available_properties="energy", units=eVA)
-        assert c.units["positions"] == "angstroem"
+        assert c.units["positions"] == "angstrom"
         assert c.units["energy"] == "eV"
