@@ -1,4 +1,5 @@
 from ase.geometry import Cell
+from ase import Atom
 from collections.abc import Sequence
 import numpy as np
 from copy import deepcopy
@@ -55,6 +56,7 @@ class AtomsToPatches:
 
     def split_atoms(self, atoms):
         # Define grid and cells
+        atoms = deepcopy(atoms)
         atoms.set_pbc(self.grid == 1)
         full_cell = atoms.cell
         grid_cell = Cell(full_cell / np.broadcast_to(self.grid, (3, 3)).T)
@@ -72,7 +74,7 @@ class AtomsToPatches:
             raise ValueError("The grid is too fine to use with this buffer.")
 
         # Add initial buffer around the supercell
-        buffered_atoms = add_initial_buffer(atoms, full_scaled_buffer_length)
+        buffered_atoms = add_initial_buffer(atoms, full_scaled_buffer_length, full_cell)
 
         # Define grid indexes
         dim0, dim1, dim2 = (
@@ -123,7 +125,7 @@ class AtomsToPatches:
         return subcell_as_atoms_list, main_atoms_idx_list
 
 
-def add_initial_buffer(atoms, scaled_buffer_length):
+def add_initial_buffer(atoms, scaled_buffer_length, full_cell):
     init_scaled_positions = atoms.get_scaled_positions()
     in_buff_low = (init_scaled_positions < scaled_buffer_length).astype(int)
     in_buff_high = (init_scaled_positions > (1 - scaled_buffer_length)).astype(int)
@@ -144,23 +146,32 @@ def add_initial_buffer(atoms, scaled_buffer_length):
                 ],
             ):
                 if dim != 0:
-                    atoms = copy_atom_with_translation(atoms, i, translation * dim)
+                    atoms = copy_atom_with_translation(
+                        atoms, i, (translation * dim).dot(full_cell)
+                    )
         if non_zero_dimensions >= 2:
             if x != 0:
                 if y != 0:
-                    atoms = copy_atom_with_translation(atoms, i, np.array([x, y, 0]))
+                    atoms = copy_atom_with_translation(
+                        atoms, i, np.array([x, y, 0]).dot(full_cell)
+                    )
                 if z != 0:
-                    atoms = copy_atom_with_translation(atoms, i, np.array([x, 0, z]))
+                    atoms = copy_atom_with_translation(
+                        atoms, i, np.array([x, 0, z]).dot(full_cell)
+                    )
             else:
-                atoms = copy_atom_with_translation(atoms, i, np.array([0, y, z]))
+                atoms = copy_atom_with_translation(
+                    atoms, i, np.array([0, y, z]).dot(full_cell)
+                )
         if non_zero_dimensions == 3:
-            atoms = copy_atom_with_translation(atoms, i, np.array([x, y, z]))
+            atoms = copy_atom_with_translation(
+                atoms, i, np.array([x, y, z]).dot(full_cell)
+            )
 
     return atoms
 
 
 def copy_atom_with_translation(atoms, idx, translation):
-    new_atom = deepcopy(atoms[idx])
-    new_atom.scaled_position += translation
+    new_atom = Atom(atoms[idx].symbol, atoms[idx].position + translation)
     atoms.append(new_atom)
     return atoms
