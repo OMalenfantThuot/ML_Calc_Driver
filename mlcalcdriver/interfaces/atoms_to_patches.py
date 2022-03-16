@@ -109,7 +109,12 @@ class AtomsToPatches:
 
             main_subcell_idx = np.where(
                 np.all(
-                    np.floor(scaled_atoms_positions[buffered_subcell_atoms_idx])
+                    np.floor(
+                        np.around(
+                            scaled_atoms_positions[buffered_subcell_atoms_idx],
+                            decimals=8,
+                        )
+                    )
                     == subcells_idx[i],
                     axis=1,
                 )
