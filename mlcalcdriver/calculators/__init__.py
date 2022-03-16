@@ -10,4 +10,3 @@ from .calculator import Calculator
 from .schnetpack import SchnetPackCalculator
 from .ensemble import Ensemble, EnsembleCalculator, AseEnsembleCalculator
 from .ase_calculators.asespkcalculator import AseSpkCalculator
-from .schnetpack_lowmem import LowMemSPCalculator
