@@ -11,7 +11,13 @@ class AseSpkCalculator(Calculator):
     """
 
     def __init__(
-        self, model_dir, available_properties=None, device="cpu", md=False, **kwargs
+        self,
+        model_dir,
+        available_properties=None,
+        device="cpu",
+        md=False,
+        dropout=False,
+        **kwargs
     ):
         r"""
         Parameters
@@ -25,6 +31,8 @@ class AseSpkCalculator(Calculator):
         md : bool
             Default is False. Should be set to True if the
             calculator is used for molecular dynamics.
+        dropout : bool
+            Same as :class:`SchnetPackCalculator`.
         units : dict
             Same as :class:`SchnetPackCalculator`.
         """
@@ -34,6 +42,7 @@ class AseSpkCalculator(Calculator):
             available_properties=available_properties,
             device=device,
             md=md,
+            dropout=dropout,
         )
         self.implemented_properties = (
             self.schnetpackcalculator._get_available_properties()
