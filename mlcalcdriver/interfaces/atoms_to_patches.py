@@ -93,6 +93,7 @@ class AtomsToPatches:
         # Create subcells as atoms instances
         subcell_as_atoms_list = []
         main_atoms_idx_list = []
+        original_atoms_idx_list = []
         for i, subcell in enumerate(subcells_idx):
             buffered_subcell_min = subcell - grid_scaled_buffer_length
             buffered_subcell_max = subcell + 1 + grid_scaled_buffer_length
@@ -110,7 +111,7 @@ class AtomsToPatches:
             main_subcell_idx = np.where(
                 np.all(
                     np.floor(
-                        np.around(
+                        np.round(
                             scaled_atoms_positions[buffered_subcell_atoms_idx],
                             decimals=8,
                         )
@@ -124,10 +125,11 @@ class AtomsToPatches:
                 deepcopy(buffered_atoms[buffered_subcell_atoms_idx])
             )
             main_atoms_idx_list.append(main_subcell_idx)
+            original_atoms_idx_list.append(buffered_subcell_atoms_idx[main_subcell_idx])
 
         # Return a list of atoms instances and a list of indexes of
         # the atoms that are not in the buffer of those subcells
-        return subcell_as_atoms_list, main_atoms_idx_list
+        return subcell_as_atoms_list, main_atoms_idx_list, original_atoms_idx_list
 
 
 def add_initial_buffer(atoms, scaled_buffer_length, full_cell):
