@@ -3,7 +3,6 @@ Calculator metaclass to accomodate machine learning models
 trained using the SchnetPack package.
 """
 
-import os
 import numpy as np
 import torch
 from schnetpack import AtomsLoader
@@ -12,8 +11,7 @@ from mlcalcdriver.calculators import SchnetPackCalculator
 from mlcalcdriver.calculators.utils import torch_derivative, get_derivative_names
 from mlcalcdriver.interfaces import posinp_to_ase_atoms, SchnetPackData, AtomsToPatches
 from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProvider
-from schnetpack.utils import load_model
-from mlcalcdriver.globals import EV_TO_HA, B_TO_ANG
+from utils.models import PatchesAtomisticModel, PatchesAtomwise
 
 
 class PatchSPCalculator(SchnetPackCalculator):
@@ -39,6 +37,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         )
         self.n_interaction = len(self.model.representation.interactions)
         self.subgrid = subgrid
+        self._convert_model()
 
     @property
     def n_interaction(self):
@@ -141,8 +140,6 @@ class PatchSPCalculator(SchnetPackCalculator):
                     )
                     if derivative < 0:
                         deriv1 = -1.0 * deriv1
-                    #print(deriv1)
-                    #np.save("forces.npy", deriv1.cpu().detach().numpy())
                     results.append({"forces": deriv1.squeeze()[main_idx]})
 
             if abs(derivative) == 2:
@@ -154,13 +151,12 @@ class PatchSPCalculator(SchnetPackCalculator):
                 [patch["energy"].cpu().detach().numpy() for patch in results]
             )
         elif property == "forces":
-            forces  = np.concatenate(
+            forces = np.concatenate(
                 [patch["forces"].cpu().detach().numpy() for patch in results]
             )
             print(forces[0])
             idx = np.argsort(np.concatenate(subcells_main_idx))
             predictions["forces"] = forces[idx]
-
 
         return predictions
 
@@ -212,3 +208,10 @@ class PatchSPCalculator(SchnetPackCalculator):
                 )
         else:
             raise NotImplementedError("Model type is not recognized.")
+
+    def _convert_model(self):
+        initout = self.model.output_modules[0]
+        patches_output = PatchesAtomwise(initout.out_net[1].n_neurons[0])
+        patches_output.load_state_dict(initout.state_dict())
+        patches_model = PatchesAtomisticModel(self.model.representation, patches_output)
+        self.model = patches_model
