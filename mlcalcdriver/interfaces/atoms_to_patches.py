@@ -55,6 +55,7 @@ class AtomsToPatches:
         self._grid = np.array(grid)
 
     def split_atoms(self, atoms):
+
         # Define grid and cells
         atoms = deepcopy(atoms)
         atoms.set_pbc(self.grid == 1)
@@ -94,6 +95,7 @@ class AtomsToPatches:
         subcell_as_atoms_list = []
         main_atoms_idx_list = []
         original_atoms_idx_list = []
+
         for i, subcell in enumerate(subcells_idx):
             buffered_subcell_min = subcell - grid_scaled_buffer_length
             buffered_subcell_max = subcell + 1 + grid_scaled_buffer_length
@@ -127,17 +129,25 @@ class AtomsToPatches:
             main_atoms_idx_list.append(main_subcell_idx)
             original_atoms_idx_list.append(buffered_subcell_atoms_idx[main_subcell_idx])
 
-        # Return a list of atoms instances and a list of indexes of
-        # the atoms that are not in the buffer of those subcells
+        # Returns:
+        # 1) a list of atoms instances (subcells)
+        # 2) a list of indexes of the atoms that
+        #    are not in the buffer of those subcells
+        # 3) a list of the original index of the atoms
+        #    to map back per atom predicted properties
+        #    to the original configuration.
         return subcell_as_atoms_list, main_atoms_idx_list, original_atoms_idx_list
 
 
 def add_initial_buffer(atoms, scaled_buffer_length, full_cell):
+
+    # Determine which atoms need to be copied
     init_scaled_positions = atoms.get_scaled_positions()
     in_buff_low = (init_scaled_positions < scaled_buffer_length).astype(int)
     in_buff_high = (init_scaled_positions > (1 - scaled_buffer_length)).astype(int)
     in_buff = in_buff_low - in_buff_high
 
+    # Look at all possible permutations
     for i in range(init_scaled_positions.shape[0]):
         non_zero_dimensions = np.sum(np.absolute(in_buff[i]))
         x, y, z = in_buff[i]
@@ -179,6 +189,7 @@ def add_initial_buffer(atoms, scaled_buffer_length, full_cell):
 
 
 def copy_atom_with_translation(atoms, idx, translation):
+    # Add atom to existing configuration
     new_atom = Atom(atoms[idx].symbol, atoms[idx].position + translation)
     atoms.append(new_atom)
     return atoms
