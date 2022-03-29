@@ -11,7 +11,6 @@ from mlcalcdriver.calculators import SchnetPackCalculator
 from mlcalcdriver.calculators.utils import torch_derivative, get_derivative_names
 from mlcalcdriver.interfaces import posinp_to_ase_atoms, SchnetPackData, AtomsToPatches
 from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProvider
-from utils.models import PatchesAtomisticModel, PatchesAtomwise
 
 
 class PatchSPCalculator(SchnetPackCalculator):
@@ -108,8 +107,7 @@ class PatchSPCalculator(SchnetPackCalculator):
 
         # Pass each subcell independantly
         results = []
-        for subcell, main_idx in zip(subcells, subcells_main_idx):
-            main_idx = torch.LongTensor(main_idx).to(self.device)
+        for subcell in subcells:
             data = SchnetPackData(
                 data=[subcell],
                 environment_provider=environment_provider,
@@ -119,28 +117,26 @@ class PatchSPCalculator(SchnetPackCalculator):
 
             if derivative == 0:
                 if self.model.output_modules[0].derivative is not None:
-                    print("test")
                     for batch in data_loader:
                         batch = {k: v.to(self.device) for k, v in batch.items()}
-                        results.append(self.model(batch, main_idx))
+                        results.append(self.model(batch))
                 else:
                     with torch.no_grad():
                         for batch in data_loader:
                             batch = {k: v.to(self.device) for k, v in batch.items()}
-                            results.append(self.model(batch, main_idx))
+                            results.append(self.model(batch))
 
             if abs(derivative) == 1:
                 for batch in data_loader:
                     batch = {k: v.to(self.device) for k, v in batch.items()}
                     batch[wrt[0]].requires_grad_()
-                    forward_results = self.model(batch, main_idx)
-                    deriv1 = torch.unsqueeze(
-                        torch_derivative(forward_results[init_property], batch[wrt[0]]),
-                        0,
+                    forward_results = self.model(batch)
+                    deriv1 = torch_derivative(
+                        forward_results[init_property], batch[wrt[0]]
                     )
                     if derivative < 0:
                         deriv1 = -1.0 * deriv1
-                    results.append({"forces": deriv1.squeeze()[main_idx]})
+                    results.append({out_name: deriv1})
 
             if abs(derivative) == 2:
                 raise NotImplementedError()
@@ -148,70 +144,55 @@ class PatchSPCalculator(SchnetPackCalculator):
         predictions = {}
         if property == "energy":
             predictions["energy"] = np.sum(
-                [patch["energy"].cpu().detach().numpy() for patch in results]
+                [
+                    patch["individual_energy"][subcells_main_idx[i]]
+                    .detach()
+                    .cpu()
+                    .numpy()
+                    for i, patch in enumerate(results)
+                ]
             )
         elif property == "forces":
-            forces = np.concatenate(
-                [patch["forces"].cpu().detach().numpy() for patch in results]
-            )
-            print(forces[0])
-            idx = np.argsort(np.concatenate(subcells_main_idx))
-            predictions["forces"] = forces[idx]
+            forces = np.zeros((len(atoms), 3))
+            for i in range(len(results)):
+                forces[original_cell_idx[i]] = (
+                    results[i]["forces"]
+                    .detach()
+                    .squeeze()
+                    .cpu()
+                    .numpy()[subcells_main_idx[i]]
+                )
+            predictions["forces"] = forces
+        elif property == "hessian":
+            print(results[0]["hessian"].shape)
+        else:
+            raise NotImplementedError()
 
         return predictions
 
-    def _get_available_properties(self):
-        r"""
-        Returns
-        -------
-        avail_prop
-            Properties that the SchnetPack model can return
-        """
-        avail_prop = set()
-        for out in self.model.output_modules:
-            if out.derivative is not None:
-                avail_prop.update([out.property, out.derivative])
-            else:
-                avail_prop.update([out.property])
-        if "energy_U0" in avail_prop:
-            avail_prop.add("energy")
-        return list(avail_prop)
-
-    def _get_representation_type(self):
-        r"""
-        Private method to determine representation type (schnet or wcasf).
-        """
-        if "representation.cutoff.cutoff" in self.model.state_dict().keys():
-            self.model_type = "wacsf"
-            self.cutoff = float(self.model.state_dict()["representation.cutoff.cutoff"])
-        elif any(
-            [
-                name in self.model.state_dict().keys()
-                for name in [
-                    "module.representation.embedding.weight",
-                    "representation.embedding.weight",
-                ]
-            ]
-        ):
-            self.model_type = "schnet"
-            try:
-                self.cutoff = float(
-                    self.model.state_dict()[
-                        "module.representation.interactions.0.cutoff_network.cutoff"
-                    ]
-                )
-            except KeyError:
-                self.cutoff = float(
-                    self.model.state_dict()[
-                        "representation.interactions.0.cutoff_network.cutoff"
-                    ]
-                )
-        else:
-            raise NotImplementedError("Model type is not recognized.")
-
     def _convert_model(self):
+        from utils.models import PatchesAtomisticModel, PatchesAtomwise
+
         initout = self.model.output_modules[0]
-        patches_output = PatchesAtomwise(initout.out_net[1].n_neurons[0])
+        aggregation_mode = "mean" if initout.atom_pool.average else "sum"
+        atomref = (
+            initout.atomref.weight.numpy() if initout.atomref is not None else None
+        )
+
+        patches_output = PatchesAtomwise(
+            n_in=initout.out_net[1].n_neurons[0],
+            n_out=initout.out_net[1].n_neurons[-1],
+            aggregation_mode=aggregation_mode,
+            n_layers=initout.n_layers,
+            property=initout.property,
+            contributions=initout.contributions,
+            derivative=initout.derivative,
+            negative_dr=initout.negative_dr,
+            stress=initout.stress,
+            create_graph=initout.create_graph,
+            atomref=initout.atomref,
+        )
         patches_output.load_state_dict(initout.state_dict())
+
         patches_model = PatchesAtomisticModel(self.model.representation, patches_output)
-        self.model = patches_model
+        self.model = patches_model.to(self.device)
