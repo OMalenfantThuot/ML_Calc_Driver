@@ -90,6 +90,9 @@ class PatchSPCalculator(SchnetPackCalculator):
         init_property, out_name, derivative, wrt = get_derivative_names(
             property, self.available_properties
         )
+        if abs(derivative) >= 1:
+            self.model.output_modules[0].create_graph = True
+
         pbc = True if atoms.pbc.any() else False
         environment_provider = (
             AseEnvironmentProvider(cutoff=self.cutoff)
@@ -152,6 +155,7 @@ class PatchSPCalculator(SchnetPackCalculator):
                     for i, patch in enumerate(results)
                 ]
             )
+
         elif property == "forces":
             forces = np.zeros((len(atoms), 3))
             for i in range(len(results)):
@@ -163,8 +167,31 @@ class PatchSPCalculator(SchnetPackCalculator):
                     .numpy()[subcells_main_idx[i]]
                 )
             predictions["forces"] = forces
+
         elif property == "hessian":
-            print(results[0]["hessian"].shape)
+            hessian = np.zeros((3 * len(atoms), 3 * len(atoms)))
+
+            for i in range(len(results)):
+
+                (
+                    hessian_original_cell_idx_0,
+                    hessian_original_cell_idx_1,
+                ) = prepare_hessian_indices(original_cell_idx[i])
+
+                (
+                    hessian_subcells_main_idx_0,
+                    hessian_subcells_main_idx_1,
+                ) = prepare_hessian_indices(subcells_main_idx[i])
+
+                hessian[hessian_original_cell_idx_0, hessian_original_cell_idx_1] = (
+                    results[i]["hessian"]
+                    .detach()
+                    .squeeze()
+                    .cpu()
+                    .numpy()[hessian_subcells_main_idx_0, hessian_subcells_main_idx_1]
+                )
+            predictions["hessian"] = hessian
+
         else:
             raise NotImplementedError()
 
@@ -196,3 +223,10 @@ class PatchSPCalculator(SchnetPackCalculator):
 
         patches_model = PatchesAtomisticModel(self.model.representation, patches_output)
         self.model = patches_model.to(self.device)
+
+
+def prepare_hessian_indices(input_idx):
+    bias = np.tile(np.array([0, 1, 2]), len(input_idx))
+    hessian_idx = np.repeat(3 * input_idx, 3) + bias
+    idx_0, idx_1 = np.meshgrid(hessian_idx, hessian_idx, indexing="ij")
+    return idx_0, idx_1

@@ -1,5 +1,5 @@
 from ase.geometry import Cell
-from ase import Atom
+from ase import Atom, Atoms
 from collections.abc import Sequence
 import numpy as np
 from copy import deepcopy
@@ -56,9 +56,21 @@ class AtomsToPatches:
 
     def split_atoms(self, atoms):
 
+        # Fix for atoms exactly on the cell frontier
+        new_scaled_positions = np.round(atoms.get_scaled_positions(), decimals=8)
+        t_idx_0, t_idx_1 = np.where(
+            np.isclose(new_scaled_positions, 1.0, rtol=0, atol=1e-8)
+        )
+        new_scaled_positions[t_idx_0, t_idx_1] -= 1.0
+
+        new_pbc = []
+        for i in range(3):
+            new_pbc.append(True if atoms.pbc[i] and self.grid[i] == 1 else False)
+
+        atoms = Atoms(symbols=atoms.symbols, cell=atoms.cell, pbc=new_pbc)
+        atoms.set_scaled_positions(new_scaled_positions)
+
         # Define grid and cells
-        atoms = deepcopy(atoms)
-        atoms.set_pbc(self.grid == 1)
         full_cell = atoms.cell
         grid_cell = Cell(full_cell / np.broadcast_to(self.grid, (3, 3)).T)
 
@@ -67,7 +79,8 @@ class AtomsToPatches:
             np.radians(min(full_cell.angles()))
         )
         full_scaled_buffer_length = buffer_length / full_cell.cellpar()[:3]
-        full_scaled_buffer_length[np.where(atoms.pbc)[0]] = 0
+        full_scaled_buffer_length[np.where(self.grid == 1)[0]] = 0
+
         if np.any(full_scaled_buffer_length >= 0.5):
             raise ValueError("The supercell is too small to use with this buffer.")
         grid_scaled_buffer_length = full_scaled_buffer_length * self.grid
@@ -93,7 +106,7 @@ class AtomsToPatches:
 
         # Create subcells as atoms instances
         subcell_as_atoms_list = []
-        main_atoms_idx_list = []
+        main_subcell_idx_list = []
         original_atoms_idx_list = []
 
         for i, subcell in enumerate(subcells_idx):
@@ -123,10 +136,8 @@ class AtomsToPatches:
                 )
             )[0]
 
-            subcell_as_atoms_list.append(
-                deepcopy(buffered_atoms[buffered_subcell_atoms_idx])
-            )
-            main_atoms_idx_list.append(main_subcell_idx)
+            subcell_as_atoms_list.append(buffered_atoms[buffered_subcell_atoms_idx])
+            main_subcell_idx_list.append(main_subcell_idx)
             original_atoms_idx_list.append(buffered_subcell_atoms_idx[main_subcell_idx])
 
         # Returns:
@@ -136,7 +147,7 @@ class AtomsToPatches:
         # 3) a list of the original index of the atoms
         #    to map back per atom predicted properties
         #    to the original configuration.
-        return subcell_as_atoms_list, main_atoms_idx_list, original_atoms_idx_list
+        return subcell_as_atoms_list, main_subcell_idx_list, original_atoms_idx_list
 
 
 def add_initial_buffer(atoms, scaled_buffer_length, full_cell):
