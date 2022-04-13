@@ -87,6 +87,15 @@ class PatchSPCalculator(SchnetPackCalculator):
         ), "Use the PatchSPCalculator for one configuration at a time."
         atoms = posinp_to_ase_atoms(posinp[0])
 
+        if property == "hessian" and any(self.subgrid == 2):
+            raise warnings.warn(
+                """
+            The hessian matrix can have some bad values with a grid of
+            size 2 because the same atom can be copied multiple times
+            in the buffers of the same subcell. Use a larger grid.
+            """
+            )
+
         init_property, out_name, derivative, wrt = get_derivative_names(
             property, self.available_properties
         )
@@ -104,9 +113,12 @@ class PatchSPCalculator(SchnetPackCalculator):
         at_to_patches = AtomsToPatches(
             cutoff=self.cutoff, n_interaction=self.n_interaction, grid=self.subgrid
         )
-        subcells, subcells_main_idx, original_cell_idx = at_to_patches.split_atoms(
-            atoms
-        )
+        (
+            subcells,
+            subcells_main_idx,
+            original_cell_idx,
+            complete_subcell_copy_idx,
+        ) = at_to_patches.split_atoms(atoms)
 
         # Pass each subcell independantly
         results = []
@@ -176,12 +188,17 @@ class PatchSPCalculator(SchnetPackCalculator):
                 (
                     hessian_original_cell_idx_0,
                     hessian_original_cell_idx_1,
-                ) = prepare_hessian_indices(original_cell_idx[i])
+                ) = prepare_hessian_indices(
+                    original_cell_idx[i], complete_subcell_copy_idx[i]
+                )
 
                 (
                     hessian_subcells_main_idx_0,
                     hessian_subcells_main_idx_1,
-                ) = prepare_hessian_indices(subcells_main_idx[i])
+                ) = prepare_hessian_indices(
+                    subcells_main_idx[i],
+                    np.arange(0, len(complete_subcell_copy_idx[i])),
+                )
 
                 hessian[hessian_original_cell_idx_0, hessian_original_cell_idx_1] = (
                     results[i]["hessian"]
@@ -225,8 +242,11 @@ class PatchSPCalculator(SchnetPackCalculator):
         self.model = patches_model.to(self.device)
 
 
-def prepare_hessian_indices(input_idx):
-    bias = np.tile(np.array([0, 1, 2]), len(input_idx))
-    hessian_idx = np.repeat(3 * input_idx, 3) + bias
-    idx_0, idx_1 = np.meshgrid(hessian_idx, hessian_idx, indexing="ij")
+def prepare_hessian_indices(input_idx_0, input_idx_1):
+
+    bias_0 = np.tile(np.array([0, 1, 2]), len(input_idx_0))
+    bias_1 = np.tile(np.array([0, 1, 2]), len(input_idx_1))
+    hessian_idx_0 = np.repeat(3 * input_idx_0, 3) + bias_0
+    hessian_idx_1 = np.repeat(3 * input_idx_1, 3) + bias_1
+    idx_0, idx_1 = np.meshgrid(hessian_idx_0, hessian_idx_1, indexing="ij")
     return idx_0, idx_1

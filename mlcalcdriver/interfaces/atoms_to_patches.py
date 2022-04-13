@@ -88,7 +88,9 @@ class AtomsToPatches:
             raise ValueError("The grid is too fine to use with this buffer.")
 
         # Add initial buffer around the supercell
-        buffered_atoms = add_initial_buffer(atoms, full_scaled_buffer_length, full_cell)
+        buffered_atoms, copy_idx = add_initial_buffer(
+            atoms, full_scaled_buffer_length, full_cell
+        )
 
         # Define grid indexes
         dim0, dim1, dim2 = (
@@ -108,6 +110,7 @@ class AtomsToPatches:
         subcell_as_atoms_list = []
         main_subcell_idx_list = []
         original_atoms_idx_list = []
+        complete_subcell_copy_idx_list = []
 
         for i, subcell in enumerate(subcells_idx):
             buffered_subcell_min = subcell - grid_scaled_buffer_length
@@ -122,6 +125,8 @@ class AtomsToPatches:
                     axis=1,
                 )
             )[0]
+
+            complete_subcell_copy_idx = copy_idx[buffered_subcell_atoms_idx]
 
             main_subcell_idx = np.where(
                 np.all(
@@ -139,6 +144,7 @@ class AtomsToPatches:
             subcell_as_atoms_list.append(buffered_atoms[buffered_subcell_atoms_idx])
             main_subcell_idx_list.append(main_subcell_idx)
             original_atoms_idx_list.append(buffered_subcell_atoms_idx[main_subcell_idx])
+            complete_subcell_copy_idx_list.append(complete_subcell_copy_idx)
 
         # Returns:
         # 1) a list of atoms instances (subcells)
@@ -147,7 +153,12 @@ class AtomsToPatches:
         # 3) a list of the original index of the atoms
         #    to map back per atom predicted properties
         #    to the original configuration.
-        return subcell_as_atoms_list, main_subcell_idx_list, original_atoms_idx_list
+        return (
+            subcell_as_atoms_list,
+            main_subcell_idx_list,
+            original_atoms_idx_list,
+            complete_subcell_copy_idx_list,
+        )
 
 
 def add_initial_buffer(atoms, scaled_buffer_length, full_cell):
@@ -159,6 +170,7 @@ def add_initial_buffer(atoms, scaled_buffer_length, full_cell):
     in_buff = in_buff_low - in_buff_high
 
     # Look at all possible permutations
+    copy_idx = [i for i in range(len(atoms))]
     for i in range(init_scaled_positions.shape[0]):
         non_zero_dimensions = np.sum(np.absolute(in_buff[i]))
         x, y, z = in_buff[i]
@@ -177,26 +189,31 @@ def add_initial_buffer(atoms, scaled_buffer_length, full_cell):
                     atoms = copy_atom_with_translation(
                         atoms, i, (translation * dim).dot(full_cell)
                     )
+                    copy_idx.append(i)
         if non_zero_dimensions >= 2:
             if x != 0:
                 if y != 0:
                     atoms = copy_atom_with_translation(
                         atoms, i, np.array([x, y, 0]).dot(full_cell)
                     )
+                    copy_idx.append(i)
                 if z != 0:
                     atoms = copy_atom_with_translation(
                         atoms, i, np.array([x, 0, z]).dot(full_cell)
                     )
+                    copy_idx.append(i)
             else:
                 atoms = copy_atom_with_translation(
                     atoms, i, np.array([0, y, z]).dot(full_cell)
                 )
+                copy_idx.append(i)
         if non_zero_dimensions == 3:
             atoms = copy_atom_with_translation(
                 atoms, i, np.array([x, y, z]).dot(full_cell)
             )
+            copy_idx.append(i)
 
-    return atoms
+    return atoms, np.array(copy_idx)
 
 
 def copy_atom_with_translation(atoms, idx, translation):
