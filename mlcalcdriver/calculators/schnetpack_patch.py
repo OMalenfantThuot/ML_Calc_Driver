@@ -5,6 +5,7 @@ trained using the SchnetPack package.
 
 import numpy as np
 import torch
+import warnings
 from schnetpack import AtomsLoader
 from mlcalcdriver.globals import eVA
 from mlcalcdriver.calculators import SchnetPackCalculator
