@@ -126,6 +126,8 @@ class SchnetPackCalculator(Calculator):
         init_property, out_name, derivative, wrt = get_derivative_names(
             property, self.available_properties
         )
+        if abs(derivative) >= 1:
+            self.model.output_modules[0].create_graph = True
 
         if len(posinp) > 1 and derivative:
             batch_size = 1
