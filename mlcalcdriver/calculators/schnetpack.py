@@ -22,7 +22,13 @@ class SchnetPackCalculator(Calculator):
     """
 
     def __init__(
-        self, model_dir, available_properties=None, device="cpu", units=eVA, md=False,
+        self,
+        model_dir,
+        available_properties=None,
+        device="cpu",
+        units=eVA,
+        md=False,
+        dropout=False,
     ):
         r"""
         Parameters
@@ -45,9 +51,15 @@ class SchnetPackCalculator(Calculator):
             Whether the calculator is used with ASE to do molecular dynamics.
             Default is False and should be changed through the
             :class:`AseSpkCalculator` object.
+        dropout : bool
+            Whether the calculator should use the dropout layers to estimate
+            a confidence interval for the prediction. Default is False. No
+            effect if the model hasn't been trained with dropout layers.
         """
         self.device = device
         self.md = md
+        self.dropout = dropout
+
         try:
             self.model = load_model(model_dir, map_location=self.device)
         except Exception:
@@ -55,7 +67,10 @@ class SchnetPackCalculator(Calculator):
                 os.environ["MODELDIR"] + model_dir, map_location=self.device
             )
         super(SchnetPackCalculator, self).__init__(units=units)
-        self.model.eval()
+        if self.dropout:
+            self.model.train()
+        else:
+            self.model.eval()
         self._get_representation_type()
 
     @property
@@ -75,8 +90,20 @@ class SchnetPackCalculator(Calculator):
         assert isinstance(md, bool)
         self._md = md
 
+    @property
+    def dropout(self):
+        return self._dropout
+
+    @dropout.setter
+    def dropout(self, dropout):
+        assert isinstance(dropout, bool)
+        self._dropout = dropout
+
     def run(
-        self, property, posinp=None, batch_size=128,
+        self,
+        property,
+        posinp=None,
+        batch_size=128,
     ):
         r"""
         Central method to use when making a calculation with
@@ -150,7 +177,9 @@ class SchnetPackCalculator(Calculator):
                 deriv2 = torch.unsqueeze(
                     torch_derivative(
                         torch_derivative(
-                            results[init_property], batch[wrt[0]], create_graph=True,
+                            results[init_property],
+                            batch[wrt[0]],
+                            create_graph=True,
                         ),
                         batch[wrt[0]],
                     ),
