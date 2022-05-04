@@ -29,7 +29,7 @@ class Phonon:
         self,
         posinp,
         calculator,
-        relax=True,
+        relax=False,
         finite_difference=False,
         translation_amplitudes=None,
     ):
@@ -58,7 +58,7 @@ class Phonon:
             the created Jobs to evaluate properties.
         relax : bool
             Wether the initial positions need to be relaxed or not.
-            Default is `True`.
+            Default is `False`.
         finite_difference: bool
             If True, the hessian matrix is calculated using finite
             displacements of atoms. Default is False. Mostly there for
@@ -150,9 +150,9 @@ class Phonon:
         Returns
         -------
         relax : bool
-            If `True`, which is default, the initial positions are relaxed
-            before the phonon properties are calculated. Recommended,
-            especially if more than one model is used.
+            If `True`, the initial positions are relaxed
+            before the phonon properties are calculated.
+            Recommended when comparing models.
         """
         return self._relax
 
@@ -219,7 +219,7 @@ class Phonon:
     def normal_modes(self, normal_modes):
         self._normal_modes = normal_modes
 
-    def run(self, batch_size=128, **kwargs):
+    def run(self, batch_size=1, **kwargs):
         r"""
         Parameters
         ----------
