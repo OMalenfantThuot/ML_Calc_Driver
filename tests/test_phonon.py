@@ -15,7 +15,7 @@ class TestPhononFinite:
     calcN2 = SchnetPackCalculator(os.path.join(model_folder, "myN2_model"))
 
     def test_ph_N2(self):
-        ph1 = Phonon(posinp=self.posN2, calculator=self.calcN2, finite_difference=True)
+        ph1 = Phonon(posinp=self.posN2, calculator=self.calcN2, finite_difference=True, relax=True)
         ph1.run(batch_size=1)
         assert np.isclose(ph1.energies.max(), 2339.53, atol=0.01)
         assert all(np.abs(np.delete(ph1.energies, np.argmax(ph1.energies))) < 30)
@@ -55,13 +55,13 @@ class TestPhononAutoGrad:
     calc_for = SchnetPackCalculator(os.path.join(model_folder, "H2O_forces_model"))
 
     def test_ph_h2o_autograd_2nd_derivative(self):
-        ph1 = Phonon(posinp=self.posH2O, calculator=self.calc_ener)
+        ph1 = Phonon(posinp=self.posH2O, calculator=self.calc_ener, relax=True)
         ph1.run()
         ph1.energies.sort()
         assert np.allclose(ph1.energies[6:9], [1726, 3856, 3942], atol=1)
 
     def test_ph_h2o_autograd_1st_derivative(self):
-        ph1 = Phonon(posinp=self.posH2O, calculator=self.calc_for)
+        ph1 = Phonon(posinp=self.posH2O, calculator=self.calc_for, relax=True)
         ph1.run()
         ph1.energies.sort()
         assert np.allclose(ph1.energies[6:9], [1589, 3703, 3812], atol=1)
