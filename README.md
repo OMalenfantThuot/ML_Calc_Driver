@@ -11,7 +11,7 @@ ML\_Calc\_Driver is a driver to emulate DFT calculations using machine learned p
 To use this package, one needs an already trained model, that can predict energy or forces from an input atomic geometry.
 Supported systems depends on the model, this package should not be a limitation.
 
-This package has been tested with python 3.7, but should work with older python 3 versions.
+This package is tested with python 3.8 and 3.9.
 
 Credit to [mmoriniere](https://gitlab.com/mmoriniere) for the [MyBigDFT package](https://gitlab.com/mmoriniere/MyBigDFT)
 which served as a foundation for this work. Some classes have been directly adapted from MyBigDFT.
