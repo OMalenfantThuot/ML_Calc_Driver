@@ -7,7 +7,6 @@ learning trained model.
 import numpy as np
 from mlcalcdriver import Job, Posinp
 from mlcalcdriver.calculators import Calculator
-from mlcalcdriver.workflows import Geopt
 from copy import deepcopy
 from mlcalcdriver.globals import ANG_TO_B, B_TO_ANG, EV_TO_HA, HA_TO_CMM1, AMU_TO_EMU
 
@@ -230,6 +229,8 @@ class Phonon:
             Only useful if the relaxation is unstable.
         """
         if self.relax:
+            from mlcalcdriver.workflows import Geopt
+
             geopt = Geopt(posinp=self.posinp, calculator=self.calculator, **kwargs)
             geopt.run(batch_size=batch_size)
             self._ground_state = deepcopy(geopt.final_posinp)
@@ -294,7 +295,7 @@ class Phonon:
             h = (
                 job.results["hessian"].reshape(3 * n_at, 3 * n_at)
                 * EV_TO_HA
-                * B_TO_ANG ** 2
+                * B_TO_ANG**2
             )
             return (h + h.T) / 2.0
         else:
@@ -316,3 +317,116 @@ class Phonon:
         eigs, vecs = np.linalg.eigh(self.dyn_mat)
         eigs = np.sign(eigs) * np.sqrt(np.where(eigs < 0, -eigs, eigs))
         return eigs, vecs
+
+
+class LanczosPhonon(Phonon):
+    def __init__(self, posinp, calculator, relax=False):
+        super().__init__(
+            posinp=posinp, calculator=calculator, relax=relax, finite_difference=False
+        )
+
+    def run(self, batch_size=1, displacement=0.005, num_eval=4, **kwargs):
+        r""" """
+        from scipy.linalg import eigh_tridiagonal
+
+        if self.relax:
+            from mlcalcdriver.workflows import Geopt
+
+            geopt = Geopt(posinp=self.posinp, calculator=self.calculator, **kwargs)
+            geopt.run(batch_size=batch_size)
+            self._ground_state = deepcopy(geopt.final_posinp)
+
+        n_atoms = len(self._ground_state)
+
+        projection_function = self._get_projection_function(num_eval)
+        factors = self._get_factors(num_eval)
+
+        # Empty matrices
+        V_matrix = np.zeros((3 * n_atoms, 3 * n_atoms))
+        T_diag = np.zeros(3 * n_atoms)
+        T_offdiag = np.zeros(3 * n_atoms - 1)
+
+        # Initial values
+        v = np.ones(3 * n_atoms) / np.sqrt(3 * n_atoms)
+        v = np.random.rand(3 * n_atoms)
+        v = v / np.linalg.norm(v)
+        beta, oldv = 0, 0
+
+        # Lanczos iterations
+        for it in range(3 * n_atoms):
+            if it > 0:
+                oldv = v
+                beta = np.linalg.norm(omega)
+                if beta > 1e-6:
+                    v = omega / beta
+                else:
+                    break
+
+            # Save current values
+            self._update_V_matrix(V_matrix, v, it)
+
+            # Create next basis vector
+            forces = [
+                self._get_forces_with_displacement(factor * displacement, v).flatten()
+                for factor in factors
+            ]
+            omega = projection_function(*forces, displacement)
+
+            # Save current values
+            alpha = np.dot(omega, v)
+            self._update_T_matrix(T_diag, T_offdiag, alpha, beta, it)
+
+            # Orthogonaliza basis
+            omega = omega - alpha * v - beta * oldv
+
+        T_eigvals, T_eigvecs = eigh_tridiagonal(T_diag, T_offdiag)
+        # To be continued
+
+    def _get_forces_with_displacement(self, displacement, vector):
+        posinp = deepcopy(self._ground_state)
+        translation = (displacement * vector).reshape(-1, 3)
+
+        # Loop on atoms is slow, but it's negligible
+        # Posinp needs to be changed to make this more efficient
+        for i, atom in enumerate(posinp):
+            atom.position += translation[i]
+
+        job = Job(posinp=posinp, calculator=self.calculator)
+        job.run("forces")
+        return job.results["forces"]
+
+    def _update_V_matrix(self, V_matrix, v, it):
+        V_matrix[:, it] = v
+
+    def _update_T_matrix(self, T_diag, T_offdiag, alpha, beta, it):
+        T_diag[it] = alpha
+        if it > 0:
+            T_offdiag[it - 1] = beta
+
+    def _get_projection_function(self, num_eval):
+        # Simulate the Hessian * v matricial product
+        # without explicitely knowing the Hessian
+        if num_eval == 3:
+
+            def project_hessian(F1, F2, F3, displacement):
+                return (6 * displacement) ** (-1) * (-18 * F1 + 9 * F2 - 2 * F3)
+
+        elif num_eval == 4:
+
+            def project_hessian(F1, F2, Fmoins1, Fmoins2, displacement):
+                return (12 * displacement) ** (-1) * (
+                    F2 - 8 * F1 + 8 * Fmoins1 - Fmoins2
+                )
+
+        else:
+            raise NotImplementedError()
+        return project_hessian
+
+    def _get_factors(self, num_eval):
+        if num_eval == 3:
+            factors = [1, 2, 3]
+        elif num_eval == 4:
+            factors = [1, 2, -1, -2]
+        else:
+            raise NotImplementedError()
+        return factors
