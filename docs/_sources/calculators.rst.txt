@@ -9,5 +9,6 @@ Calculators Module
 
    calculator
    schnetcalc
+   schnetcalcpatches
    asespkcalc
    ensemble

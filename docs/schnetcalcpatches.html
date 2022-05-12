@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PatchSPCalculator &mdash; ML_Calc_Driver 1.1.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="AseSpkCalculator" href="asespkcalc.html" />
+    <link rel="prev" title="SchnetPackCalculator" href="schnetcalc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> ML_Calc_Driver
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Code Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="calculators.html">Calculators Module</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="calculator.html">Basic Calculator Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schnetcalc.html">SchnetPackCalculator</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PatchSPCalculator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="asespkcalc.html">AseSpkCalculator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ensemble.html">Ensemble Calculators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Interfaces Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="globals.html">Globals</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ML_Calc_Driver</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="calculators.html">Calculators Module</a> &raquo;</li>
+      <li>PatchSPCalculator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/schnetcalcpatches.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="patchspcalculator">
+<h1>PatchSPCalculator<a class="headerlink" href="#patchspcalculator" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlcalcdriver.calculators.schnetpack_patch.PatchSPCalculator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.calculators.schnetpack_patch.</span></span><span class="sig-name descname"><span class="pre">PatchSPCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">available_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'dipole_moment':</span> <span class="pre">'Debye',</span> <span class="pre">'energy':</span> <span class="pre">'eV',</span> <span class="pre">'positions':</span> <span class="pre">'angstrom'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgrid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/schnetpack_patch.html#PatchSPCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.schnetpack_patch.PatchSPCalculator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="schnetcalc.html#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator" title="mlcalcdriver.calculators.schnetpack.SchnetPackCalculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlcalcdriver.calculators.schnetpack.SchnetPackCalculator</span></code></a></p>
+<p>Calculator based on a SchnetPack model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_dir</strong> (<em>str</em>) – Path to the stored model.</p></li>
+<li><p><strong>available_properties</strong> (<em>str</em><em> or </em><em>list of str</em>) – Same as SchnetPackCalculator</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – Same as SchnetPackCalculator</p></li>
+<li><p><strong>units</strong> (<em>dict</em>) – Same as SchnetPackCalculator</p></li>
+<li><p><strong>md</strong> (<em>bool</em>) – Same as SchnetPackCalculator</p></li>
+<li><p><strong>subgrid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code> of length 3) – Number of subdivisions of the initial configuration in
+all 3 dimensions. The periodic boundary conditions will
+be kept in the dimensions with 1.</p></li>
+<li><p><strong>model_dir</strong> – Path to the stored model on which the calculator
+will be based. If $MODELDIR is defined, the path can
+be relative to it. If not, the path must be absolute
+or relative to the working directory.</p></li>
+<li><p><strong>available_properties</strong> – Properties that the model can predict. If <cite>None</cite>, they
+automatically determined from the model. Default is <cite>None</cite>.</p></li>
+<li><p><strong>device</strong> – Can be either <cite>“cpu”</cite> to use cpu or <cite>“cuda”</cite> to use “gpu”</p></li>
+<li><p><strong>units</strong> – Dictionnary containing the units in which the calculator
+makes predictions. Default is mlcalcdriver.globals.eVA for
+a SchnetPackCalculator.</p></li>
+<li><p><strong>md</strong> – Whether the calculator is used with ASE to do molecular dynamics.
+Default is False and should be changed through the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">AseSpkCalculator</span></code> object.</p></li>
+<li><p><strong>dropout</strong> (<em>bool</em>) – Whether the calculator should use the dropout layers to estimate
+a confidence interval for the prediction. Default is False. No
+effect if the model hasn’t been trained with dropout layers.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlcalcdriver.calculators.schnetpack_patch.PatchSPCalculator.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posinp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/schnetpack_patch.html#PatchSPCalculator.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.schnetpack_patch.PatchSPCalculator.run" title="Permalink to this definition"></a></dt>
+<dd><p>Central method to use when making a calculation with
+the calculator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property</strong> (<em>str</em>) – Property to be predicted by the calculator</p></li>
+<li><p><strong>posinp</strong> (<a class="reference internal" href="posinp.html#mlcalcdriver.base.posinp.Posinp" title="mlcalcdriver.base.posinp.Posinp"><em>Posinp</em></a>) – Atomic configuration to pass to the model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>predictions</strong> – Corresponding prediction by the model.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Using one or more values of <strong>2</strong> in the subgrid can create problems because the same atom can be present multiple times in the buffers of a single patch.</p>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="schnetcalc.html" class="btn btn-neutral float-left" title="SchnetPackCalculator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="asespkcalc.html" class="btn btn-neutral float-right" title="AseSpkCalculator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Olivier Malenfant-Thuot.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

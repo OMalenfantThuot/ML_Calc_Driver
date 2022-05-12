@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ensemble Calculators &mdash; ML_Calc_Driver 1.1.0 documentation</title>
+  <title>Ensemble Calculators &mdash; ML_Calc_Driver 1.1.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -43,6 +43,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="calculators.html">Calculators Module</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="calculator.html">Basic Calculator Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schnetcalc.html">SchnetPackCalculator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schnetcalcpatches.html">PatchSPCalculator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="asespkcalc.html">AseSpkCalculator</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Ensemble Calculators</a></li>
 </ul>
@@ -81,7 +82,7 @@
 <span id="ensemble-calculators"></span><h1>Ensemble Calculators<a class="headerlink" href="#module-mlcalcdriver.calculators.ensemble" title="Permalink to this headline"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mlcalcdriver.calculators.ensemble.Ensemble">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.calculators.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelpaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'dipole_moment':</span> <span class="pre">'Debye',</span> <span class="pre">'energy':</span> <span class="pre">'eV',</span> <span class="pre">'positions':</span> <span class="pre">'angstroem'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.Ensemble" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.calculators.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelpaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'dipole_moment':</span> <span class="pre">'Debye',</span> <span class="pre">'energy':</span> <span class="pre">'eV',</span> <span class="pre">'positions':</span> <span class="pre">'angstrom'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.Ensemble" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Not a Calculator. This holds the models needed in the actual calculators.
 Only implemented for SchnetPack models, at the moment. Could be easily expanded.</p>
@@ -89,7 +90,7 @@ Only implemented for SchnetPack models, at the moment. Could be easily expanded.
 
 <dl class="py class">
 <dt class="sig sig-object py" id="mlcalcdriver.calculators.ensemble.EnsembleCalculator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.calculators.ensemble.</span></span><span class="sig-name descname"><span class="pre">EnsembleCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelpaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">available_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'dipole_moment':</span> <span class="pre">'Debye',</span> <span class="pre">'energy':</span> <span class="pre">'eV',</span> <span class="pre">'positions':</span> <span class="pre">'angstroem'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#EnsembleCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.EnsembleCalculator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.calculators.ensemble.</span></span><span class="sig-name descname"><span class="pre">EnsembleCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modelpaths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">available_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'dipole_moment':</span> <span class="pre">'Debye',</span> <span class="pre">'energy':</span> <span class="pre">'eV',</span> <span class="pre">'positions':</span> <span class="pre">'angstrom'}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/calculators/ensemble.html#EnsembleCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.calculators.ensemble.EnsembleCalculator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="calculator.html#mlcalcdriver.calculators.calculator.Calculator" title="mlcalcdriver.calculators.calculator.Calculator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlcalcdriver.calculators.calculator.Calculator</span></code></a></p>
 <p>Calculator using many similarly trained models to approximate
 a convfidence interval on predictions. Can be used with any <a class="reference internal" href="#mlcalcdriver.calculators.ensemble.Ensemble" title="mlcalcdriver.calculators.ensemble.Ensemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ensemble</span></code></a>.</p>
@@ -195,7 +196,7 @@ directories.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Olivier Malenfant-Thuot.</p>
+    <p>&#169; Copyright 2022, Olivier Malenfant-Thuot.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

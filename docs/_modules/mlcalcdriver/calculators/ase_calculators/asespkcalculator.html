@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlcalcdriver.calculators.ase_calculators.asespkcalculator &mdash; ML_Calc_Driver 1.1.0 documentation</title>
+  <title>mlcalcdriver.calculators.ase_calculators.asespkcalculator &mdash; ML_Calc_Driver 1.1.3 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -70,7 +70,6 @@
   <h1>Source code for mlcalcdriver.calculators.ase_calculators.asespkcalculator</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">ase.calculators.calculator</span> <span class="kn">import</span> <span class="n">Calculator</span><span class="p">,</span> <span class="n">all_changes</span>
 <span class="kn">from</span> <span class="nn">mlcalcdriver.calculators</span> <span class="kn">import</span> <span class="n">SchnetPackCalculator</span>
-<span class="kn">from</span> <span class="nn">mlcalcdriver.base</span> <span class="kn">import</span> <span class="n">Posinp</span><span class="p">,</span> <span class="n">Job</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -81,7 +80,15 @@
 <span class="sd">    class to use directly inside ASE funtions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">,</span> <span class="n">available_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_dir</span><span class="p">,</span>
+        <span class="n">available_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+        <span class="n">md</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -94,6 +101,8 @@
 <span class="sd">        md : bool</span>
 <span class="sd">            Default is False. Should be set to True if the</span>
 <span class="sd">            calculator is used for molecular dynamics.</span>
+<span class="sd">        dropout : bool</span>
+<span class="sd">            Same as :class:`SchnetPackCalculator`.</span>
 <span class="sd">        units : dict</span>
 <span class="sd">            Same as :class:`SchnetPackCalculator`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -103,9 +112,15 @@
             <span class="n">available_properties</span><span class="o">=</span><span class="n">available_properties</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">md</span><span class="o">=</span><span class="n">md</span><span class="p">,</span>
+            <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">implemented_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schnetpackcalculator</span><span class="o">.</span><span class="n">_get_available_properties</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">implemented_properties</span> <span class="ow">and</span> <span class="s2">&quot;forces&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">implemented_properties</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">implemented_properties</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schnetpackcalculator</span><span class="o">.</span><span class="n">_get_available_properties</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="s2">&quot;energy&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">implemented_properties</span>
+            <span class="ow">and</span> <span class="s2">&quot;forces&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">implemented_properties</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">implemented_properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;forces&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AseSpkCalculator.calculate"><a class="viewcode-back" href="../../../../asespkcalc.html#mlcalcdriver.calculators.ase_calculators.asespkcalculator.AseSpkCalculator.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">],</span> <span class="n">system_changes</span><span class="o">=</span><span class="n">all_changes</span><span class="p">):</span>
@@ -113,8 +128,12 @@
 <span class="sd">        This method will be called by ASE functions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculation_required</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">mlcalcdriver.base.posinp</span> <span class="kn">import</span> <span class="n">Posinp</span>
+
             <span class="n">Calculator</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
             <span class="n">posinp</span> <span class="o">=</span> <span class="n">Posinp</span><span class="o">.</span><span class="n">from_ase</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+
+            <span class="kn">from</span> <span class="nn">mlcalcdriver.base.job</span> <span class="kn">import</span> <span class="n">Job</span>
 
             <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">posinp</span><span class="o">=</span><span class="n">posinp</span><span class="p">,</span> <span class="n">calculator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schnetpackcalculator</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
@@ -132,7 +151,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Olivier Malenfant-Thuot.</p>
+    <p>&#169; Copyright 2022, Olivier Malenfant-Thuot.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

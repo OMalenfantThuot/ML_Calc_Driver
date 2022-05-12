@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlcalcdriver.base.posinp &mdash; ML_Calc_Driver 1.1.0 documentation</title>
+  <title>mlcalcdriver.base.posinp &mdash; ML_Calc_Driver 1.1.3 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -106,7 +106,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">atoms</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;angstroem&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;angstrom&quot;</span><span class="p">,</span>
         <span class="n">boundary_conditions</span><span class="o">=</span><span class="s2">&quot;free&quot;</span><span class="p">,</span>
         <span class="n">cell</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">angles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -126,13 +126,13 @@
 
 
 <span class="sd">        &gt;&gt;&gt; posinp = Posinp([Atom(&#39;N&#39;, [0, 0, 0]), Atom(&#39;N&#39;, [0, 0, 1.1])],</span>
-<span class="sd">        ...                 &#39;angstroem&#39;, &#39;free&#39;)</span>
+<span class="sd">        ...                 &#39;angstrom&#39;, &#39;free&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; len(posinp)</span>
 <span class="sd">        2</span>
 <span class="sd">        &gt;&gt;&gt; posinp.boundary_conditions</span>
 <span class="sd">        &#39;free&#39;</span>
 <span class="sd">        &gt;&gt;&gt; posinp.units</span>
-<span class="sd">        &#39;angstroem&#39;</span>
+<span class="sd">        &#39;angstrom&#39;</span>
 <span class="sd">        &gt;&gt;&gt; for atom in posinp:</span>
 <span class="sd">        ...     repr(atom)</span>
 <span class="sd">        &quot;Atom(&#39;N&#39;, [0.0, 0.0, 0.0])&quot;</span>
@@ -319,12 +319,6 @@
 <span class="sd">        ...</span>
 <span class="sd">        ValueError: Cannot use reduced units with free boundary conditions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Lower the keys of the posinp if needed</span>
-        <span class="k">if</span> <span class="s2">&quot;positions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">posinp</span><span class="p">:</span>
-            <span class="n">ref_posinp</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">posinp</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ref_posinp</span><span class="p">:</span>
-                <span class="n">posinp</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">ref_posinp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                <span class="k">del</span> <span class="n">posinp</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="c1"># Read data from the dictionary</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># atomic positions</span>
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">posinp</span><span class="p">[</span><span class="s2">&quot;positions&quot;</span><span class="p">]:</span>
@@ -378,7 +372,7 @@
             <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">Atom</span><span class="p">)</span> <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">]):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_atoms</span> <span class="o">=</span> <span class="n">atoms</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All atoms should be mybigdft.Atoms instances&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All atoms should be mlcalcdriver.base.Atom instances&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Atoms should be given in a list&quot;</span><span class="p">)</span>
 
@@ -398,7 +392,7 @@
             <span class="n">units</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">units</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;d0&quot;</span><span class="p">):</span>
                 <span class="n">units</span> <span class="o">=</span> <span class="n">units</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">units</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;angstroem&quot;</span><span class="p">,</span> <span class="s2">&quot;atomic&quot;</span><span class="p">,</span> <span class="s2">&quot;reduced&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">units</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;angstrom&quot;</span><span class="p">,</span> <span class="s2">&quot;atomic&quot;</span><span class="p">,</span> <span class="s2">&quot;reduced&quot;</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">units</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Units are not recognized.&quot;</span><span class="p">)</span>
@@ -622,7 +616,7 @@
 
 
 <span class="sd">        &gt;&gt;&gt; atoms = [Atom(&#39;N&#39;, [0, 0, 0]), Atom(&#39;N&#39;, [3, 4, 0])]</span>
-<span class="sd">        &gt;&gt;&gt; pos = Posinp(atoms, units=&quot;angstroem&quot;, boundary_conditions=&quot;free&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; pos = Posinp(atoms, units=&quot;angstrom&quot;, boundary_conditions=&quot;free&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; assert pos.distance(0, 1) == 5.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pos_1</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">i_at_1</span><span class="p">]</span><span class="o">.</span><span class="n">position</span>
@@ -654,10 +648,10 @@
 
 
 <span class="sd">        &gt;&gt;&gt; posinp = Posinp([Atom(&#39;N&#39;, [0, 0, 0]), Atom(&#39;N&#39;, [0, 0, 1.1])],</span>
-<span class="sd">        ...                 &#39;angstroem&#39;, &#39;free&#39;)</span>
+<span class="sd">        ...                 &#39;angstrom&#39;, &#39;free&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; new_posinp = posinp.translate_atom(1, [0.0, 0.0, 0.05])</span>
 <span class="sd">        &gt;&gt;&gt; print(new_posinp)</span>
-<span class="sd">        2   angstroem</span>
+<span class="sd">        2   angstrom</span>
 <span class="sd">        free</span>
 <span class="sd">        N   0.0   0.0   0.0</span>
 <span class="sd">        N   0.0   0.0   1.15</span>
@@ -735,24 +729,24 @@
 <span class="sd">        ----------</span>
 <span class="sd">        new_units: str</span>
 <span class="sd">            The new units in which the positions should be converted.</span>
-<span class="sd">            Can either be &quot;angstroem&quot; or &quot;atomic&quot;.</span>
+<span class="sd">            Can either be &quot;angstrom&quot; or &quot;atomic&quot;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">new_units</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;angstroem&quot;</span><span class="p">,</span> <span class="s2">&quot;atomic&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">new_units</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;angstrom&quot;</span><span class="p">,</span> <span class="s2">&quot;atomic&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;New units are not recognized.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="n">new_units</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">B_TO_ANG</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;angstrom&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="n">ANG_TO_B</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">*</span> <span class="n">ANG_TO_B</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;atomic&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;angstroem&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;reduced&quot;</span> <span class="ow">and</span> <span class="n">new_units</span> <span class="o">==</span> <span class="s2">&quot;angstrom&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">position</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">*</span> <span class="n">B_TO_ANG</span><span class="p">)</span>
@@ -957,7 +951,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Olivier Malenfant-Thuot.</p>
+    <p>&#169; Copyright 2022, Olivier Malenfant-Thuot.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

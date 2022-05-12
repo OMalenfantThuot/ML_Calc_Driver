@@ -1,5 +1,5 @@
 r"""
-Calculator metaclass to accomodate machine learning models
+Calculator subclass to accomodate machine learning models
 trained using the SchnetPack package.
 """
 

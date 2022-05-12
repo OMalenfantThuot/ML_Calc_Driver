@@ -8,6 +8,7 @@ from copy import deepcopy
 class AtomsToPatches:
     """
     Splits an ase.Atoms into patches.
+    Used by the PatchSPCalculator.
     """
 
     def __init__(self, cutoff, n_interaction, grid):
