@@ -11,7 +11,7 @@ pytest-sugar==0.9.4
 coveralls==3.3.1
 ase==3.22.1
 git+https://github.com/atomistic-machine-learning/schnetpack.git
-mistune==0.8.4
+mistune==2.0.3
 sphinx==4.4.0
 sphinx-rtd-theme==1.0.0
 m2r2==0.3.2
