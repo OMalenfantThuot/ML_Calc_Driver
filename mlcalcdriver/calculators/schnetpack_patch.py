@@ -1,6 +1,7 @@
 r"""
-Calculator metaclass to accomodate machine learning models
-trained using the SchnetPack package.
+Calculator subclass to accomodate machine learning models
+trained using the SchnetPack package and configurations
+split over individual patches.
 """
 
 import numpy as np
@@ -17,6 +18,23 @@ from schnetpack.environment import SimpleEnvironmentProvider, AseEnvironmentProv
 class PatchSPCalculator(SchnetPackCalculator):
     r"""
     Calculator based on a SchnetPack model
+
+    Parameters
+    ----------
+    model_dir : str
+        Path to the stored model.
+    available_properties : str or list of str
+        Same as SchnetPackCalculator
+    device : str
+        Same as SchnetPackCalculator
+    units : dict
+        Same as SchnetPackCalculator
+    md : bool
+        Same as SchnetPackCalculator
+    subgrid : :class:`Sequence` of length 3
+        Number of subdivisions of the initial configuration in 
+        all 3 dimensions. The periodic boundary conditions will
+        be kept in the dimensions with 1.
     """
 
     def __init__(

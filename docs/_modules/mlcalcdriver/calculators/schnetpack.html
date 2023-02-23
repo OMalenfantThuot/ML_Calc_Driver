@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mlcalcdriver.calculators.schnetpack &mdash; ML_Calc_Driver 1.1.0 documentation</title>
+  <title>mlcalcdriver.calculators.schnetpack &mdash; ML_Calc_Driver 1.1.3 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -69,7 +69,7 @@
              
   <h1>Source code for mlcalcdriver.calculators.schnetpack</h1><div class="highlight"><pre>
 <span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Calculator metaclass to accomodate machine learning models</span>
+<span class="sd">Calculator subclass to accomodate machine learning models</span>
 <span class="sd">trained using the SchnetPack package.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -92,7 +92,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">model_dir</span><span class="p">,</span> <span class="n">available_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">eVA</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_dir</span><span class="p">,</span>
+        <span class="n">available_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="n">eVA</span><span class="p">,</span>
+        <span class="n">md</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -115,9 +121,15 @@
 <span class="sd">            Whether the calculator is used with ASE to do molecular dynamics.</span>
 <span class="sd">            Default is False and should be changed through the</span>
 <span class="sd">            :class:`AseSpkCalculator` object.</span>
+<span class="sd">        dropout : bool</span>
+<span class="sd">            Whether the calculator should use the dropout layers to estimate</span>
+<span class="sd">            a confidence interval for the prediction. Default is False. No</span>
+<span class="sd">            effect if the model hasn&#39;t been trained with dropout layers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">md</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -125,7 +137,10 @@
                 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;MODELDIR&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">model_dir</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span>
             <span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SchnetPackCalculator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_representation_type</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -145,8 +160,20 @@
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_md</span> <span class="o">=</span> <span class="n">md</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dropout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dropout</span>
+
+    <span class="nd">@dropout</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">dropout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropout</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dropout</span> <span class="o">=</span> <span class="n">dropout</span>
+
 <div class="viewcode-block" id="SchnetPackCalculator.run"><a class="viewcode-back" href="../../../schnetcalc.html#mlcalcdriver.calculators.schnetpack.SchnetPackCalculator.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">posinp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">property</span><span class="p">,</span>
+        <span class="n">posinp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Central method to use when making a calculation with</span>
@@ -169,6 +196,8 @@
         <span class="n">init_property</span><span class="p">,</span> <span class="n">out_name</span><span class="p">,</span> <span class="n">derivative</span><span class="p">,</span> <span class="n">wrt</span> <span class="o">=</span> <span class="n">get_derivative_names</span><span class="p">(</span>
             <span class="nb">property</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_properties</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">derivative</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">output_modules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">create_graph</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">posinp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">derivative</span><span class="p">:</span>
             <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
@@ -218,7 +247,9 @@
                 <span class="n">deriv2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span>
                     <span class="n">torch_derivative</span><span class="p">(</span>
                         <span class="n">torch_derivative</span><span class="p">(</span>
-                            <span class="n">results</span><span class="p">[</span><span class="n">init_property</span><span class="p">],</span> <span class="n">batch</span><span class="p">[</span><span class="n">wrt</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">results</span><span class="p">[</span><span class="n">init_property</span><span class="p">],</span>
+                            <span class="n">batch</span><span class="p">[</span><span class="n">wrt</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                            <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="p">),</span>
                         <span class="n">batch</span><span class="p">[</span><span class="n">wrt</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
                     <span class="p">),</span>
@@ -227,6 +258,7 @@
                 <span class="k">if</span> <span class="n">derivative</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">deriv2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">deriv2</span>
                 <span class="n">pred</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">out_name</span><span class="p">:</span> <span class="n">deriv2</span><span class="p">})</span>
+
         <span class="n">predictions</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;forces&quot;</span><span class="p">]:</span>
@@ -301,7 +333,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Olivier Malenfant-Thuot.</p>
+    <p>&#169; Copyright 2022, Olivier Malenfant-Thuot.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

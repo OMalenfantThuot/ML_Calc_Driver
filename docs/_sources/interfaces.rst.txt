@@ -14,3 +14,4 @@ interfaces might be needed when adding new calculators.
 
    ase_interface
    schnet_interface
+   atoms_to_patches

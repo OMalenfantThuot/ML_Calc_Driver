@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interfaces Module &mdash; ML_Calc_Driver 1.1.3 documentation</title>
+  <title>AtomsToPatches &mdash; ML_Calc_Driver 1.1.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="ASE Interface" href="ase_interface.html" />
-    <link rel="prev" title="Ensemble Calculators" href="ensemble.html" /> 
+    <link rel="next" title="Workflows Module" href="workflows.html" />
+    <link rel="prev" title="SchnetPack Interface" href="schnet_interface.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,10 +41,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="base.html">Base Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="calculators.html">Calculators Module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Interfaces Module</a><ul>
+<li class="toctree-l1 current"><a class="reference internal" href="interfaces.html">Interfaces Module</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="ase_interface.html">ASE Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schnet_interface.html">SchnetPack Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="atoms_to_patches.html">AtomsToPatches</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">AtomsToPatches</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="workflows.html">Workflows Module</a></li>
@@ -65,9 +65,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Interfaces Module</li>
+          <li><a href="interfaces.html">Interfaces Module</a> &raquo;</li>
+      <li>AtomsToPatches</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/interfaces.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/atoms_to_patches.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -75,28 +76,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="interfaces-module">
-<h1>Interfaces Module<a class="headerlink" href="#interfaces-module" title="Permalink to this headline"></a></h1>
-<p>This module contains the functions needed to interface ML_Calc_Driver with other
-python packages. For the moment, these packages include <a class="reference external" href="https://wiki.fysik.dtu.dk/ase/index.html">ase</a>
-and <a class="reference external" href="https://github.com/atomistic-machine-learning/schnetpack">SchnetPack</a>. More
-interfaces might be needed when adding new calculators.</p>
-<span class="target" id="module-mlcalcdriver.interfaces"></span><div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Interfaces</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ase_interface.html">ASE Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schnet_interface.html">SchnetPack Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="atoms_to_patches.html">AtomsToPatches</a></li>
-</ul>
-</div>
+  <section id="atomstopatches">
+<h1>AtomsToPatches<a class="headerlink" href="#atomstopatches" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlcalcdriver.interfaces.atoms_to_patches.AtomsToPatches">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlcalcdriver.interfaces.atoms_to_patches.</span></span><span class="sig-name descname"><span class="pre">AtomsToPatches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_interaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/mlcalcdriver/interfaces/atoms_to_patches.html#AtomsToPatches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mlcalcdriver.interfaces.atoms_to_patches.AtomsToPatches" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Splits an ase.Atoms into patches.
+Used by the PatchSPCalculator.</p>
+</dd></dl>
+
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ensemble.html" class="btn btn-neutral float-left" title="Ensemble Calculators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ase_interface.html" class="btn btn-neutral float-right" title="ASE Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="schnet_interface.html" class="btn btn-neutral float-left" title="SchnetPack Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="workflows.html" class="btn btn-neutral float-right" title="Workflows Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
