@@ -38,16 +38,13 @@ To upgrade to last version:
 
 ```
 git clone git@github.com:OMalenfantThuot/ML_Calc_Driver.git
-cd ML_Calc_Driver
+cd ML_Calc_Driver/
+pip install -r basic_requirements.txt
+pip install -r requirements_dev.txt
 pip install .
 ```
 To modify the sources, instead of `pip install .`, use
 
 ```
-pip install -r requirements_dev.txt
 pip install -e .
 ```
-
-### To use with [SchetPack](https://github.com/atomistic-machine-learning/schnetpack) trained models (only supported models at the time)
-
-`pip install schnetpack`
