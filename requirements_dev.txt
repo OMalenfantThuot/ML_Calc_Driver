@@ -1,10 +1,10 @@
-torch==1.10.0
+torch==2.0.0
 twine==4.0.2
 pytest==7.2.1
 pytest-cov==4.0.0
 pytest-sugar==0.9.6
 coveralls==3.3.1
-matplotlib==3.6.3
+matplotlib==3.2.2 #Last working version on MacOs 10.11
 ase==3.22.1
 schnetpack==1.0.1
 mistune==0.8.4
