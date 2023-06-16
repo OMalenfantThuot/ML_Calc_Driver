@@ -3,6 +3,7 @@ wheel==0.40.0
 black==23.3.0
 flake8==6.0.0
 numpy==1.23.2
+-f https://download.pytorch.org/whl/cu117/torch_stable.html
 torch==2.0.1
 twine==4.0.2
 pytest==7.3.2

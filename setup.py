@@ -4,7 +4,7 @@ with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    "numpy>=1.20<1.24",
+    "numpy>=1.20,<1.24",
     "torch>=2.0.1",
     "schnetpack==1.0.1",
     "ase>=3.22.0",
