@@ -205,7 +205,8 @@ class Posinp(Sequence):
         for line in lines:
             atom_type = line[0]
             position = np.array(line[1:4], dtype=float)
-            atoms.append(Atom(atom_type, position))
+            isotope = line[4] if len(line) > 4 else None
+            atoms.append(Atom(atom_type, position, isotope=isotope))
         return cls(atoms, units, boundary_conditions, cell=cell, angles=angles)
 
     @classmethod
@@ -717,7 +718,7 @@ class Atom(object):
     Class allowing to represent an atom by its type and position.
     """
 
-    def __init__(self, atom_type, position):
+    def __init__(self, atom_type, position, isotope=None):
         r"""
         Parameters
         ----------
@@ -738,7 +739,8 @@ class Atom(object):
         # TODO: Check that the atom type exists
         self.type = atom_type
         self.position = position
-        self.mass = ATOMS_MASS[self.type]
+        self.isotope = isotope
+        self.mass = ATOMS_MASS[self.isotope] if self.isotope else ATOMS_MASS[self.type]
 
     @classmethod
     def from_dict(cls, atom_dict):
@@ -831,7 +833,11 @@ class Atom(object):
             String representation of the atom, mainly used to create the
             string representation of a Posinp instance.
         """
-        return "{t}  {: .15}  {: .15}  {: .15}\n".format(t=self.type, *self.position)
+        return (
+            f"{self.type}  {self.position[0]:.15}  {self.position[1]:.15}  {self.position[2]:.15}  {self.isotope}\n"
+            if self.isotope
+            else f"{self.type}  {self.position[0]:.15}  {self.position[1]:.15}  {self.position[2]:.15}\n"
+        )
 
     def __repr__(self):
         r"""
@@ -840,7 +846,11 @@ class Atom(object):
         str
             General string representation of an Atom instance.
         """
-        return "Atom('{}', {})".format(self.type, list(self.position))
+        return (
+            "Atom('{}', {}, {})".format(self.type, list(self.position), self.isotope)
+            if self.isotope
+            else "Atom('{}', {})".format(self.type, list(self.position))
+        )
 
     def __eq__(self, other):
         r"""
