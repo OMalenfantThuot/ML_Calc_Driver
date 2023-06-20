@@ -10,6 +10,9 @@ ATOMS_MASS = {
     "Be": 9.012182,
     "B": 10.811,
     "C": 12.011,
+    "C12": 12,
+    "C13": 13.003,
+    "C14": 14.003,
     "N": 14.00674,
     "O": 15.9994,
     "F": 18.9984032,
@@ -99,7 +102,7 @@ ATOMS_MASS = {
     "Np": 237.048,
     "Pu": 244.064,
     "Am": 243.061,
-    "Cm": 247.070
+    "Cm": 247.070,
 }
 r"""
 `Dictionnary` containing elemental masses, in atomic mass units.
