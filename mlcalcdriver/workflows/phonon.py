@@ -6,7 +6,7 @@ learning trained model.
 
 import numpy as np
 from mlcalcdriver import Job, Posinp
-from mlcalcdriver.calculators import Calculator
+from mlcalcdriver.calculators.calculator import Calculator, DummyCalculator
 from mlcalcdriver.workflows import Geopt
 from copy import deepcopy
 from mlcalcdriver.globals import ANG_TO_B, B_TO_ANG, EV_TO_HA, HA_TO_CMM1, AMU_TO_EMU
@@ -294,7 +294,7 @@ class Phonon:
             h = (
                 job.results["hessian"].reshape(3 * n_at, 3 * n_at)
                 * EV_TO_HA
-                * B_TO_ANG ** 2
+                * B_TO_ANG**2
             )
             return (h + h.T) / 2.0
         else:
@@ -316,3 +316,52 @@ class Phonon:
         eigs, vecs = np.linalg.eigh(self.dyn_mat)
         eigs = np.sign(eigs) * np.sqrt(np.where(eigs < 0, -eigs, eigs))
         return eigs, vecs
+
+
+class PhononFromHessian(Phonon):
+    r"""
+    Similar to the main Phonon class, but can be used when calculating
+    many structures with the same hessian matrix (isotopes study). Saves
+    the time to compute the hessian matrix each time
+    """
+
+    def __init__(self, posinp, hessian):
+        r"""
+        Parameters
+        ----------
+        posinp : mlcaldriver.Posinp
+            Initial positions of the system under consideration.
+        hessian : np.ndarray or str
+            Hessian matrix calculated before instanciating this class.
+            Can be the array or a path to .npy file (created with np.save).
+        """
+        super().__init__(
+            posinp=posinp,
+            calculator=DummyCalculator(),
+            relax=False,
+            finite_difference=False,
+        )
+        self.hessian = hessian
+
+    @property
+    def hessian(self):
+        return self._hessian
+
+    @hessian.setter
+    def hessian(self, hessian):
+        if isinstance(hessian, str):
+            hessian = np.load(hessian)
+
+        if isinstance(hessian, np.ndarray):
+            assert hessian[0].shape == (
+                3 * len(self.posinp),
+                3 * len(self.posinp),
+            ), f"The hessian shape {hessian.shape} does not match the number of atoms {len(self.posinp)}"
+            self._hessian = hessian
+        else:
+            raise TypeError("The hessian matrix should be a numpy array.")
+
+    def run(self):
+        job = Job(posinp=self.posinp, calculator=self.calculator)
+        job.results["hessian"] = self.hessian
+        self._post_proc(job)

@@ -138,6 +138,25 @@ class Posinp(Sequence):
             return cls._from_lines(lines)
 
     @classmethod
+    def read(cls, filename):
+        r"""
+        Initialize the input positions from a file on disk.
+        Uses ase.io.read to support many file formats.
+
+        Parameters
+        ----------
+        filename : str
+            Name of the input file
+
+        Returns
+        -------
+        Posinp
+        """
+        from ase.io import read
+
+        return Posinp.from_ase(read(filename))
+
+    @classmethod
     def from_string(cls, posinp):
         r"""
         Initialize the input positions from a string.
@@ -740,7 +759,7 @@ class Atom(object):
         self.type = atom_type
         self.position = position
         self.isotope = isotope
-        self.mass = ATOMS_MASS[self.isotope] if self.isotope else ATOMS_MASS[self.type]
+        # self.mass = ATOMS_MASS[self.isotope] if self.isotope else ATOMS_MASS[self.type]
 
     @classmethod
     def from_dict(cls, atom_dict):
@@ -788,6 +807,20 @@ class Atom(object):
         self._position = np.array(position, dtype=float)
 
     @property
+    def isotope(self):
+        r"""
+        Returns
+        -------
+        str or None
+            Isotope of the atom
+        """
+        return self._isotope
+
+    @isotope.setter
+    def isotope(self, isotope):
+        self._isotope = isotope
+
+    @property
     def mass(self):
         r"""
         Returns
@@ -795,11 +828,7 @@ class Atom(object):
         float
             Mass of the atom in atomic mass units.
         """
-        return self._mass
-
-    @mass.setter
-    def mass(self, mass):
-        self._mass = mass
+        return ATOMS_MASS[self.isotope] if self.isotope else ATOMS_MASS[self.type]
 
     def translate(self, vector):
         r"""

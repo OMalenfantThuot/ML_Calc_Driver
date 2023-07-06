@@ -1,3 +1,5 @@
+from mlcalcdriver.globals import eVA
+
 r"""
 The :class:`Calculator` is the general class for a machine learning
 calculator. A specific class derived from this one must be implemented
@@ -84,3 +86,9 @@ class Calculator:
                 raise KeyError("Units key not recognized.")
         else:
             raise TypeError("Units should be given in a dictionary.")
+
+
+class DummyCalculator(Calculator):
+    def __init__(self):
+        properties = ["energy"]
+        super().__init__(available_properties=properties, units=eVA)

@@ -3,14 +3,13 @@ import pytest
 import numpy as np
 from mlcalcdriver import Posinp, Job
 from mlcalcdriver.calculators import SchnetPackCalculator
-from mlcalcdriver.workflows import Phonon
+from mlcalcdriver.workflows.phonon import Phonon, PhononFromHessian
 
 pos_folder = "tests/posinp_files/"
 model_folder = "tests/models/"
 
 
 class TestPhononFinite:
-
     posN2 = Posinp.from_file(os.path.join(pos_folder, "N2_unrelaxed.xyz"))
     calcN2 = SchnetPackCalculator(os.path.join(model_folder, "myN2_model"))
 
@@ -49,7 +48,6 @@ class TestPhononFinite:
 
 
 class TestPhononAutoGrad:
-
     posH2O = Posinp.from_file(os.path.join(pos_folder, "H2Orelaxed.xyz"))
     calc_ener = SchnetPackCalculator(os.path.join(model_folder, "H2O_model"))
     calc_for = SchnetPackCalculator(os.path.join(model_folder, "H2O_forces_model"))
@@ -65,3 +63,11 @@ class TestPhononAutoGrad:
         ph1.run()
         ph1.energies.sort()
         assert np.allclose(ph1.energies[6:9], [1589, 3703, 3812], atol=1)
+
+    def test_ph_from_hessian(self):
+        job = Job(posinp=self.posH2O, calculator=self.calc_for)
+        job.run("hessian")
+        ph = PhononFromHessian(posinp=self.posH2O, hessian=job.results["hessian"])
+        ph.run()
+        ph.energies.sort()
+        assert np.allclose(ph.energies[6:9], [1589, 3705, 3814], atol=1)
