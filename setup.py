@@ -12,7 +12,7 @@ requirements = [
 
 setup(
     name="mlcalcdriver",
-    version="1.4.1",
+    version="1.4.2",
     author="Olivier Malenfant-Thuot",
     author_email="malenfantthuotolivier@gmail.com",
     description="A package to drive atomic calculations using machine learned models.",
