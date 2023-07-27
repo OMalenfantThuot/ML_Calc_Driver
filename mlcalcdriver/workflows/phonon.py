@@ -4,12 +4,13 @@ and vibration energies of a system using a machine
 learning trained model.
 """
 
-import numpy as np
-from mlcalcdriver import Job, Posinp
 from mlcalcdriver.calculators.calculator import Calculator, DummyCalculator
+from mlcalcdriver.globals import ANG_TO_B, B_TO_ANG, EV_TO_HA, HA_TO_CMM1, AMU_TO_EMU
 from mlcalcdriver.workflows import Geopt
 from copy import deepcopy
-from mlcalcdriver.globals import ANG_TO_B, B_TO_ANG, EV_TO_HA, HA_TO_CMM1, AMU_TO_EMU
+from mlcalcdriver import Job, Posinp
+import numpy as np
+import warnings
 
 
 class Phonon:
@@ -298,6 +299,9 @@ class Phonon:
             )
             return (h + h.T) / 2.0
         else:
+            warnings.warn(
+                "The hessian matrix is approximated by a numerical derivative."
+            )
             hessian = np.zeros((3 * n_at, 3 * n_at))
             forces = np.array(job.results["forces"]) * EV_TO_HA * B_TO_ANG
             for i in range(3 * n_at):
@@ -306,7 +310,7 @@ class Phonon:
                     + forces[4 * i + 3].flatten()
                     + 8 * (forces[4 * i + 1].flatten() - forces[4 * i + 2].flatten())
                 ) / (12 * self.translation_amplitudes * ANG_TO_B)
-        return -(hessian + hessian.T) / 2.0
+            return -(hessian + hessian.T) / 2.0
 
     def _solve_dyn_mat(self):
         r"""
