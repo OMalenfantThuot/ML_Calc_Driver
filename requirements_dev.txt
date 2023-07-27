@@ -2,7 +2,7 @@ pip==23.1.2
 wheel==0.40.0
 black==23.3.0
 flake8==6.0.0
-numpy==1.23.2
+numpy==1.23.0
 -f https://download.pytorch.org/whl/cu117/torch_stable.html
 torch==2.0.1
 twine==4.0.2
