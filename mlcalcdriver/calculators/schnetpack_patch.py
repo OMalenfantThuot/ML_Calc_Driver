@@ -32,7 +32,7 @@ class PatchSPCalculator(SchnetPackCalculator):
     md : bool
         Same as SchnetPackCalculator
     subgrid : :class:`Sequence` of length 3
-        Number of subdivisions of the initial configuration in 
+        Number of subdivisions of the initial configuration in
         all 3 dimensions. The periodic boundary conditions will
         be kept in the dimensions with 1.
     """
@@ -153,12 +153,24 @@ class PatchSPCalculator(SchnetPackCalculator):
                 if self.model.output_modules[0].derivative is not None:
                     for batch in data_loader:
                         batch = {k: v.to(self.device) for k, v in batch.items()}
-                        results.append(self.model(batch))
+                        patch_results = self.model(batch)
+                        cpu_patch_results = {}
+                        for key, value in patch_results.items():
+                            cpu_patch_results[key] = value.detach().cpu().numpy()
+                            del value
+                        results.append(cpu_patch_results)
+                        del patch_results
                 else:
                     with torch.no_grad():
                         for batch in data_loader:
                             batch = {k: v.to(self.device) for k, v in batch.items()}
-                            results.append(self.model(batch))
+                            patch_results = self.model(batch)
+                            cpu_patch_results = {}
+                            for key, value in patch_results.items():
+                                cpu_patch_results[key] = value.detach().cpu().numpy()
+                                del value
+                            results.append(cpu_patch_results)
+                            del patch_results
 
             if abs(derivative) == 1:
                 for batch in data_loader:
@@ -180,9 +192,6 @@ class PatchSPCalculator(SchnetPackCalculator):
             predictions["energy"] = np.sum(
                 [
                     patch["individual_energy"][subcells_main_idx[i]]
-                    .detach()
-                    .cpu()
-                    .numpy()
                     for i, patch in enumerate(results)
                 ]
             )
@@ -190,20 +199,15 @@ class PatchSPCalculator(SchnetPackCalculator):
         elif property == "forces":
             forces = np.zeros((len(atoms), 3))
             for i in range(len(results)):
-                forces[original_cell_idx[i]] = (
-                    results[i]["forces"]
-                    .detach()
-                    .squeeze()
-                    .cpu()
-                    .numpy()[subcells_main_idx[i]]
-                )
+                forces[original_cell_idx[i]] = results[i]["forces"][0][
+                    subcells_main_idx[i]
+                ]
             predictions["forces"] = forces
 
         elif property == "hessian":
             hessian = np.zeros((3 * len(atoms), 3 * len(atoms)))
 
             for i in range(len(results)):
-
                 (
                     hessian_original_cell_idx_0,
                     hessian_original_cell_idx_1,
@@ -262,10 +266,18 @@ class PatchSPCalculator(SchnetPackCalculator):
 
 
 def prepare_hessian_indices(input_idx_0, input_idx_1):
-
     bias_0 = np.tile(np.array([0, 1, 2]), len(input_idx_0))
     bias_1 = np.tile(np.array([0, 1, 2]), len(input_idx_1))
     hessian_idx_0 = np.repeat(3 * input_idx_0, 3) + bias_0
     hessian_idx_1 = np.repeat(3 * input_idx_1, 3) + bias_1
     idx_0, idx_1 = np.meshgrid(hessian_idx_0, hessian_idx_1, indexing="ij")
     return idx_0, idx_1
+
+
+def collect_results(patch_results):
+    cpu_patch_results = {}
+    for key, value in patch_results.items():
+        cpu_patch_results[key] = value.detach().cpu().numpy()
+        del value
+    del patch_results
+    return cpu_patch_results

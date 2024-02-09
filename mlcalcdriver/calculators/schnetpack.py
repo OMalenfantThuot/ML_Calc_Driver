@@ -39,7 +39,7 @@ class SchnetPackCalculator(Calculator):
             be relative to it. If not, the path must be absolute
             or relative to the working directory.
         available_properties : str or list of str
-            Properties that the model can predict. If `None`, they
+            Properties that the model can predict. If `None`, they are
             automatically determined from the model. Default is `None`.
         device : str
             Can be either `"cpu"` to use cpu or `"cuda"` to use "gpu"

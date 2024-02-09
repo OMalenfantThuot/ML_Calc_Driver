@@ -83,10 +83,10 @@ class AtomsToPatches:
         full_scaled_buffer_length[np.where(self.grid == 1)[0]] = 0
 
         if np.any(full_scaled_buffer_length >= 0.5):
-            raise ValueError("The supercell is too small to use with this buffer.")
+            raise RuntimeError("The supercell is too small to use with this buffer.")
         grid_scaled_buffer_length = full_scaled_buffer_length * self.grid
         if np.any(grid_scaled_buffer_length >= 1):
-            raise ValueError("The grid is too fine to use with this buffer.")
+            raise RuntimeError("The grid is too fine to use with this buffer.")
 
         # Add initial buffer around the supercell
         buffered_atoms, copy_idx = add_initial_buffer(
