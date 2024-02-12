@@ -75,7 +75,7 @@ class PatchSPCalculator(SchnetPackCalculator):
             self._subgrid = [1, 1, 1]
         else:
             assert len(subgrid) == 3
-            self._subgrid = subgrid
+            self._subgrid = np.array(subgrid)
 
     def run(
         self,
@@ -174,15 +174,22 @@ class PatchSPCalculator(SchnetPackCalculator):
 
             if abs(derivative) == 1:
                 for batch in data_loader:
+                    torch.cuda.reset_peak_memory_stats()
                     batch = {k: v.to(self.device) for k, v in batch.items()}
                     batch[wrt[0]].requires_grad_()
-                    forward_results = self.model(batch)
-                    deriv1 = torch_derivative(
-                        forward_results[init_property], batch[wrt[0]]
+                    patch_forward_results = self.model(batch)
+                    patch_deriv1 = torch_derivative(
+                        patch_forward_results[init_property], batch[wrt[0]]
                     )
                     if derivative < 0:
-                        deriv1 = -1.0 * deriv1
-                    results.append({out_name: deriv1})
+                        patch_deriv1 = -1.0 * patch_deriv1
+                    cpu_patch_deriv1 = patch_deriv1.detach().cpu().numpy()
+                    results.append({out_name: cpu_patch_deriv1})
+                    for key, value in patch_forward_results.items():
+                        del value
+                    del patch_forward_results
+                    del patch_deriv1
+                    print(torch.cuda.max_memory_allocated())
 
             if abs(derivative) == 2:
                 raise NotImplementedError()
@@ -223,13 +230,11 @@ class PatchSPCalculator(SchnetPackCalculator):
                     np.arange(0, len(complete_subcell_copy_idx[i])),
                 )
 
-                hessian[hessian_original_cell_idx_0, hessian_original_cell_idx_1] = (
-                    results[i]["hessian"]
-                    .detach()
-                    .squeeze()
-                    .cpu()
-                    .numpy()[hessian_subcells_main_idx_0, hessian_subcells_main_idx_1]
-                )
+                hessian[
+                    hessian_original_cell_idx_0, hessian_original_cell_idx_1
+                ] = results[i]["hessian"].squeeze()[
+                    hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
+                ]
             predictions["hessian"] = hessian
 
         else:
