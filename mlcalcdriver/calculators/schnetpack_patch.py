@@ -204,7 +204,7 @@ class PatchSPCalculator(SchnetPackCalculator):
             )
 
         elif property == "forces":
-            forces = np.zeros((len(atoms), 3))
+            forces = np.zeros((len(atoms), 3), dtype=np.float32)
             for i in range(len(results)):
                 forces[original_cell_idx[i]] = results[i]["forces"][0][
                     subcells_main_idx[i]
@@ -212,7 +212,7 @@ class PatchSPCalculator(SchnetPackCalculator):
             predictions["forces"] = forces
 
         elif property == "hessian":
-            hessian = np.zeros((3 * len(atoms), 3 * len(atoms)))
+            hessian = np.zeros((3 * len(atoms), 3 * len(atoms)), dtype=np.float32)
 
             for i in range(len(results)):
                 (
@@ -235,7 +235,7 @@ class PatchSPCalculator(SchnetPackCalculator):
                 ] = results[i]["hessian"].squeeze()[
                     hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
                 ]
-            predictions["hessian"] = hessian
+            predictions["hessian"] = np.expand_dims(hessian, 0)
 
         else:
             raise NotImplementedError()
