@@ -248,7 +248,9 @@ class PatchSPCalculator(SchnetPackCalculator):
         initout = self.model.output_modules[0]
         aggregation_mode = "mean" if initout.atom_pool.average else "sum"
         atomref = (
-            initout.atomref.weight.numpy() if initout.atomref is not None else None
+            initout.atomref.weight.cpu().numpy()
+            if initout.atomref is not None
+            else None
         )
 
         patches_output = PatchesAtomwise(
@@ -262,7 +264,7 @@ class PatchSPCalculator(SchnetPackCalculator):
             negative_dr=initout.negative_dr,
             stress=initout.stress,
             create_graph=initout.create_graph,
-            atomref=initout.atomref,
+            atomref=atomref,
         )
         patches_output.load_state_dict(initout.state_dict())
 
