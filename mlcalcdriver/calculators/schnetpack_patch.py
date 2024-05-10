@@ -5,6 +5,7 @@ split over individual patches.
 """
 
 import numpy as np
+import scipy
 import torch
 import warnings
 from schnetpack import AtomsLoader
@@ -45,6 +46,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         units=eVA,
         md=False,
         subgrid=None,
+        sparse=False,
     ):
         super().__init__(
             model_dir=model_dir,
@@ -55,6 +57,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         )
         self.n_interaction = len(self.model.representation.interactions)
         self.subgrid = subgrid
+        self.sparse = sparse
         self._convert_model()
 
     @property
@@ -99,6 +102,11 @@ class PatchSPCalculator(SchnetPackCalculator):
         predictions : :class:`numpy.ndarray`
             Corresponding prediction by the model.
         """
+        import psutil
+        import os
+
+        pid = os.getpid()
+        proc = psutil.Process(pid)
 
         # Initial setup
         assert (
@@ -187,9 +195,7 @@ class PatchSPCalculator(SchnetPackCalculator):
                     results.append({out_name: cpu_patch_deriv1})
                     for key, value in patch_forward_results.items():
                         del value
-                    del patch_forward_results
-                    del patch_deriv1
-                    print(torch.cuda.max_memory_allocated())
+                    del patch_forward_results, patch_deriv1
 
             if abs(derivative) == 2:
                 raise NotImplementedError()
@@ -212,7 +218,22 @@ class PatchSPCalculator(SchnetPackCalculator):
             predictions["forces"] = forces
 
         elif property == "hessian":
-            hessian = np.zeros((3 * len(atoms), 3 * len(atoms)), dtype=np.float32)
+            hess_shape = (3 * len(atoms), 3 * len(atoms))
+            if self.sparse:
+                data_lims = [
+                    9 * s.size * cs.size
+                    for (s, cs) in zip(subcells_main_idx, complete_subcell_copy_idx)
+                ]
+                data_lims.insert(0, 0)
+                data_lims = np.cumsum(data_lims)
+                num_data = data_lims[-1]
+
+                data = np.zeros(num_data, dtype=np.float32)
+                row, col = np.zeros(num_data, dtype=np.intc), np.zeros(
+                    num_data, dtype=np.intc
+                )
+            else:
+                hessian = np.zeros(hess_shape, dtype=np.float32)
 
             for i in range(len(results)):
                 (
@@ -230,12 +251,40 @@ class PatchSPCalculator(SchnetPackCalculator):
                     np.arange(0, len(complete_subcell_copy_idx[i])),
                 )
 
-                hessian[
-                    hessian_original_cell_idx_0, hessian_original_cell_idx_1
-                ] = results[i]["hessian"].squeeze()[
-                    hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
-                ]
-            predictions["hessian"] = np.expand_dims(hessian, 0)
+                if self.sparse:
+                    row[
+                        data_lims[i] : data_lims[i + 1]
+                    ] = hessian_original_cell_idx_0.flatten()
+                    col[
+                        data_lims[i] : data_lims[i + 1]
+                    ] = hessian_original_cell_idx_1.flatten()
+                    data[data_lims[i] : data_lims[i + 1]] = (
+                        results[i]["hessian"]
+                        .copy()
+                        .squeeze()[
+                            hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
+                        ]
+                        .flatten()
+                    )
+                else:
+                    hessian[
+                        hessian_original_cell_idx_0, hessian_original_cell_idx_1
+                    ] = results[i]["hessian"].squeeze()[
+                        hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
+                    ]
+                del hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
+                del hessian_original_cell_idx_0, hessian_original_cell_idx_1
+
+            if self.sparse:
+                hessian = scipy.sparse.coo_array(
+                    (data, (row, col)), shape=hess_shape, dtype=np.float32
+                )
+                hessian.eliminate_zeros()
+                hessian = hessian.tocsr()
+            else:
+                hessian = np.expand_dims(hessian, 0)
+
+            predictions["hessian"] = hessian
 
         else:
             raise NotImplementedError()
@@ -278,7 +327,7 @@ def prepare_hessian_indices(input_idx_0, input_idx_1):
     hessian_idx_0 = np.repeat(3 * input_idx_0, 3) + bias_0
     hessian_idx_1 = np.repeat(3 * input_idx_1, 3) + bias_1
     idx_0, idx_1 = np.meshgrid(hessian_idx_0, hessian_idx_1, indexing="ij")
-    return idx_0, idx_1
+    return idx_0.astype(np.intc), idx_1.astype(np.intc)
 
 
 def collect_results(patch_results):
