@@ -5,6 +5,7 @@ split over individual patches.
 """
 
 import numpy as np
+import scipy
 import torch
 import warnings
 from schnetpack import AtomsLoader
@@ -32,7 +33,7 @@ class PatchSPCalculator(SchnetPackCalculator):
     md : bool
         Same as SchnetPackCalculator
     subgrid : :class:`Sequence` of length 3
-        Number of subdivisions of the initial configuration in 
+        Number of subdivisions of the initial configuration in
         all 3 dimensions. The periodic boundary conditions will
         be kept in the dimensions with 1.
     """
@@ -45,6 +46,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         units=eVA,
         md=False,
         subgrid=None,
+        sparse=False,
     ):
         super().__init__(
             model_dir=model_dir,
@@ -55,6 +57,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         )
         self.n_interaction = len(self.model.representation.interactions)
         self.subgrid = subgrid
+        self.sparse = sparse
         self._convert_model()
 
     @property
@@ -75,7 +78,7 @@ class PatchSPCalculator(SchnetPackCalculator):
             self._subgrid = [1, 1, 1]
         else:
             assert len(subgrid) == 3
-            self._subgrid = subgrid
+            self._subgrid = np.array(subgrid)
 
     def run(
         self,
@@ -99,6 +102,11 @@ class PatchSPCalculator(SchnetPackCalculator):
         predictions : :class:`numpy.ndarray`
             Corresponding prediction by the model.
         """
+        import psutil
+        import os
+
+        pid = os.getpid()
+        proc = psutil.Process(pid)
 
         # Initial setup
         assert (
@@ -153,24 +161,41 @@ class PatchSPCalculator(SchnetPackCalculator):
                 if self.model.output_modules[0].derivative is not None:
                     for batch in data_loader:
                         batch = {k: v.to(self.device) for k, v in batch.items()}
-                        results.append(self.model(batch))
+                        patch_results = self.model(batch)
+                        cpu_patch_results = {}
+                        for key, value in patch_results.items():
+                            cpu_patch_results[key] = value.detach().cpu().numpy()
+                            del value
+                        results.append(cpu_patch_results)
+                        del patch_results
                 else:
                     with torch.no_grad():
                         for batch in data_loader:
                             batch = {k: v.to(self.device) for k, v in batch.items()}
-                            results.append(self.model(batch))
+                            patch_results = self.model(batch)
+                            cpu_patch_results = {}
+                            for key, value in patch_results.items():
+                                cpu_patch_results[key] = value.detach().cpu().numpy()
+                                del value
+                            results.append(cpu_patch_results)
+                            del patch_results
 
             if abs(derivative) == 1:
                 for batch in data_loader:
+                    torch.cuda.reset_peak_memory_stats()
                     batch = {k: v.to(self.device) for k, v in batch.items()}
                     batch[wrt[0]].requires_grad_()
-                    forward_results = self.model(batch)
-                    deriv1 = torch_derivative(
-                        forward_results[init_property], batch[wrt[0]]
+                    patch_forward_results = self.model(batch)
+                    patch_deriv1 = torch_derivative(
+                        patch_forward_results[init_property], batch[wrt[0]]
                     )
                     if derivative < 0:
-                        deriv1 = -1.0 * deriv1
-                    results.append({out_name: deriv1})
+                        patch_deriv1 = -1.0 * patch_deriv1
+                    cpu_patch_deriv1 = patch_deriv1.detach().cpu().numpy()
+                    results.append({out_name: cpu_patch_deriv1})
+                    for key, value in patch_forward_results.items():
+                        del value
+                    del patch_forward_results, patch_deriv1
 
             if abs(derivative) == 2:
                 raise NotImplementedError()
@@ -180,30 +205,37 @@ class PatchSPCalculator(SchnetPackCalculator):
             predictions["energy"] = np.sum(
                 [
                     patch["individual_energy"][subcells_main_idx[i]]
-                    .detach()
-                    .cpu()
-                    .numpy()
                     for i, patch in enumerate(results)
                 ]
             )
 
         elif property == "forces":
-            forces = np.zeros((len(atoms), 3))
+            forces = np.zeros((len(atoms), 3), dtype=np.float32)
             for i in range(len(results)):
-                forces[original_cell_idx[i]] = (
-                    results[i]["forces"]
-                    .detach()
-                    .squeeze()
-                    .cpu()
-                    .numpy()[subcells_main_idx[i]]
-                )
+                forces[original_cell_idx[i]] = results[i]["forces"][0][
+                    subcells_main_idx[i]
+                ]
             predictions["forces"] = forces
 
         elif property == "hessian":
-            hessian = np.zeros((3 * len(atoms), 3 * len(atoms)))
+            hess_shape = (3 * len(atoms), 3 * len(atoms))
+            if self.sparse:
+                data_lims = [
+                    9 * s.size * cs.size
+                    for (s, cs) in zip(subcells_main_idx, complete_subcell_copy_idx)
+                ]
+                data_lims.insert(0, 0)
+                data_lims = np.cumsum(data_lims)
+                num_data = data_lims[-1]
+
+                data = np.zeros(num_data, dtype=np.float32)
+                row, col = np.zeros(num_data, dtype=np.intc), np.zeros(
+                    num_data, dtype=np.intc
+                )
+            else:
+                hessian = np.zeros(hess_shape, dtype=np.float32)
 
             for i in range(len(results)):
-
                 (
                     hessian_original_cell_idx_0,
                     hessian_original_cell_idx_1,
@@ -219,13 +251,39 @@ class PatchSPCalculator(SchnetPackCalculator):
                     np.arange(0, len(complete_subcell_copy_idx[i])),
                 )
 
-                hessian[hessian_original_cell_idx_0, hessian_original_cell_idx_1] = (
-                    results[i]["hessian"]
-                    .detach()
-                    .squeeze()
-                    .cpu()
-                    .numpy()[hessian_subcells_main_idx_0, hessian_subcells_main_idx_1]
+                if self.sparse:
+                    row[
+                        data_lims[i] : data_lims[i + 1]
+                    ] = hessian_original_cell_idx_0.flatten()
+                    col[
+                        data_lims[i] : data_lims[i + 1]
+                    ] = hessian_original_cell_idx_1.flatten()
+                    data[data_lims[i] : data_lims[i + 1]] = (
+                        results[i]["hessian"]
+                        .copy()
+                        .squeeze()[
+                            hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
+                        ]
+                        .flatten()
+                    )
+                else:
+                    hessian[
+                        hessian_original_cell_idx_0, hessian_original_cell_idx_1
+                    ] = results[i]["hessian"].squeeze()[
+                        hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
+                    ]
+                del hessian_subcells_main_idx_0, hessian_subcells_main_idx_1
+                del hessian_original_cell_idx_0, hessian_original_cell_idx_1
+
+            if self.sparse:
+                hessian = scipy.sparse.coo_array(
+                    (data, (row, col)), shape=hess_shape, dtype=np.float32
                 )
+                hessian.eliminate_zeros()
+                hessian = hessian.tocsr()
+            else:
+                hessian = np.expand_dims(hessian, 0)
+
             predictions["hessian"] = hessian
 
         else:
@@ -239,7 +297,9 @@ class PatchSPCalculator(SchnetPackCalculator):
         initout = self.model.output_modules[0]
         aggregation_mode = "mean" if initout.atom_pool.average else "sum"
         atomref = (
-            initout.atomref.weight.numpy() if initout.atomref is not None else None
+            initout.atomref.weight.cpu().numpy()
+            if initout.atomref is not None
+            else None
         )
 
         patches_output = PatchesAtomwise(
@@ -253,7 +313,7 @@ class PatchSPCalculator(SchnetPackCalculator):
             negative_dr=initout.negative_dr,
             stress=initout.stress,
             create_graph=initout.create_graph,
-            atomref=initout.atomref,
+            atomref=atomref,
         )
         patches_output.load_state_dict(initout.state_dict())
 
@@ -262,10 +322,18 @@ class PatchSPCalculator(SchnetPackCalculator):
 
 
 def prepare_hessian_indices(input_idx_0, input_idx_1):
-
     bias_0 = np.tile(np.array([0, 1, 2]), len(input_idx_0))
     bias_1 = np.tile(np.array([0, 1, 2]), len(input_idx_1))
     hessian_idx_0 = np.repeat(3 * input_idx_0, 3) + bias_0
     hessian_idx_1 = np.repeat(3 * input_idx_1, 3) + bias_1
     idx_0, idx_1 = np.meshgrid(hessian_idx_0, hessian_idx_1, indexing="ij")
-    return idx_0, idx_1
+    return idx_0.astype(np.intc), idx_1.astype(np.intc)
+
+
+def collect_results(patch_results):
+    cpu_patch_results = {}
+    for key, value in patch_results.items():
+        cpu_patch_results[key] = value.detach().cpu().numpy()
+        del value
+    del patch_results
+    return cpu_patch_results
