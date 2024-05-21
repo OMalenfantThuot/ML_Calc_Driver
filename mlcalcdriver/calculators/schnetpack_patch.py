@@ -47,6 +47,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         md=False,
         subgrid=None,
         sparse=False,
+        atomic_environments=None,
     ):
         super().__init__(
             model_dir=model_dir,
@@ -57,6 +58,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         )
         self.n_interaction = len(self.model.representation.interactions)
         self.subgrid = subgrid
+        self.atomic_environments = atomic_environments
         self.sparse = sparse
         self._convert_model()
 
@@ -80,6 +82,18 @@ class PatchSPCalculator(SchnetPackCalculator):
             assert len(subgrid) == 3
             self._subgrid = np.array(subgrid)
 
+    @property
+    def atomic_environments(self):
+        return self._atomic_environments
+
+    @atomic_environments.setter
+    def atomic_environments(self, atomic_environments):
+        if atomic_environments is not None:
+            assert len(atomic_environments) == np.prod(self.subgrid)
+            self._atomic_environments = atomic_environments
+        else:
+            self._atomic_environments = [None] * np.prod(self.subgrid)
+
     def run(
         self,
         property,
@@ -102,11 +116,6 @@ class PatchSPCalculator(SchnetPackCalculator):
         predictions : :class:`numpy.ndarray`
             Corresponding prediction by the model.
         """
-        import psutil
-        import os
-
-        pid = os.getpid()
-        proc = psutil.Process(pid)
 
         # Initial setup
         assert (
@@ -149,14 +158,14 @@ class PatchSPCalculator(SchnetPackCalculator):
 
         # Pass each subcell independantly
         results = []
-        for subcell in subcells:
+        for subcell, env in zip(subcells, self.atomic_environments):
             data = SchnetPackData(
                 data=[subcell],
                 environment_provider=environment_provider,
+                atomic_environment=env,
                 collect_triples=self.model_type == "wacsf",
             )
             data_loader = AtomsLoader(data, batch_size=1)
-
             if derivative == 0:
                 if self.model.output_modules[0].derivative is not None:
                     for batch in data_loader:
@@ -182,7 +191,6 @@ class PatchSPCalculator(SchnetPackCalculator):
 
             if abs(derivative) == 1:
                 for batch in data_loader:
-                    torch.cuda.reset_peak_memory_stats()
                     batch = {k: v.to(self.device) for k, v in batch.items()}
                     batch[wrt[0]].requires_grad_()
                     patch_forward_results = self.model(batch)
@@ -252,12 +260,12 @@ class PatchSPCalculator(SchnetPackCalculator):
                 )
 
                 if self.sparse:
-                    row[
-                        data_lims[i] : data_lims[i + 1]
-                    ] = hessian_original_cell_idx_0.flatten()
-                    col[
-                        data_lims[i] : data_lims[i + 1]
-                    ] = hessian_original_cell_idx_1.flatten()
+                    row[data_lims[i] : data_lims[i + 1]] = (
+                        hessian_original_cell_idx_0.flatten()
+                    )
+                    col[data_lims[i] : data_lims[i + 1]] = (
+                        hessian_original_cell_idx_1.flatten()
+                    )
                     data[data_lims[i] : data_lims[i + 1]] = (
                         results[i]["hessian"]
                         .copy()
