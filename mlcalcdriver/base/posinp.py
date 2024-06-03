@@ -634,7 +634,7 @@ class Posinp(Sequence):
         """
         new_positions = self.positions + np.array(vector)
         atoms = [
-            Atom(atom.type, pos.tolist())
+            Atom(atom.type, pos, isotope=atom.isotope)
             for atom, pos in zip(self.atoms, new_positions)
         ]
         return Posinp(

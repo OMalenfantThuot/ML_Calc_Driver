@@ -47,6 +47,8 @@ class PatchSPCalculator(SchnetPackCalculator):
         md=False,
         subgrid=None,
         sparse=False,
+        atomic_environments=None,
+        patches=None,
     ):
         super().__init__(
             model_dir=model_dir,
@@ -57,6 +59,8 @@ class PatchSPCalculator(SchnetPackCalculator):
         )
         self.n_interaction = len(self.model.representation.interactions)
         self.subgrid = subgrid
+        self.atomic_environments = atomic_environments
+        self.patches = patches
         self.sparse = sparse
         self._convert_model()
 
@@ -80,6 +84,31 @@ class PatchSPCalculator(SchnetPackCalculator):
             assert len(subgrid) == 3
             self._subgrid = np.array(subgrid)
 
+    @property
+    def atomic_environments(self):
+        return self._atomic_environments
+
+    @atomic_environments.setter
+    def atomic_environments(self, atomic_environments):
+        if atomic_environments is not None:
+            assert len(atomic_environments) == np.prod(self.subgrid)
+            self._atomic_environments = atomic_environments
+        else:
+            self._atomic_environments = [None] * np.prod(self.subgrid)
+
+    @property
+    def patches(self):
+        return self._patches
+
+    @patches.setter
+    def patches(self, patches):
+        if patches is not None:
+            for el in patches:
+                assert len(el) == np.prod(self.subgrid)
+            self._patches = patches
+        else:
+            self._patches = None
+
     def run(
         self,
         property,
@@ -102,11 +131,6 @@ class PatchSPCalculator(SchnetPackCalculator):
         predictions : :class:`numpy.ndarray`
             Corresponding prediction by the model.
         """
-        import psutil
-        import os
-
-        pid = os.getpid()
-        proc = psutil.Process(pid)
 
         # Initial setup
         assert (
@@ -137,26 +161,34 @@ class PatchSPCalculator(SchnetPackCalculator):
         )
 
         # Split the configuration according to the subgrid
-        at_to_patches = AtomsToPatches(
-            cutoff=self.cutoff, n_interaction=self.n_interaction, grid=self.subgrid
-        )
-        (
-            subcells,
-            subcells_main_idx,
-            original_cell_idx,
-            complete_subcell_copy_idx,
-        ) = at_to_patches.split_atoms(atoms)
+        if self.patches is None:
+            at_to_patches = AtomsToPatches(
+                cutoff=self.cutoff, n_interaction=self.n_interaction, grid=self.subgrid
+            )
+            (
+                subcells,
+                subcells_main_idx,
+                original_cell_idx,
+                complete_subcell_copy_idx,
+            ) = at_to_patches.split_atoms(atoms)
+        else:
+            (
+                subcells,
+                subcells_main_idx,
+                original_cell_idx,
+                complete_subcell_copy_idx,
+            ) = self.patches
 
         # Pass each subcell independantly
         results = []
-        for subcell in subcells:
+        for subcell, env in zip(subcells, self.atomic_environments):
             data = SchnetPackData(
                 data=[subcell],
                 environment_provider=environment_provider,
+                atomic_environment=env,
                 collect_triples=self.model_type == "wacsf",
             )
             data_loader = AtomsLoader(data, batch_size=1)
-
             if derivative == 0:
                 if self.model.output_modules[0].derivative is not None:
                     for batch in data_loader:
@@ -182,7 +214,6 @@ class PatchSPCalculator(SchnetPackCalculator):
 
             if abs(derivative) == 1:
                 for batch in data_loader:
-                    torch.cuda.reset_peak_memory_stats()
                     batch = {k: v.to(self.device) for k, v in batch.items()}
                     batch[wrt[0]].requires_grad_()
                     patch_forward_results = self.model(batch)
@@ -212,7 +243,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         elif property == "forces":
             forces = np.zeros((len(atoms), 3), dtype=np.float32)
             for i in range(len(results)):
-                forces[original_cell_idx[i]] = results[i]["forces"][0][
+                forces[original_cell_idx[i]] = results[i]["forces"].squeeze()[
                     subcells_main_idx[i]
                 ]
             predictions["forces"] = forces
@@ -252,12 +283,12 @@ class PatchSPCalculator(SchnetPackCalculator):
                 )
 
                 if self.sparse:
-                    row[
-                        data_lims[i] : data_lims[i + 1]
-                    ] = hessian_original_cell_idx_0.flatten()
-                    col[
-                        data_lims[i] : data_lims[i + 1]
-                    ] = hessian_original_cell_idx_1.flatten()
+                    row[data_lims[i] : data_lims[i + 1]] = (
+                        hessian_original_cell_idx_0.flatten()
+                    )
+                    col[data_lims[i] : data_lims[i + 1]] = (
+                        hessian_original_cell_idx_1.flatten()
+                    )
                     data[data_lims[i] : data_lims[i + 1]] = (
                         results[i]["hessian"]
                         .copy()
