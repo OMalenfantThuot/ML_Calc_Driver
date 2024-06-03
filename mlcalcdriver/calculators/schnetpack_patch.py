@@ -48,6 +48,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         subgrid=None,
         sparse=False,
         atomic_environments=None,
+        patches=None,
     ):
         super().__init__(
             model_dir=model_dir,
@@ -59,6 +60,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         self.n_interaction = len(self.model.representation.interactions)
         self.subgrid = subgrid
         self.atomic_environments = atomic_environments
+        self.patches = patches
         self.sparse = sparse
         self._convert_model()
 
@@ -93,6 +95,19 @@ class PatchSPCalculator(SchnetPackCalculator):
             self._atomic_environments = atomic_environments
         else:
             self._atomic_environments = [None] * np.prod(self.subgrid)
+
+    @property
+    def patches(self):
+        return self._patches
+
+    @patches.setter
+    def patches(self, patches):
+        if patches is not None:
+            for el in patches:
+                assert len(el) == np.prod(self.subgrid)
+            self._patches = patches
+        else:
+            self._patches = None
 
     def run(
         self,
@@ -146,15 +161,23 @@ class PatchSPCalculator(SchnetPackCalculator):
         )
 
         # Split the configuration according to the subgrid
-        at_to_patches = AtomsToPatches(
-            cutoff=self.cutoff, n_interaction=self.n_interaction, grid=self.subgrid
-        )
-        (
-            subcells,
-            subcells_main_idx,
-            original_cell_idx,
-            complete_subcell_copy_idx,
-        ) = at_to_patches.split_atoms(atoms)
+        if self.patches is None:
+            at_to_patches = AtomsToPatches(
+                cutoff=self.cutoff, n_interaction=self.n_interaction, grid=self.subgrid
+            )
+            (
+                subcells,
+                subcells_main_idx,
+                original_cell_idx,
+                complete_subcell_copy_idx,
+            ) = at_to_patches.split_atoms(atoms)
+        else:
+            (
+                subcells,
+                subcells_main_idx,
+                original_cell_idx,
+                complete_subcell_copy_idx,
+            ) = self.patches
 
         # Pass each subcell independantly
         results = []
@@ -220,7 +243,7 @@ class PatchSPCalculator(SchnetPackCalculator):
         elif property == "forces":
             forces = np.zeros((len(atoms), 3), dtype=np.float32)
             for i in range(len(results)):
-                forces[original_cell_idx[i]] = results[i]["forces"][0][
+                forces[original_cell_idx[i]] = results[i]["forces"].squeeze()[
                     subcells_main_idx[i]
                 ]
             predictions["forces"] = forces

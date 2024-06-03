@@ -63,11 +63,11 @@ class SchnetPackData(Dataset):
 
 def fast_convert(atoms, atomic_environment):
     inputs = {}
-    inputs[Properties.Z] = atoms.numbers.astype(np.int)
+    inputs[Properties.Z] = atoms.numbers.astype(int)
     inputs[Properties.R] = atoms.positions.astype(np.float32)
 
     nbh_idx, offsets = atomic_environment
-    inputs[Properties.neighbors] = nbh_idx.astype(np.int)
+    inputs[Properties.neighbors] = nbh_idx.astype(int)
 
     inputs[Properties.cell] = np.array(atoms.cell.array, dtype=np.float32)
     inputs[Properties.cell_offset] = offsets.astype(np.float32)

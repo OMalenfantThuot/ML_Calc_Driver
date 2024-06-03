@@ -416,7 +416,7 @@ class PhononFromHessian(Phonon):
             self._solve_sparse_hessian(kwargs=sparse_kwargs)
 
     def _solve_sparse_hessian(self, kwargs):
-        self.dyn_mat = self._compute_sparse_dyn_mat()
+        self._compute_sparse_dyn_mat()
         self.energies, self.normal_modes = self._solve_sparse_dyn_mat(kwargs=kwargs)
         self.energies *= HA_TO_CMM1
 
