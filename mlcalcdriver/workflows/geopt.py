@@ -6,7 +6,8 @@ learning model.
 
 import numpy as np
 from copy import deepcopy
-from mlcalcdriver import Posinp, Job, Atom
+from mlcalcdriver import Posinp, Job
+from mlcalcdriver.base import Atom
 from mlcalcdriver.calculators import Calculator
 from scipy.optimize import minimize
 
