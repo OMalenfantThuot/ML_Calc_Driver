@@ -14,7 +14,10 @@ def torch_derivative(fx, x, create_graph=False):
             retain_graph=True,
             create_graph=create_graph,
         )
-        dfdx.append(grad_x)
+        if create_graph is False:
+            dfdx.append(grad_x.detach().cpu())
+        else:
+            dfdx.append(grad_x)
     return torch.stack(dfdx).reshape(fx.shape[2] * x.shape[1], fx.shape[1] * x.shape[2])
 
 

@@ -10,6 +10,7 @@ from mlcalcdriver.workflows import Geopt
 from copy import deepcopy
 from mlcalcdriver import Job, Posinp
 import numpy as np
+import scipy
 import warnings
 
 
@@ -33,6 +34,7 @@ class Phonon:
         relax=True,
         finite_difference=False,
         translation_amplitudes=None,
+        low_memory=False,
     ):
         r"""
         The initial position fo the atoms are taken from the `init_state`
@@ -74,6 +76,7 @@ class Phonon:
         self.relax = relax
         self.finite_difference = finite_difference
         self.translation_amplitudes = translation_amplitudes
+        self.low_memory = low_memory
 
         if self.relax:
             self._ground_state = None
@@ -261,13 +264,13 @@ class Phonon:
                     )
         return structs
 
-    def _post_proc(self, job):
+    def _post_proc(self, job, use_jax=False):
         r"""
         Calculates the energies and normal modes from the results
         obtained from the model.
         """
         self.dyn_mat = self._compute_dyn_mat(job)
-        self.energies, self.normal_modes = self._solve_dyn_mat()
+        self.energies, self.normal_modes = self._solve_dyn_mat(use_jax=use_jax)
         self.energies *= HA_TO_CMM1
 
     def _compute_dyn_mat(self, job):
@@ -275,16 +278,28 @@ class Phonon:
         Computes the dynamical matrix
         """
         hessian = self._compute_hessian(job)
-        masses = self._compute_masses()
-        return hessian / masses
+        if not self.low_memory:
+            masses = self._compute_masses()
+            return hessian / masses
+        else:
+            masses = np.array(
+                [atom.mass for atom in self._ground_state for _ in range(3)],
+            )
+            for i in range(int(hessian.shape[0] / 3)):
+                hessian[3 * i : 3 * (i + 1)] = hessian[3 * i : 3 * (i + 1)] / np.sqrt(
+                    masses * masses[3 * i]
+                )
+            return hessian
 
     def _compute_masses(self):
         r"""
         Creates the masses matrix
         """
-        to_mesh = [atom.mass for atom in self._ground_state for _ in range(3)]
+        to_mesh = np.array(
+            [atom.mass for atom in self._ground_state for _ in range(3)],
+        )
         m_i, m_j = np.meshgrid(to_mesh, to_mesh)
-        return np.sqrt(m_i * m_j) * AMU_TO_EMU
+        return np.sqrt(m_i * m_j)
 
     def _compute_hessian(self, job):
         r"""
@@ -292,32 +307,43 @@ class Phonon:
         """
         n_at = len(self.posinp)
         if "hessian" in job.results.keys():
-            h = (
-                job.results["hessian"].reshape(3 * n_at, 3 * n_at)
-                * EV_TO_HA
-                * B_TO_ANG**2
-            )
+            h = job.results["hessian"].reshape(3 * n_at, 3 * n_at)
             return (h + h.T) / 2.0
         else:
             warnings.warn(
                 "The hessian matrix is approximated by a numerical derivative."
             )
             hessian = np.zeros((3 * n_at, 3 * n_at))
-            forces = np.array(job.results["forces"]) * EV_TO_HA * B_TO_ANG
+            forces = np.array(job.results["forces"])
             for i in range(3 * n_at):
                 hessian[i, :] = (
                     -forces[4 * i].flatten()
                     + forces[4 * i + 3].flatten()
                     + 8 * (forces[4 * i + 1].flatten() - forces[4 * i + 2].flatten())
-                ) / (12 * self.translation_amplitudes * ANG_TO_B)
+                ) / (12 * self.translation_amplitudes)
             return -(hessian + hessian.T) / 2.0
 
-    def _solve_dyn_mat(self):
+    def _solve_dyn_mat(self, use_jax=False):
         r"""
         Obtains the eigenvalues and eigenvectors from
         the dynamical matrix
         """
-        eigs, vecs = np.linalg.eigh(self.dyn_mat)
+        if use_jax:
+            try:
+                import jax.scipy
+
+                jax.config.update("jax_traceback_filtering", "off")
+                use_jax = True
+            except ModuleNotFoundError:
+                print("Jax not installed, defaults to basic scipy library.")
+                use_jax = False
+
+        if use_jax:
+            eigs, vecs = jax.scipy.linalg.eigh(self.dyn_mat)
+        else:
+            eigs, vecs = scipy.linalg.eigh(self.dyn_mat)
+
+        eigs *= EV_TO_HA * B_TO_ANG**2 / AMU_TO_EMU
         eigs = np.sign(eigs) * np.sqrt(np.where(eigs < 0, -eigs, eigs))
         return eigs, vecs
 
@@ -329,7 +355,7 @@ class PhononFromHessian(Phonon):
     the time to compute the hessian matrix each time
     """
 
-    def __init__(self, posinp, hessian):
+    def __init__(self, posinp, hessian, sparse=False, sparse_kwargs=None):
         r"""
         Parameters
         ----------
@@ -344,7 +370,11 @@ class PhononFromHessian(Phonon):
             calculator=DummyCalculator(),
             relax=False,
             finite_difference=False,
+            low_memory=True,
         )
+        self.sparse = sparse
+        if self.sparse:
+            self.sparse_kwargs = sparse_kwargs
         self.hessian = hessian
 
     @property
@@ -353,19 +383,68 @@ class PhononFromHessian(Phonon):
 
     @hessian.setter
     def hessian(self, hessian):
-        if isinstance(hessian, str):
-            hessian = np.load(hessian)
-
-        if isinstance(hessian, np.ndarray):
-            assert hessian[0].shape == (
-                3 * len(self.posinp),
-                3 * len(self.posinp),
-            ), f"The hessian shape {hessian.shape} does not match the number of atoms {len(self.posinp)}"
-            self._hessian = hessian
+        if self.sparse:
+            assert isinstance(hessian, scipy.sparse._compressed._cs_matrix)
+            self._hessian = scipy.sparse.csr_array(hessian)
         else:
-            raise TypeError("The hessian matrix should be a numpy array.")
+            if isinstance(hessian, str):
+                hessian = np.load(hessian)
 
-    def run(self):
-        job = Job(posinp=self.posinp, calculator=self.calculator)
-        job.results["hessian"] = self.hessian
-        self._post_proc(job)
+            if isinstance(hessian, np.ndarray):
+                assert hessian[0].shape == (
+                    3 * len(self.posinp),
+                    3 * len(self.posinp),
+                ), f"The hessian shape {hessian.shape} does not match the number of atoms {len(self.posinp)}"
+                self._hessian = hessian
+            else:
+                raise TypeError("The hessian matrix should be a numpy array.")
+
+    @property
+    def sparse(self):
+        return self._sparse
+
+    @sparse.setter
+    def sparse(self, sparse):
+        self._sparse = bool(sparse)
+
+    def run(self, use_jax=False, sparse_kwargs={}):
+        if not self.sparse:
+            job = Job(posinp=self.posinp, calculator=self.calculator)
+            job.results["hessian"] = self.hessian
+            self._post_proc(job, use_jax=use_jax)
+        else:
+            self._solve_sparse_hessian(kwargs=sparse_kwargs)
+
+    def _solve_sparse_hessian(self, kwargs):
+        self._compute_sparse_dyn_mat()
+        self.energies, self.normal_modes = self._solve_sparse_dyn_mat(kwargs=kwargs)
+        self.energies *= HA_TO_CMM1
+
+    def _compute_sparse_dyn_mat(self):
+        self.hessian = (self.hessian + self.hessian.T) / 2
+        masses = np.array(
+            [atom.mass for atom in self.posinp for _ in range(3)],
+        )
+        for i in range(self.hessian.shape[0]):
+            self.hessian.data[
+                self.hessian.indptr[i] : self.hessian.indptr[i + 1]
+            ] = self.hessian.data[
+                self.hessian.indptr[i] : self.hessian.indptr[i + 1]
+            ] / np.sqrt(
+                masses[i]
+                * masses[
+                    self.hessian.indices[
+                        self.hessian.indptr[i] : self.hessian.indptr[i + 1]
+                    ]
+                ]
+            )
+
+    def _solve_sparse_dyn_mat(self, kwargs={}):
+        eigs, vecs = scipy.sparse.linalg.eigsh(
+            self.hessian,
+            which="LM",
+            **kwargs,
+        )
+        eigs *= EV_TO_HA * B_TO_ANG**2 / AMU_TO_EMU
+        eigs = np.sign(eigs) * np.sqrt(np.abs(eigs))
+        return eigs, vecs

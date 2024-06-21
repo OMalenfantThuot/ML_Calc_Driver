@@ -1,8 +1,8 @@
-pip==23.1.2
+pip==24.0
 wheel==0.40.0
-black==23.3.0
+black==24.4.2
 flake8==6.0.0
-numpy==1.23.0
+numpy==1.26.4
 -f https://download.pytorch.org/whl/cu117/torch_stable.html
 torch==2.0.1
 twine==4.0.2
@@ -12,7 +12,7 @@ pytest-sugar==0.9.7
 coveralls==3.3.1
 matplotlib==3.7.1
 ase==3.22.1
-schnetpack==1.0.1
+schnetpack @ git+https://github.com/dounia-shaaban/schnetpack@1.0.1
 mistune==0.8.4
 sphinx<7
 sphinx-rtd-theme==1.2.2
