@@ -611,6 +611,27 @@ class Posinp(Sequence):
         new_posinp.atoms[i_at] = self[i_at].translate(vector)
         return new_posinp
 
+    def translate_atoms(self, translations):
+        r"""
+        Translate all atoms by a different value.
+        Still not perfect in efficiency, but much faster than looping
+        with ``translate_atom`.
+        """
+        init_pos = self.positions
+        assert init_pos.shape == translations.shape
+
+        new_positions = init_pos + translations
+        atoms = [
+            Atom(atom.type, pos, isotope=atom.isotope)
+            for atom, pos in zip(self.atoms, new_positions)
+        ]
+        return Posinp(
+            atoms,
+            units=self.units,
+            cell=self.cell,
+            boundary_conditions=self.boundary_conditions,
+        )
+
     def translate(self, vector):
         r"""
         Translate all the atoms along the three space coordinates

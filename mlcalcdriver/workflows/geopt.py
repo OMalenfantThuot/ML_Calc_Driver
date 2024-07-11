@@ -160,40 +160,52 @@ class Geopt:
         verbose = int(verbose)
 
         # Optimization loop
+        best_fmax = np.inf
         for i in range(1, self.max_iter + 1):
-            # Forces calculation
-            job = Job(posinp=temp_posinp, calculator=self.calculator)
-            job.run("forces", batch_size=batch_size)
-            # Moving the atoms
-            for j in range(len(job.posinp[0])):
-                temp_posinp = temp_posinp.translate_atom(
-                    j, self.step_size * job.results["forces"][0][j]
+            try:
+                # Forces calculation
+                job = Job(posinp=temp_posinp, calculator=self.calculator)
+                job.run("forces", batch_size=batch_size)
+                # Moving the atoms
+                temp_posinp = temp_posinp.translate_atoms(
+                    self.step_size * job.results["forces"].squeeze()
                 )
-            fmax = np.max(np.abs(job.results["forces"][0]))
-            if verbose >= 2:
-                print(
-                    "At iteration {}, the maximum remaining force is {:6.4f} eV/Ha.".format(
-                        i, fmax
-                    )
-                )
-            # Stopping condition
-            if fmax < self.forcemax:
-                if verbose >= 1:
-                    print("Geometry optimization stopped at iteration {}.".format(i))
-                break
-            # Step size reduction to help forces optimization
-            if i % 100 == 0:
-                self.step_size = self.step_size * 0.9
-            # Maximum iterations check
-            if i == self.max_iter:
-                if verbose >= 1:
+                fmax = np.max(np.abs(job.results["forces"].squeeze()))
+                if verbose >= 2:
                     print(
-                        "Geometry optimization was not succesful at iteration {}.".format(
-                            i
+                        "At iteration {}, the maximum remaining force is {:6.4f} eV/Ha.".format(
+                            i, fmax
                         )
                     )
+                if fmax < best_fmax:
+                    self.best_posinp = temp_posinp
+                    best_fmax = fmax
+                # Stopping condition
+                if fmax < self.forcemax:
+                    if verbose >= 1:
+                        print(
+                            "Geometry optimization stopped at iteration {}.".format(i)
+                        )
+                    break
+                # Step size reduction to help forces optimization
+                if i % 100 == 0:
+                    self.step_size = self.step_size * 0.9
+                # Maximum iterations check
+                if i == self.max_iter:
+                    if verbose >= 1:
+                        print(
+                            "Geometry optimization was not succesful at iteration {}.".format(
+                                i
+                            )
+                        )
+            except RuntimeError as err:
+                print(f"RuntimeError at iteration {i}.")
+                print(str(err))
+                break
         if verbose >= 1:
-            print("Max remaining force is {:6.4f}.".format(fmax))
+            print("Best remaining force is {:6.4f}.".format(best_fmax))
+            print("Last remaining force is {:6.4f}.".format(fmax))
         self.final_posinp = temp_posinp
         if recenter:
+            self.best_posinp = self.best_posinp.to_centroid()
             self.final_posinp = self.final_posinp.to_centroid()
